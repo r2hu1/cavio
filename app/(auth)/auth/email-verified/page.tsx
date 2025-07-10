@@ -10,7 +10,9 @@ export default function EmailVerifiedPage() {
     return (
       <div className="max-w-sm space-y-2 text-center">
         <AlertCircle className="h-10 w-10 mx-auto" />
-        <h1 className="text-3xl font-bold">Invalid or Expired Link</h1>
+        <h1 className="text-xl sm:text-3xl font-bold">
+          Invalid or Expired Link
+        </h1>
         <p className="text-base sm:text-lg text-foreground/80">
           The link you followed may be invalid or expired. Please try signing up
           or signing again.
