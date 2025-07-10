@@ -42,7 +42,10 @@ export default function ForgotPasswordPage() {
       />
       <div className="grid w-full sm:grid-cols-2 gap-2">
         <Button type="submit">Request Reset</Button>
-        <Link href="/login" className="text-sm text-foreground/80 text-center">
+        <Link
+          href="/auth/sign-in"
+          className="text-sm text-foreground/80 text-center"
+        >
           Back to Sign In
         </Link>
       </div>

@@ -1,5 +1,9 @@
-import { JSX } from "react";
+"use client";
+import { JSX, useState } from "react";
 import { Button } from "../ui/button";
+import { signIn } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface SocialSignInButtonProps {
   type: "google" | "github";
@@ -40,13 +44,34 @@ const icons: Record<string, JSX.Element> = {
 
 export default function SocialSignInButton({ type }: SocialSignInButtonProps) {
   const icon = icons[type];
+  const [loading, setLoading] = useState(false);
+
+  const handleFlow = async () => {
+    setLoading(true);
+    const { error } = await signIn.social({
+      provider: type,
+      callbackURL: "/dashboard",
+    });
+    if (error) {
+      toast.error(error.message);
+    }
+    setLoading(false);
+  };
   return (
-    <Button className="w-auto" variant="outline">
+    <Button
+      type="button"
+      className="w-auto"
+      onClick={handleFlow}
+      variant="outline"
+      disabled={loading}
+    >
       <span>
         {type.charAt(0).toUpperCase()}
         {type.slice(1)}
       </span>
-      <span>{icon}</span>
+      <span>
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
+      </span>
     </Button>
   );
 }
