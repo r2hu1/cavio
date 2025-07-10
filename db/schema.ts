@@ -1,21 +1,25 @@
 import {
   pgTable,
   text,
-  integer,
   timestamp,
   boolean,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").notNull().default(false),
+  emailVerified: boolean("email_verified")
+    .$defaultFn(() => false)
+    .notNull(),
   image: text("image"),
-  createdAt: timestamp("created_at").notNull(),
-  subscription: text("subscription"),
-  updatedAt: timestamp("updated_at").notNull(),
-  onboardingCompleted: boolean("onboarding_completed").notNull().default(false),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
 });
 
 export const session = pgTable("session", {
@@ -54,52 +58,10 @@ export const verification = pgTable("verification", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at"),
-  updatedAt: timestamp("updated_at"),
-});
-
-export const subscriptions = pgTable("subscriptions", {
-  id: text("id").primaryKey(),
-  createdTime: timestamp("created_time").defaultNow(),
-  subscriptionId: text("subscription_id"),
-  stripeUserId: text("stripe_user_id"),
-  status: text("status"),
-  startDate: text("start_date"),
-  endDate: text("end_date"),
-  planId: text("plan_id"),
-  defaultPaymentMethodId: text("default_payment_method_id"),
-  email: text("email"),
-  userId: text("user_id"),
-});
-
-export const subscriptionPlans = pgTable("subscriptions_plans", {
-  id: text("id").primaryKey(),
-  createdTime: timestamp("created_time").defaultNow(),
-  planId: text("plan_id"),
-  name: text("name"),
-  description: text("description"),
-  amount: text("amount"),
-  currency: text("currency"),
-  interval: text("interval"),
-});
-
-export const invoices = pgTable("invoices", {
-  id: text("id").primaryKey(),
-  createdTime: timestamp("created_time").defaultNow(),
-  invoiceId: text("invoice_id"),
-  subscriptionId: text("subscription_id"),
-  amountPaid: text("amount_paid"),
-  amountDue: text("amount_due"),
-  currency: text("currency"),
-  status: text("status"),
-  email: text("email"),
-  userId: text("user_id"),
-});
-
-export const feedback = pgTable("feedback", {
-  id: text("id").primaryKey(),
-  createdTime: timestamp("created_time").defaultNow(),
-  userId: text("user_id"),
-  feedbackContent: text("feedback_content"),
-  stars: integer().notNull(),
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
 });
