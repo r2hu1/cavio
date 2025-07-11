@@ -1,3 +1,4 @@
+import { polarClient } from "@polar-sh/better-auth";
 import { createAuthClient } from "better-auth/react";
 export const {
   signIn,
@@ -6,7 +7,7 @@ export const {
   useSession,
   forgetPassword,
   resetPassword,
+  polar,
 } = createAuthClient({
-  /** the base url of the server (optional if you're using the same domain) */
-  // baseURL: "http://localhost:3000",
+  plugins: [polarClient()],
 });

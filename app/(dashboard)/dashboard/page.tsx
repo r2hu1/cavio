@@ -2,15 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "@/lib/auth-client";
+import { polarClient } from "@/lib/polar";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const router = useRouter();
   const user = useSession();
+  const [products, setProducts] = useState<any>([]);
+  const prd = async () => {
+    const proudc = await polarClient.products.list({
+      isArchived: false,
+      isRecurring: true,
+      sorting: ["price_amount"],
+    });
+    setProducts(proudc.result.items);
+  };
+  useEffect(() => {
+    prd();
+  }, []);
   return (
     <div className="grid gap-2">
-      {user.data?.user.email}
-      {user.data?.user.emailVerified}
       <Button
         onClick={async () => {
           await signOut();
@@ -19,6 +31,8 @@ export default function DashboardPage() {
       >
         Sign Out
       </Button>
+      <span>Products</span>
+      <span>{products.length}</span>
     </div>
   );
 }

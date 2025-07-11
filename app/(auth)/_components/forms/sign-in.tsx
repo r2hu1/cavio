@@ -32,7 +32,7 @@ import { signIn } from "@/lib/auth-client";
 import SocialSignInButton from "@/components/auth/social-signin";
 
 const formSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(8),
 });
 
@@ -81,8 +81,8 @@ export default function SignInForm({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid gap-6">
                 <div className="grid grid-cols-2 gap-4">
-                  <SocialSignInButton type="google" />
-                  <SocialSignInButton type="github" />
+                  <SocialSignInButton disabled={isLoading} type="google" />
+                  <SocialSignInButton disabled={isLoading} type="github" />
                 </div>
                 <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
@@ -128,7 +128,7 @@ export default function SignInForm({
                         href="/auth/forgot-password"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
-                        Forgot your password?
+                        Forgot password?
                       </Link>
                     </div>
                   </div>

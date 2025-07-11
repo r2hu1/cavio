@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 
 interface SocialSignInButtonProps {
   type: "google" | "github";
+  disabled?: boolean;
 }
 
 const icons: Record<string, JSX.Element> = {
@@ -42,7 +43,10 @@ const icons: Record<string, JSX.Element> = {
   ),
 };
 
-export default function SocialSignInButton({ type }: SocialSignInButtonProps) {
+export default function SocialSignInButton({
+  type,
+  disabled = false,
+}: SocialSignInButtonProps) {
   const icon = icons[type];
   const [loading, setLoading] = useState(false);
 
@@ -63,7 +67,7 @@ export default function SocialSignInButton({ type }: SocialSignInButtonProps) {
       className="w-auto"
       onClick={handleFlow}
       variant="outline"
-      disabled={loading}
+      disabled={loading || disabled}
     >
       <span>
         {type.charAt(0).toUpperCase()}
