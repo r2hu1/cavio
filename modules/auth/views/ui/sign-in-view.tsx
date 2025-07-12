@@ -28,17 +28,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { signUp } from "@/lib/auth-client";
-import SocialSignInButton from "@/modules/auth/ui/views/social-signin-view";
+import { signIn } from "@/lib/auth-client";
+import SocialSignInButton from "./social-signin-view";
 
 const formSchema = z.object({
   email: z.email(),
   password: z.string().min(8),
-  firstName: z.string().min(2).max(100),
-  lastName: z.string().min(2).max(100),
 });
 
-export default function SignUpForm({
+export default function SignInForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
@@ -50,25 +48,22 @@ export default function SignUpForm({
     defaultValues: {
       email: "",
       password: "",
-      firstName: "",
-      lastName: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    const { error } = await signUp.email({
-      name: `${values.firstName} ${values.lastName}`,
+    const { error } = await signIn.email({
       email: values.email,
       password: values.password,
-      callbackURL: "/auth/verify-email",
+      callbackURL: "/dashboard",
     });
 
     if (error) {
       toast.error(error.message);
     } else {
-      router.push("/auth/verify-email");
+      router.push("/dashboard");
     }
 
     setIsLoading(false);
@@ -78,8 +73,8 @@ export default function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create Account</CardTitle>
-          <CardDescription>Continue with your social accounts</CardDescription>
+          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardDescription>Login with your social accounts</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -95,38 +90,6 @@ export default function SignUpForm({
                   </span>
                 </div>
                 <div className="grid gap-6">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="grid gap-3">
-                      <FormField
-                        control={form.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>First Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="John" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="grid gap-3">
-                      <FormField
-                        control={form.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Last Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Deo" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
                   <div className="grid gap-3">
                     <FormField
                       control={form.control}
@@ -135,7 +98,7 @@ export default function SignUpForm({
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="name@example.com" {...field} />
+                            <Input placeholder="m@example.com" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -161,6 +124,12 @@ export default function SignUpForm({
                           </FormItem>
                         )}
                       />
+                      <Link
+                        href="/auth/forgot-password"
+                        className="ml-auto text-sm underline-offset-4 hover:underline"
+                      >
+                        Forgot password?
+                      </Link>
                     </div>
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
@@ -172,12 +141,12 @@ export default function SignUpForm({
                   </Button>
                 </div>
                 <div className="text-center text-sm">
-                  Already have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
-                    href="/auth/sign-in"
+                    href="/auth/sign-up"
                     className="underline underline-offset-4"
                   >
-                    Sign In
+                    Sign Up
                   </Link>
                 </div>
               </div>

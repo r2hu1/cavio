@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { GalleryVerticalEnd } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
-import SignUpForm from "@/modules/auth/ui/views/sign-up-view";
+import SignUpForm from "@/modules/auth/views/ui/sign-up-view";
 
 export default function SignUpPage() {
   const { isPending, data } = useSession();
