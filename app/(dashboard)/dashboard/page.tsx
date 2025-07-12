@@ -20,7 +20,7 @@ export default function DashboardPage() {
   };
   useEffect(() => {
     prd();
-  }, []);
+  }, [user.data?.session]);
   return (
     <div className="grid gap-2">
       <Button

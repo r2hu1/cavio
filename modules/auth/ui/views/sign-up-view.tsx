@@ -29,7 +29,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { signUp } from "@/lib/auth-client";
-import SocialSignInButton from "@/components/auth/social-signin";
+import SocialSignInButton from "@/modules/auth/ui/views/social-signin-view";
 
 const formSchema = z.object({
   email: z.email(),

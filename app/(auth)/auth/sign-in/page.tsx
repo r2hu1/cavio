@@ -1,9 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import SignInForm from "../../_components/forms/sign-in";
 import { GalleryVerticalEnd } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
+import SignInForm from "@/modules/auth/ui/views/sign-in-view";
 
 export default function SignInPage() {
   const { isPending, data } = useSession();

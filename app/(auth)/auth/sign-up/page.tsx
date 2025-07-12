@@ -2,8 +2,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { GalleryVerticalEnd } from "lucide-react";
-import SignUpForm from "../../_components/forms/sign-up";
 import { useSession } from "@/lib/auth-client";
+import SignUpForm from "@/modules/auth/ui/views/sign-up-view";
 
 export default function SignUpPage() {
   const { isPending, data } = useSession();

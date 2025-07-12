@@ -1,9 +1,9 @@
 "use client";
 import { JSX, useState } from "react";
-import { Button } from "../ui/button";
 import { signIn } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SocialSignInButtonProps {
   type: "google" | "github";
