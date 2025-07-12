@@ -6,19 +6,6 @@ import { polar, checkout, portal } from "@polar-sh/better-auth";
 import { polarClient } from "./polar";
 
 export const auth = betterAuth({
-  plugins: [
-    polar({
-      client: polarClient,
-      createCustomerOnSignUp: true,
-      use: [
-        checkout({
-          authenticatedUsersOnly: true,
-          successUrl: "/upgrade",
-        }),
-        portal(),
-      ],
-    }),
-  ],
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
@@ -59,4 +46,33 @@ export const auth = betterAuth({
       });
     },
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
+  plugins: [
+    polar({
+      client: polarClient,
+      createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          authenticatedUsersOnly: true,
+          products: [
+            {
+              productId: "41361670-74b3-4d08-981e-e9d4290e8114",
+              slug: "monthly",
+            },
+            {
+              productId: "ec57ca42-e547-4280-9e43-3e7fbbddf900",
+              slug: "yearly",
+            },
+          ],
+          successUrl: "/upgrade",
+        }),
+        portal(),
+      ],
+    }),
+  ],
 });
