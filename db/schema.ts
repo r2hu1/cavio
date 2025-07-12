@@ -4,7 +4,9 @@ import {
   timestamp,
   boolean,
   integer,
+  uuid,
 } from "drizzle-orm/pg-core";
+import { nanoid } from "zod";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -67,7 +69,9 @@ export const verification = pgTable("verification", {
 });
 
 export const documents = pgTable("documents", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuid().toString()),
   title: text("title").notNull().default("unnamed"),
   userId: text("user_id")
     .notNull()
