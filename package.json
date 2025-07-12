@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "schema:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
