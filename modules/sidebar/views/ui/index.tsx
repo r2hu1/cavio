@@ -11,6 +11,7 @@ import {
 import { Command } from "lucide-react";
 import DashboardSidebarHeader from "./header";
 import { NavUser } from "./user";
+import Useage from "./useage";
 
 export function DashboardSidebar() {
   return (
@@ -21,6 +22,7 @@ export function DashboardSidebar() {
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter>
+        <Useage />
         <NavUser />
       </SidebarFooter>
     </Sidebar>

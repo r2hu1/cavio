@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuthState } from "@/modules/auth/providers/auth-context";
 import SignOut from "@/modules/auth/views/ui/sign-out";
+import TextSkeleton from "@/components/text-skeleton";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -53,8 +54,14 @@ export function NavUser() {
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{data?.user.name}</span>
-                <span className="truncate text-xs">{data?.user.email}</span>
+                <TextSkeleton
+                  className="truncate font-medium"
+                  text={data?.user.name}
+                />
+                <TextSkeleton
+                  className="truncate text-xs"
+                  text={data?.user.email}
+                />
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
