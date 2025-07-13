@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BorderTrail } from "@/components/ui/border-trail";
 import { Badge } from "@/components/ui/badge";
 import { authClient } from "@/lib/auth-client";
+import { polarClient } from "@/lib/polar";
 
 export function Pricing({
   productId,
@@ -14,6 +15,16 @@ export function Pricing({
   productId: string[];
   currentPlan: string;
 }) {
+  const handleCheckout = async (id: string) => {
+    const e = await authClient.checkout({
+      products: [id],
+      fetchOptions: {
+        disableValidation: true,
+      },
+    });
+    console.log(e.data?.url);
+    console.log(e.error?.message);
+  };
   return (
     <section className="relative overflow-hidden">
       <div id="pricing" className="mx-auto w-full max-w-7xl space-y-5 px-4">
@@ -70,10 +81,9 @@ export function Pricing({
                   </div>
                   <Button
                     onClick={() => {
-                      authClient.checkout({
-                        products: [productId[0]],
-                      });
+                      handleCheckout(productId[0]);
                     }}
+                    disabled={!productId[0]}
                     className="w-full"
                     variant="outline"
                   >
@@ -113,10 +123,9 @@ export function Pricing({
                   </div>
                   <Button
                     onClick={() => {
-                      authClient.checkout({
-                        products: [productId[1]],
-                      });
+                      handleCheckout(productId[1]);
                     }}
+                    disabled={!productId[1]}
                     className="w-full"
                   >
                     Get Started

@@ -12,9 +12,6 @@ export default function PricingView() {
   const { data: products, isLoading: productsLoading } = useQuery(
     trpc.premium.getProducts.queryOptions(),
   );
-  if (!productsLoading) {
-    console.log(products);
-  }
   return (
     <div className="space-y-10">
       <Pricing

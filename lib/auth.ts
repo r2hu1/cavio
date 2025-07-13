@@ -14,6 +14,7 @@ export const auth = betterAuth({
     "https://cavio.pro",
     "https://www.cavio.pro",
     "https://app.cavio.pro",
+    "https://cavio.vercel.app",
   ],
   emailAndPassword: {
     enabled: true,
@@ -50,12 +51,6 @@ export const auth = betterAuth({
         subject: "Cavio - Verify your email address",
         text: `Click the link to verify your email: ${verificationUrl}`,
       });
-    },
-  },
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 10 * 60,
     },
   },
   plugins: [
