@@ -32,7 +32,7 @@ import { signIn } from "@/lib/auth-client";
 import SocialSignInButton from "./social-signin-view";
 
 const formSchema = z.object({
-  email: z.email(),
+  email: z.string().email(),
   password: z.string().min(8),
 });
 
