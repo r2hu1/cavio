@@ -26,6 +26,7 @@ export const RedirectProvider = ({
   }, [session.data?.session]);
 
   return (
+    //@ts-ignore
     <RedirectContext.Provider value={session.data?.session}>
       {children}
     </RedirectContext.Provider>

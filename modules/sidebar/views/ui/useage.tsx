@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { MAX_FREE_DOCUMENTS } from "@/modules/constants";
+import UpgradeButton from "@/modules/premium/views/ui/upgrade-button";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { is } from "drizzle-orm";
@@ -21,9 +22,9 @@ export default function Useage() {
   }
   return (
     <div className="p-2 mb-2 px-3 rounded-lg space-y-2 border bg-background">
-      <h1 className="font-medium text-base">Useage</h1>
+      <h1 className="font-medium text-base">Free Useage</h1>
       <p className="text-sm text-foreground/80 -mt-1.5">
-        Upgrade to paid plan to remove limits and unlock features.
+        Upgrade to remove limits and unlock all features.
       </p>
       <div className="flex items-center gap-1.5">
         <Progress
@@ -33,9 +34,9 @@ export default function Useage() {
           {useage?.documentsCount}/{MAX_FREE_DOCUMENTS}
         </span>
       </div>
-      <Button className="w-full mt-2" size="sm">
-        Upgrade <Sparkles className="h-3 w-3" />
-      </Button>
+      <UpgradeButton className="w-full mt-1" size="sm">
+        Upgrade <Sparkles className="w-4 h-4" />
+      </UpgradeButton>
     </div>
   );
 }

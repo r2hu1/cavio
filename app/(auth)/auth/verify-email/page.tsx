@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { AlertCircle, CircleCheckBig } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
 import Link from "next/link";
 
 export default function VerifyEmailPage() {

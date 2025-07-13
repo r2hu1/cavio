@@ -6,7 +6,7 @@ import { useSession } from "@/lib/auth-client";
 import SignUpForm from "@/modules/auth/views/ui/sign-up-view";
 
 export default function SignUpPage() {
-  const { isPending, data } = useSession();
+  const { data } = useSession();
   const router = useRouter();
 
   useEffect(() => {

@@ -1,19 +1,21 @@
-import SharedLogo from "@/components/shared-logo";
-import { Button } from "@/components/ui/button";
-import { RainbowButton } from "@/components/ui/rainbow-button";
+import { ModeToggle } from "@/components/theme-switcher";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import UpgradeButton from "@/modules/premium/views/ui/upgrade-button";
 import { Sparkles } from "lucide-react";
+import Breadcrumbs from "./breadcrumbs";
 
 export default function DashboardHeader() {
   return (
     <header className="px-6 h-16 flex items-center justify-between">
-      <SidebarTrigger />
       <div className="flex items-center gap-3">
-        <Button asChild>
-          <RainbowButton>
-            Upgrade <Sparkles className="h-3 w-3" />
-          </RainbowButton>
-        </Button>
+        <SidebarTrigger />
+        {/* <Breadcrumbs /> */}
+      </div>
+      <div className="flex items-center gap-2">
+        <UpgradeButton>
+          Upgrade <Sparkles className="h-3 w-3" />
+        </UpgradeButton>
+        <ModeToggle />
       </div>
     </header>
   );

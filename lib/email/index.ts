@@ -26,6 +26,7 @@ export async function sendEmail({ type, to, subject, text }: SendEmailProps) {
       subject,
       html: emailTemplate[type],
     });
+    //@ts-ignore
   } catch (error: any) {
     console.log(`Transporter error: ${error}`);
   }

@@ -9,6 +9,12 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://cavio.pro",
+    "https://www.cavio.pro",
+    "https://app.cavio.pro",
+  ],
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -49,7 +55,7 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60,
+      maxAge: 10 * 60,
     },
   },
   plugins: [
@@ -59,17 +65,7 @@ export const auth = betterAuth({
       use: [
         checkout({
           authenticatedUsersOnly: true,
-          products: [
-            {
-              productId: "41361670-74b3-4d08-981e-e9d4290e8114",
-              slug: "monthly",
-            },
-            {
-              productId: "ec57ca42-e547-4280-9e43-3e7fbbddf900",
-              slug: "yearly",
-            },
-          ],
-          successUrl: "/upgrade",
+          successUrl: "/dashboard/pro",
         }),
         portal(),
       ],
