@@ -85,11 +85,16 @@ export const documents = pgTable("documents", {
 });
 
 export const folders = pgTable("folders", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuid().toString()),
   title: text("title").notNull().default("unnamed"),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  documents: text("documents")
+    .notNull()
+    .references(() => documents.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
