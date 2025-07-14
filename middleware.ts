@@ -11,7 +11,10 @@ export async function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
-  if (!sessionCookie) {
+  if (
+    !sessionCookie &&
+    !sessionDeProtectedRoutes.includes(request.nextUrl.pathname)
+  ) {
     return NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
   return NextResponse.next();
