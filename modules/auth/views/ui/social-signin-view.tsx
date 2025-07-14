@@ -64,18 +64,14 @@ export default function SocialSignInButton({
   return (
     <Button
       type="button"
-      className="w-auto items-center"
+      className="w-auto items-center gap-2 flex"
       onClick={handleFlow}
       variant="outline"
       disabled={loading || disabled}
     >
-      <span>
-        {type.charAt(0).toUpperCase()}
-        {type.slice(1)}
-      </span>
-      <span>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
-      </span>
+      {type.charAt(0).toUpperCase()}
+      {type.slice(1)}
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
     </Button>
   );
 }
