@@ -9,6 +9,7 @@ import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function Pricing({
   productId,
@@ -35,8 +36,11 @@ export function Pricing({
     <section className="relative overflow-hidden">
       <div id="pricing" className="mx-auto w-full max-w-7xl space-y-5 px-4">
         <div className="mx-auto max-w-xl space-y-5">
-          <h2 className="mt-5 text-center text-2xl font-bold tracking-tighter md:text-3xl lg:text-4xl">
-            You are on <span className="text-indigo-700">{currentPlan}</span>{" "}
+          <h2 className="mt-5 justify-center text-center text-2xl font-bold tracking-tighter flex items-center gap-3 md:text-3xl lg:text-4xl">
+            You are on
+            <span className="text-indigo-700">
+              {currentPlan ? currentPlan : <Skeleton className="h-5 w-32" />}
+            </span>
             plan
           </h2>
           <p className="text-muted-foreground mt-5 text-center text-sm md:text-base">
