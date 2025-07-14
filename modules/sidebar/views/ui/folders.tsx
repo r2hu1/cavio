@@ -11,6 +11,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import CreateFolderPopup from "@/modules/folders/views/ui/create-folder-popup";
 import { ChevronRight, FolderOpen, FolderPlus, Plus } from "lucide-react";
 
 export function Folders() {
@@ -36,18 +37,22 @@ export function Folders() {
             <div className="h-32 flex items-center justify-center text-foreground/50 text-xs text-center w-full bg-secondary rounded-xl">
               No folders found.
             </div>
-            <Button className="w-full" size="sm">
-              Add Folder
-              <FolderPlus className="h-3 w-3" />
-            </Button>
+            <CreateFolderPopup>
+              <Button className="w-full" size="sm">
+                Add Folder
+                <FolderPlus className="h-3 w-3" />
+              </Button>
+            </CreateFolderPopup>
           </div>
         )}
         {folders.length > 0 && (
           <div className="hidden mt-2 group-hover:flex">
-            <Button className="w-full" size="sm">
-              Add Folder
-              <FolderPlus className="h-3 w-3" />
-            </Button>
+            <CreateFolderPopup>
+              <Button className="w-full" size="sm">
+                Add Folder
+                <FolderPlus className="h-3 w-3" />
+              </Button>
+            </CreateFolderPopup>
           </div>
         )}
       </SidebarMenu>
