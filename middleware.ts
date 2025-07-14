@@ -5,8 +5,6 @@ export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
 
   const sessionDeProtectedRoutes = ["/auth/sign-in", "/auth/sign-up"];
-  console.log(request.nextUrl.pathname);
-  console.log(sessionDeProtectedRoutes.includes(request.nextUrl.pathname));
   if (
     sessionCookie &&
     sessionDeProtectedRoutes.includes(request.nextUrl.pathname)
