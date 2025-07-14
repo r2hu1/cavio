@@ -54,7 +54,7 @@ export default function SocialSignInButton({
     setLoading(true);
     const { error } = await signIn.social({
       provider: type,
-      callbackURL: "/dashboard",
+      callbackURL: "/",
     });
     if (error) {
       toast.error(error.message);
@@ -64,7 +64,7 @@ export default function SocialSignInButton({
   return (
     <Button
       type="button"
-      className="w-auto"
+      className="w-auto items-center"
       onClick={handleFlow}
       variant="outline"
       disabled={loading || disabled}

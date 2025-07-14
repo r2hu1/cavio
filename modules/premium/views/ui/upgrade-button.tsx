@@ -1,9 +1,6 @@
-"use client";
-
 import { Button, buttonVariants } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
-import { polarClient } from "@/lib/polar";
 import { VariantProps } from "class-variance-authority";
+import Link from "next/link";
 
 export default function UpgradeButton({
   className,
@@ -16,18 +13,10 @@ export default function UpgradeButton({
     asChild?: boolean;
   }) {
   return (
-    <Button
-      asChild={asChild}
-      className={className}
-      size={size}
-      onClick={async () => {
-        authClient.checkout({
-          products: ["41361670-74b3-4d08-981e-e9d4290e8114"],
-        });
-      }}
-      {...props}
-    >
-      {children}
-    </Button>
+    <Link href="/pro">
+      <Button asChild={asChild} className={className} size={size} {...props}>
+        {children}
+      </Button>
+    </Link>
   );
 }

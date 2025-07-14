@@ -1,30 +1,11 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { GalleryVerticalEnd } from "lucide-react";
-import { useSession } from "@/lib/auth-client";
 import SignInForm from "@/modules/auth/views/ui/sign-in-view";
 
-export default function SignInPage() {
-  const { data } = useSession();
-  const router = useRouter();
+export const metadata = {
+  title: "Sign In to Your Account",
+  description:
+    "Access your dashboard by signing in with your email and password. Secure and fast login to your account.",
+};
 
-  useEffect(() => {
-    if (data?.user) {
-      router.push("/dashboard");
-    }
-  }, [data?.session]);
-  return (
-    <div className="flex flex-col items-center justify-center gap-6">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
-          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-            <GalleryVerticalEnd className="size-4" />
-          </div>
-          Cavio
-        </a>
-      </div>
-      <SignInForm />
-    </div>
-  );
+export default function SignInPage() {
+  return <SignInForm />;
 }

@@ -19,7 +19,7 @@ export default function Breadcrumbs() {
         {pathname.split("/").map((segment, index) => (
           <Fragment key={index}>
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/dashboard/${segment}`}>
+              <BreadcrumbLink href={`/${segment}`}>
                 {segment.charAt(0).toUpperCase()}
                 {segment.slice(1)}
               </BreadcrumbLink>

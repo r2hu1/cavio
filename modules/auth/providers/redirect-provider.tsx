@@ -1,8 +1,8 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
-import { Session } from "better-auth";
+import type { Session } from "better-auth";
 import { usePathname, useRouter } from "next/navigation";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const RedirectContext = createContext<Session | null>(null);
 
@@ -11,6 +11,7 @@ export const RedirectProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const [cachedSession, setCachedSession] = useState<Session | null>(null);
   const router = useRouter();
   const session = useSession();
   const pathname = usePathname();
@@ -18,16 +19,23 @@ export const RedirectProvider = ({
   const exclude = ["/auth/forgot-password", "/auth/reset-password"];
 
   useEffect(() => {
-    if (session.data?.session) {
-      if (!exclude.includes(pathname)) {
-        router.push("/dashboard");
-      }
+    if (!session.isPending) {
+      setCachedSession(session.data?.session ?? null);
     }
-  }, [session.data?.session]);
+  }, [session.isPending, session.data?.session]);
+
+  useEffect(() => {
+    if (
+      !session.isPending &&
+      cachedSession?.id &&
+      !exclude.includes(pathname)
+    ) {
+      router.push("/");
+    }
+  }, [cachedSession, session.isPending, pathname, router]);
 
   return (
-    //@ts-ignore
-    <RedirectContext.Provider value={session.data?.session}>
+    <RedirectContext.Provider value={cachedSession}>
       {children}
     </RedirectContext.Provider>
   );

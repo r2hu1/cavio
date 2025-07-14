@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MAX_FREE_DOCUMENTS } from "@/modules/constants";
 import UpgradeButton from "@/modules/premium/views/ui/upgrade-button";
 import { useTRPC } from "@/trpc/client";
@@ -17,6 +18,9 @@ export default function Useage() {
     trpc.premium.getFreeUsage.queryOptions(),
   );
 
+  if (isLoading && useageLoading) {
+    return <Skeleton className="w-full h-36" />;
+  }
   if (data && !isLoading) {
     return null;
   }
@@ -26,14 +30,18 @@ export default function Useage() {
       <p className="text-sm text-foreground/80 -mt-1.5">
         Upgrade to remove limits and unlock all features.
       </p>
-      <div className="flex items-center gap-1.5">
-        <Progress
-          value={((useage?.documentsCount ?? 0) / MAX_FREE_DOCUMENTS) * 100}
-        />
-        <span className="text-xs text-foreground/80">
-          {useage?.documentsCount}/{MAX_FREE_DOCUMENTS}
-        </span>
-      </div>
+      {!useageLoading ? (
+        <div className="flex items-center gap-1.5">
+          <Progress
+            value={((useage?.documentsCount ?? 0) / MAX_FREE_DOCUMENTS) * 100}
+          />
+          <span className="text-xs text-foreground/80">
+            {useage?.documentsCount}/{MAX_FREE_DOCUMENTS}
+          </span>
+        </div>
+      ) : (
+        <Skeleton className="w-full h-2.5" />
+      )}
       <UpgradeButton className="w-full mt-1" size="sm">
         Upgrade <Sparkles className="w-4 h-4" />
       </UpgradeButton>

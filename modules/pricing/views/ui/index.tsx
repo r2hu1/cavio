@@ -3,6 +3,8 @@
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { Pricing } from "./pricing-view";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function PricingView() {
   const trpc = useTRPC();
@@ -12,6 +14,8 @@ export default function PricingView() {
   const { data: products, isLoading: productsLoading } = useQuery(
     trpc.premium.getProducts.queryOptions(),
   );
+  const params = useParams();
+  // useEffect(()=>{},[params.get("cu")])
   return (
     <div className="space-y-10">
       <Pricing

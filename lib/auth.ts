@@ -60,7 +60,7 @@ export const auth = betterAuth({
       use: [
         checkout({
           authenticatedUsersOnly: true,
-          successUrl: "/dashboard/pro",
+          successUrl: "/pro",
         }),
         portal(),
       ],

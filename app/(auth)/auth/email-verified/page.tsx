@@ -1,10 +1,22 @@
 import VerifiedEmail from "@/modules/auth/views/ui/verified-email-view";
+import Head from "next/head";
 import { Suspense } from "react";
+
+export const metadata = {
+  title: "Email Verified Successfully",
+  description:
+    "Your email has been verified. You can now sign in and enjoy full access to your account",
+};
 
 export default function EmailVerifiedPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <VerifiedEmail />
-    </Suspense>
+    <>
+      <Head>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
+      <Suspense fallback={<div>Loading...</div>}>
+        <VerifiedEmail />
+      </Suspense>
+    </>
   );
 }

@@ -31,10 +31,17 @@ import SignOut from "@/modules/auth/views/ui/sign-out";
 import TextSkeleton from "@/components/text-skeleton";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/trpc/client";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { data } = useAuthState();
+
+  const trpc = useTRPC();
+  const { data: activeSubscription, isLoading } = useQuery(
+    trpc.premium.getActiveSubscription.queryOptions(),
+  );
 
   return (
     <SidebarMenu>
@@ -46,6 +53,7 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage src={data?.user.image} />
                 <AvatarFallback className="rounded-lg bg-indigo-700 text-white">
                   {data?.user.name ? (
                     data.user.name.charAt(0).toUpperCase() +
@@ -77,6 +85,7 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={data?.user.image} />
                   <AvatarFallback className="rounded-lg bg-indigo-700 text-white">
                     {data?.user.name ? (
                       data.user.name.charAt(0).toUpperCase() +
@@ -95,18 +104,22 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {!isLoading && !activeSubscription && (
+              <>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <Link href="/pro">
+                      <Sparkles />
+                      Upgrade to Pro
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/pro">
-                  <Sparkles />
-                  Upgrade to Pro
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/account">
+                <Link href="/account">
                   <BadgeCheck />
                   Account
                 </Link>
