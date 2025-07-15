@@ -19,8 +19,12 @@ export default function DashboardNav() {
     <SidebarGroup className="mt-2">
       <SidebarMenu>
         <SidebarMenuItem>
-          <SearchFolderPopup>
-            <SidebarMenuButton className="cursor-pointer" tooltip={"Search"}>
+          <SidebarMenuButton
+            asChild
+            className="cursor-pointer"
+            tooltip={"Search"}
+          >
+            <SearchFolderPopup triggerClassName="cursor-pointer flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none">
               <Search className="h-4 !w-4" />{" "}
               <span className="flex items-center justify-between w-full">
                 Search{" "}
@@ -28,8 +32,8 @@ export default function DashboardNav() {
                   ⌘K
                 </Badge>
               </span>
-            </SidebarMenuButton>
-          </SearchFolderPopup>
+            </SearchFolderPopup>
+          </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarMenuButton asChild tooltip={"Home"}>
