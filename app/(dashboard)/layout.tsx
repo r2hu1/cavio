@@ -14,7 +14,7 @@ export default function DashboardLayout({
         <DashboardSidebar />
         <SidebarInset>
           <DashboardHeader />
-          <div className="px-6 py-10">{children}</div>
+          <div className="px-6 sm:px-10 py-6">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </AuthProvider>
