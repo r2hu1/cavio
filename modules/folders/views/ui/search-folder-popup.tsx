@@ -15,8 +15,10 @@ import { Button } from "@/components/ui/button";
 
 export default function SearchFolderPopup({
   children,
+  triggerClassName,
 }: {
   children: React.ReactNode;
+  triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -45,7 +47,7 @@ export default function SearchFolderPopup({
   return (
     <div>
       <button
-        className="w-full outline-0"
+        className={`w-full outline-0 ${triggerClassName}`}
         onClick={() => setOpen((open) => !open)}
       >
         {children}
