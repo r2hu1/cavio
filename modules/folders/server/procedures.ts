@@ -1,11 +1,10 @@
 import { db } from "@/db/client";
-import { polarClient } from "@/lib/polar";
 import {
   createTRPCRouter,
   premiumProcedure,
   protectedProcedure,
 } from "@/trpc/init";
-import { count, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 import { folders } from "@/db/schema";
