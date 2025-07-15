@@ -1,7 +1,9 @@
+import HomeView from "@/modules/home/views/ui/home-view";
+
 export default function SubscriptionInfo() {
   return (
     <div>
-      <h1>Dashboard</h1>
+      <HomeView />
     </div>
   );
 }
