@@ -30,8 +30,8 @@ export default function HomeView() {
             !
           </h1>
           <p className="text-sm sm:text-lg text-foreground/80">
-            Need content? Just ask. From blog posts to punchy copy, I’m your AI
-            writer ready to craft it all.
+            Need content? Just ask. From blog posts to research papers, I’m your
+            AI writer ready to craft it all.
           </p>
         </div>
         <div className="mt-10">
