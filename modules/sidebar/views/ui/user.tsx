@@ -3,6 +3,7 @@
 import {
   BadgeCheck,
   Bell,
+  Bolt,
   ChevronsUpDown,
   CreditCard,
   Loader2,
@@ -120,8 +121,8 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link href="/account">
-                  <BadgeCheck />
-                  Account
+                  <Bolt />
+                  Settings
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => authClient.customer.portal()}>
