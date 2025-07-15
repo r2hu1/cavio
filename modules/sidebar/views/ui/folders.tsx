@@ -12,48 +12,77 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import CreateFolderPopup from "@/modules/folders/views/ui/create-folder-popup";
-import { ChevronRight, FolderOpen, FolderPlus, Plus } from "lucide-react";
+import {
+  ChevronRight,
+  ExternalLink,
+  FilePlus,
+  Folder,
+  FolderOpen,
+  FolderPlus,
+  Plus,
+  Trash,
+} from "lucide-react";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 export function Folders() {
-  const folders: any[] = [];
+  const folders: any[] = [
+    {
+      title: "Test folder",
+    },
+    {
+      title: "Test folder 2",
+    },
+  ];
+
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="flex items-center justify-between">
+    <SidebarGroup className="-mt-2 space-y-1">
+      <SidebarGroupLabel className="group/folder flex items-center justify-between hover:bg-sidebar-accent">
         Folders
-        <FolderOpen className="!h-3.5 !w-3.5" />
+        <CreateFolderPopup triggerClassName="hidden group-hover/folder:block h-4 w-4 rounded">
+          <Button variant="ghost" className="hover:bg-accent" size="icon">
+            <Plus className="!h-3.5 !w-3.5" />
+          </Button>
+        </CreateFolderPopup>
       </SidebarGroupLabel>
-      <SidebarMenu className="mt-2 group">
+      <SidebarMenu>
         {folders.length > 0 &&
-          folders.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                <span>{item.title}</span>
-                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:" />
-              </SidebarMenuButton>
+          folders.map((item, index) => (
+            <SidebarMenuItem key={index}>
+              <ContextMenu key={index}>
+                <ContextMenuTrigger>
+                  <SidebarMenuButton tooltip={item.title}>
+                    <span>{item.title}</span>
+                    <Folder className="!h-3.5 !w-3.5 ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:" />
+                  </SidebarMenuButton>
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                  <ContextMenuItem>
+                    <FilePlus className="!h-4 !w-4" /> Add File
+                  </ContextMenuItem>
+                  <ContextMenuItem>
+                    <ExternalLink className="!h-4 !w-4" /> Open
+                  </ContextMenuItem>
+                  <ContextMenuItem variant="destructive">
+                    <Trash className="!h-4 !w-4" /> Delete
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
             </SidebarMenuItem>
           ))}
         {!folders.length && (
-          <div className="space-y-3 mt-2">
-            <div className="h-32 flex items-center justify-center text-foreground/50 text-xs text-center w-full bg-secondary rounded-xl">
-              No folders found.
-            </div>
+          <SidebarMenuItem>
             <CreateFolderPopup>
-              <Button className="w-full" size="sm">
-                Add Folder
-                <FolderPlus className="h-3 w-3" />
-              </Button>
+              <SidebarMenuButton className="text-sm">
+                <Plus className="!h-3.5 !w-3.5" />
+                Add new
+              </SidebarMenuButton>
             </CreateFolderPopup>
-          </div>
-        )}
-        {folders.length > 0 && (
-          <div className="hidden mt-2 group-hover:flex">
-            <CreateFolderPopup>
-              <Button className="w-full" size="sm">
-                Add Folder
-                <FolderPlus className="h-3 w-3" />
-              </Button>
-            </CreateFolderPopup>
-          </div>
+          </SidebarMenuItem>
         )}
       </SidebarMenu>
     </SidebarGroup>
