@@ -54,7 +54,7 @@ export const premiumProcedure = () =>
       throw new TRPCError({
         code: "FORBIDDEN",
         message:
-          "You have reached the free limit for documents. Upgrade to premium to continue.",
+          "You have reached the free limit. Upgrade to premium to continue.",
       });
     }
     return next({ ctx: { ...ctx, customer } });
