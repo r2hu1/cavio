@@ -24,8 +24,11 @@ export function Pricing() {
   );
 
   const handleCheckout = async () => {
-    setLoading(true);
+    if (!isLoadingSubscription && subscription?.name) {
+      return await authClient.customer.portal();
+    }
     if (isProductsLoading) return;
+    setLoading(true);
     const selectedProductId =
       selectedPlan === "yearly" ? products![1].id : products![0].id;
     await authClient.checkout({
@@ -87,7 +90,10 @@ export function Pricing() {
           </Label>
         </RadioGroup>
         <div className="flex items-center justify-end -mb-4">
-          <Button onClick={handleCheckout}>
+          <Button
+            disabled={isLoadingSubscription || loading}
+            onClick={handleCheckout}
+          >
             {!isLoadingSubscription &&
               (!subscription?.name
                 ? "Continue To Upgrade"

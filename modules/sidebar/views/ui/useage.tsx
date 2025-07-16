@@ -26,7 +26,7 @@ export default function Useage() {
   }
   return (
     <div className="p-2 mb-2 px-3 rounded-lg space-y-2 border bg-background">
-      <h1 className="font-medium text-base">Free Useage</h1>
+      <h1 className="font-medium text-base">Free Usage</h1>
       <p className="text-sm text-foreground/80 -mt-1.5">
         Upgrade to remove limits and unlock all features.
       </p>
