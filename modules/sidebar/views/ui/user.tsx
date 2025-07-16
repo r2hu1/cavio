@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  BadgeCheck,
-  Bell,
   Bolt,
   ChevronsUpDown,
   CreditCard,
@@ -32,18 +30,11 @@ import SignOut from "@/modules/auth/views/ui/sign-out";
 import TextSkeleton from "@/components/text-skeleton";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { useTRPC } from "@/trpc/client";
+import PricingModal from "@/modules/pricing/views/ui/pricing-modal";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { data } = useAuthState();
-
-  const trpc = useTRPC();
-  const { data: activeSubscription, isLoading } = useQuery(
-    trpc.premium.getActiveSubscription.queryOptions(),
-  );
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -105,19 +96,6 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {!isLoading && !activeSubscription && (
-              <>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem asChild>
-                    <Link href="/pro">
-                      <Sparkles />
-                      Upgrade to Pro
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-              </>
-            )}
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link href="/account">

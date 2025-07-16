@@ -1,6 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
+import PricingModal from "@/modules/pricing/views/ui/pricing-modal";
 import { VariantProps } from "class-variance-authority";
-import Link from "next/link";
 
 export default function UpgradeButton({
   className,
@@ -13,10 +13,10 @@ export default function UpgradeButton({
     asChild?: boolean;
   }) {
   return (
-    <Link href="/pro">
+    <PricingModal>
       <Button asChild={asChild} className={className} size={size} {...props}>
         {children}
       </Button>
-    </Link>
+    </PricingModal>
   );
 }
