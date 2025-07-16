@@ -26,7 +26,6 @@ export const foldersRouter = createTRPCRouter({
         .values({
           title: input.title,
           userId: ctx.auth.user.id,
-          documents: JSON.stringify(input.documents),
         })
         .returning();
       return createdFolder;
@@ -41,6 +40,6 @@ export const foldersRouter = createTRPCRouter({
       if (!folder) throw new TRPCError({ code: "NOT_FOUND" });
       if (folder.userId != ctx.auth.user.id)
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      return JSON.parse(folder.documents);
+      return folder.documents;
     }),
 });
