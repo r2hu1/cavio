@@ -76,6 +76,9 @@ export const documents = pgTable("documents", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
+  folderId: text("folder_id")
+    .notNull()
+    .references(() => folders.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
@@ -92,9 +95,7 @@ export const folders = pgTable("folders", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  documents: text("documents")
-    .notNull()
-    .references(() => documents.id, { onDelete: "cascade" }),
+  documents: text("documents").array().default([]),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
