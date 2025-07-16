@@ -1,8 +1,8 @@
 import { db } from "@/db/client";
-import { documents } from "@/db/schema";
+import { documents, folders } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { polarClient } from "@/lib/polar";
-import { MAX_FREE_DOCUMENTS } from "@/modules/constants";
+import { MAX_FREE_DOCUMENTS, MAX_FREE_FOLDERS } from "@/modules/constants";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { count, eq } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -48,7 +48,15 @@ export const premiumProcedure = () =>
       })
       .from(documents)
       .where(eq(documents.userId, ctx.auth.user.id));
-    const isFreeLimitReached = userDocuments.count >= MAX_FREE_DOCUMENTS;
+    const [userFolders] = await db
+      .select({
+        count: count(folders.id),
+      })
+      .from(folders)
+      .where(eq(folders.userId, ctx.auth.user.id));
+    const isFreeLimitReached =
+      userDocuments.count >= MAX_FREE_DOCUMENTS &&
+      userFolders.count >= MAX_FREE_FOLDERS;
     const shouldThroughError = isFreeLimitReached && !isPremium;
     if (shouldThroughError) {
       throw new TRPCError({
