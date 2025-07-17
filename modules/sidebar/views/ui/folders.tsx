@@ -38,6 +38,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import RenameFolderPopup from "@/modules/folders/views/ui/rename-folder-popup";
+import DeleteFolderPopup from "@/modules/folders/views/ui/delete-folder-popup";
 
 interface FolderProps {
   createdAt: Date | null;
@@ -52,29 +53,8 @@ export function Folders() {
   const [folders, setFolders] = useState<FolderProps[]>([]);
   const trpc = useTRPC();
   const { data, isLoading } = useQuery(trpc.folder.getAll.queryOptions());
-  const { mutate, isPending } = useMutation(
-    trpc.folder.delete.mutationOptions(),
-  );
   const queryClient = useQueryClient();
-  const handleDelete = (id: string) => {
-    mutate(
-      { id },
-      {
-        onSuccess: () => {
-          setFolders(folders.filter((folder) => folder.id !== id));
-          toast.success("Folder deleted successfully");
-        },
-        onError: (error) => {
-          toast.error(error.message);
-        },
-        onSettled: async () => {
-          await queryClient.invalidateQueries(
-            trpc.premium.getFreeUsage.queryOptions(),
-          );
-        },
-      },
-    );
-  };
+
   useEffect(() => {
     if (data) {
       setFolders(data as FolderProps[]);
@@ -127,20 +107,15 @@ export function Folders() {
                       <ExternalLink className="!h-4 !w-4" /> Open in New Tab
                     </Link>
                   </ContextMenuItem>
-                  <ContextMenuItem
-                    variant="destructive"
-                    disabled={isPending}
-                    onClick={() => {
-                      handleDelete(item.id);
-                    }}
-                  >
-                    {isPending ? (
-                      <Loader2 className="!h-4 !w-4 animate-spin" />
-                    ) : (
+                  <DeleteFolderPopup folderId={item.id}>
+                    <ContextMenuItem
+                      onSelect={(e) => e.preventDefault()}
+                      variant="destructive"
+                    >
                       <Trash className="!h-4 !w-4" />
-                    )}{" "}
-                    Delete
-                  </ContextMenuItem>
+                      Delete
+                    </ContextMenuItem>
+                  </DeleteFolderPopup>
                 </ContextMenuContent>
               </ContextMenu>
             </SidebarMenuItem>
