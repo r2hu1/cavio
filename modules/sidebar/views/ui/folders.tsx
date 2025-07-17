@@ -28,16 +28,32 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+interface FolderProps {
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  title: string;
+  id: string;
+  userId: string;
+  documents: string[] | null;
+}
 
 export function Folders() {
-  const folders: any[] = [
-    {
-      title: "Test folder",
-    },
-    {
-      title: "Test folder 2",
-    },
-  ];
+  const [folders, setFolders] = useState<FolderProps[]>([]);
+  const trpc = useTRPC();
+  const { data, isLoading, error } = useQuery(
+    trpc.folder.getAll.queryOptions(),
+  );
+  useEffect(() => {
+    if (data) {
+      setFolders(data as FolderProps[]);
+    }
+  }, [data]);
 
   return (
     <SidebarGroup className="-mt-2 space-y-1">
@@ -50,14 +66,23 @@ export function Folders() {
         </CreateFolderPopup>
       </SidebarGroupLabel>
       <SidebarMenu>
+        {isLoading && (
+          <div className="grid gap-2">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-8 w-full" />
+            ))}
+          </div>
+        )}
         {folders.length > 0 &&
           folders.map((item, index) => (
             <SidebarMenuItem key={index}>
               <ContextMenu key={index}>
                 <ContextMenuTrigger>
-                  <SidebarMenuButton tooltip={item.title}>
-                    <span>{item.title}</span>
-                    <Folder className="!h-3.5 !w-3.5 ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:" />
+                  <SidebarMenuButton tooltip={item.title} asChild>
+                    <Link href={`/${item.userId}/folders/${item.id}`}>
+                      <span>{item.title}</span>
+                      <Folder className="!h-3.5 !w-3.5 ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:" />
+                    </Link>
                   </SidebarMenuButton>
                 </ContextMenuTrigger>
                 <ContextMenuContent>
@@ -74,7 +99,7 @@ export function Folders() {
               </ContextMenu>
             </SidebarMenuItem>
           ))}
-        {!folders.length && (
+        {!isLoading && !folders.length && (
           <SidebarMenuItem>
             <CreateFolderPopup>
               <SidebarMenuButton className="text-sm">
