@@ -36,27 +36,22 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
   }
   return next({ ctx: { ...ctx, auth: session } });
 });
-export const premiumProcedure = () =>
+export const premiumProcedure = (name: "folder" | "document") =>
   protectedProcedure.use(async ({ ctx, next }) => {
     const customer = await polarClient.customers.getStateExternal({
       externalId: ctx.auth.user.id,
     });
     const isPremium = customer.activeSubscriptions.length > 0;
-    const [userDocuments] = await db
+    const table = name === "folder" ? folders : documents;
+    const [contents] = await db
       .select({
-        count: count(documents.id),
+        count: count(table.id),
       })
-      .from(documents)
-      .where(eq(documents.userId, ctx.auth.user.id));
-    const [userFolders] = await db
-      .select({
-        count: count(folders.id),
-      })
-      .from(folders)
-      .where(eq(folders.userId, ctx.auth.user.id));
-    const isFreeLimitReached =
-      userDocuments.count >= MAX_FREE_DOCUMENTS &&
-      userFolders.count >= MAX_FREE_FOLDERS;
+      .from(table)
+      .where(eq(table.userId, ctx.auth.user.id));
+
+    const max_limit = name === "folder" ? MAX_FREE_FOLDERS : MAX_FREE_DOCUMENTS;
+    const isFreeLimitReached = contents.count >= max_limit;
     const shouldThroughError = isFreeLimitReached && !isPremium;
     if (shouldThroughError) {
       throw new TRPCError({
