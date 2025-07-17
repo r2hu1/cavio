@@ -19,9 +19,9 @@ export default function HomeView() {
   };
   const { data: user, error, isPending } = useAuthState();
   return (
-    <div className="flex items-center justify-center py-10 pt-20">
-      <div className="max-w-2xl">
-        <div className="max-w-lg mx-auto text-center space-y-4">
+    <div className="flex items-center justify-center py-10 pt-30">
+      <div className="max-w-3xl">
+        <div className="max-w-xl mx-auto text-center space-y-4">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-medium">
             {getGreetings()}{" "}
             <span className="font-bold text-indigo-700">
