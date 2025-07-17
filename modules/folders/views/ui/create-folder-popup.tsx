@@ -14,7 +14,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function CreateFolderPopup({
   children,
@@ -23,15 +26,43 @@ export default function CreateFolderPopup({
   children: React.ReactNode;
   triggerClassName?: string;
 }) {
-  // const trpc = useTRPC();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation(trpc.folder.create.mutationOptions());
+  const [loading, setLoading] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
+
   const handleCreateFolder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // const formData = new FormData(e.target as HTMLFormElement);
-    // const name = formData.get("folder-name") as string;
-    // await trpc.folder.create.mutate({ name });
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get("folder-name") as string;
+    setLoading(true);
+    mutate(
+      {
+        title: name,
+      },
+      {
+        onSuccess: async () => {
+          toast.success("Folder created successfully");
+          await queryClient.invalidateQueries(
+            trpc.folder.getAll.queryOptions(),
+          );
+          await queryClient.invalidateQueries(
+            trpc.premium.getFreeUsage.queryOptions(),
+          );
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+        onSettled: () => {
+          setLoading(false);
+          setPopupOpen(false);
+        },
+      },
+    );
   };
   return (
-    <Credenza>
+    <Credenza open={popupOpen} onOpenChange={setPopupOpen}>
       <CredenzaTrigger className={triggerClassName} asChild>
         {children}
       </CredenzaTrigger>
@@ -45,10 +76,17 @@ export default function CreateFolderPopup({
         <form className="space-y-4" onSubmit={handleCreateFolder}>
           <CredenzaBody className="space-y-2">
             <Label htmlFor="folder-name">Folder Name</Label>
-            <Input id="folder-name" type="text" placeholder="My Blogs" />
+            <Input
+              id="folder-name"
+              name="folder-name"
+              type="text"
+              placeholder="My Blogs"
+            />
           </CredenzaBody>
           <CredenzaFooter>
-            <Button>Continue</Button>
+            <Button disabled={loading} type="submit">
+              {loading ? <Loader2 className="animate-spin" /> : "Continue"}
+            </Button>
             <CredenzaClose asChild>
               <Button variant="secondary">Cancel</Button>
             </CredenzaClose>
