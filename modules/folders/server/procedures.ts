@@ -8,7 +8,11 @@ import { eq } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 import { folders } from "@/db/schema";
-import { foldersSchema, getFoldersByIdSchema } from "../schema";
+import {
+  foldersSchema,
+  getFoldersByIdSchema,
+  updateFoldersByIdSchema,
+} from "../schema";
 
 export const foldersRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ input, ctx }) => {
@@ -41,5 +45,49 @@ export const foldersRouter = createTRPCRouter({
       if (folder.userId != ctx.auth.user.id)
         throw new TRPCError({ code: "UNAUTHORIZED" });
       return folder.documents;
+    }),
+  delete: protectedProcedure
+    .input(getFoldersByIdSchema)
+    .mutation(async ({ input, ctx }) => {
+      const [deletedFolder] = await db
+        .delete(folders)
+        .where(eq(folders.id, input.id))
+        .returning();
+      if (!deletedFolder)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
+      if (deletedFolder.userId != ctx.auth.user.id)
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+      return deletedFolder;
+    }),
+  update: protectedProcedure
+    .input(updateFoldersByIdSchema)
+    .mutation(async ({ input, ctx }) => {
+      const existingFolder = await db.query.folders.findFirst({
+        where: (folders, { eq }) => eq(folders.id, input.id),
+      });
+      if (!existingFolder) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
+      }
+      if (existingFolder.userId !== ctx.auth.user.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+      }
+      const updatedData: Partial<typeof folders.$inferInsert> = {
+        title: input.title,
+      };
+      if (input.documents) {
+        updatedData.documents = [
+          ...(existingFolder.documents ?? []),
+          input.documents,
+        ];
+      }
+      const [updatedFolder] = await db
+        .update(folders)
+        .set(updatedData)
+        .where(eq(folders.id, input.id))
+        .returning();
+      if (!updatedFolder) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
+      }
+      return updatedFolder;
     }),
 });

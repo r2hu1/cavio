@@ -19,20 +19,22 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function CreateFolderPopup({
+export default function RenameFolderPopup({
+  folderId,
   children,
   triggerClassName,
 }: {
   children: React.ReactNode;
   triggerClassName?: string;
+  folderId: string;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { mutate } = useMutation(trpc.folder.create.mutationOptions());
+  const { mutate } = useMutation(trpc.folder.update.mutationOptions());
   const [loading, setLoading] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  const handleCreateFolder = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRenameFolder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get("folder-name") as string;
@@ -40,15 +42,12 @@ export default function CreateFolderPopup({
     mutate(
       {
         title: name,
+        id: folderId,
       },
       {
         onSuccess: async () => {
-          toast.success("Folder created successfully");
           await queryClient.invalidateQueries(
             trpc.folder.getAll.queryOptions(),
-          );
-          await queryClient.invalidateQueries(
-            trpc.premium.getFreeUsage.queryOptions(),
           );
         },
         onError: (error) => {
@@ -68,12 +67,12 @@ export default function CreateFolderPopup({
       </CredenzaTrigger>
       <CredenzaContent>
         <CredenzaHeader>
-          <CredenzaTitle>Create Folder</CredenzaTitle>
+          <CredenzaTitle>Rename</CredenzaTitle>
           <CredenzaDescription>
-            Quickly create a new folder in your workspace.
+            Rename your folder to a new name.
           </CredenzaDescription>
         </CredenzaHeader>
-        <form className="space-y-4" onSubmit={handleCreateFolder}>
+        <form className="space-y-4" onSubmit={handleRenameFolder}>
           <CredenzaBody className="space-y-2">
             <Label htmlFor="folder-name">Folder Name</Label>
             <Input

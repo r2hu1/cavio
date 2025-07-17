@@ -19,6 +19,9 @@ import {
   Folder,
   FolderOpen,
   FolderPlus,
+  Link2Icon,
+  Loader2,
+  PencilLine,
   Plus,
   Trash,
 } from "lucide-react";
@@ -29,10 +32,12 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import RenameFolderPopup from "@/modules/folders/views/ui/rename-folder-popup";
 
 interface FolderProps {
   createdAt: Date | null;
@@ -46,9 +51,30 @@ interface FolderProps {
 export function Folders() {
   const [folders, setFolders] = useState<FolderProps[]>([]);
   const trpc = useTRPC();
-  const { data, isLoading, error } = useQuery(
-    trpc.folder.getAll.queryOptions(),
+  const { data, isLoading } = useQuery(trpc.folder.getAll.queryOptions());
+  const { mutate, isPending } = useMutation(
+    trpc.folder.delete.mutationOptions(),
   );
+  const queryClient = useQueryClient();
+  const handleDelete = (id: string) => {
+    mutate(
+      { id },
+      {
+        onSuccess: () => {
+          setFolders(folders.filter((folder) => folder.id !== id));
+          toast.success("Folder deleted successfully");
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+        onSettled: async () => {
+          await queryClient.invalidateQueries(
+            trpc.premium.getFreeUsage.queryOptions(),
+          );
+        },
+      },
+    );
+  };
   useEffect(() => {
     if (data) {
       setFolders(data as FolderProps[]);
@@ -67,9 +93,9 @@ export function Folders() {
       </SidebarGroupLabel>
       <SidebarMenu>
         {isLoading && (
-          <div className="grid gap-2">
+          <div className="grid gap-1">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="h-8 w-full" />
+              <Skeleton key={index} className="h-7 w-full" />
             ))}
           </div>
         )}
@@ -79,21 +105,41 @@ export function Folders() {
               <ContextMenu key={index}>
                 <ContextMenuTrigger>
                   <SidebarMenuButton tooltip={item.title} asChild>
-                    <Link href={`/${item.userId}/folders/${item.id}`}>
+                    <Link href={`/folder/${item.id}`}>
                       <span>{item.title}</span>
                       <Folder className="!h-3.5 !w-3.5 ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:" />
                     </Link>
                   </SidebarMenuButton>
                 </ContextMenuTrigger>
                 <ContextMenuContent>
-                  <ContextMenuItem>
-                    <FilePlus className="!h-4 !w-4" /> Add File
+                  <RenameFolderPopup folderId={item.id}>
+                    <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+                      <PencilLine className="!h-4 !w-4" /> Rename
+                    </ContextMenuItem>
+                  </RenameFolderPopup>
+                  <ContextMenuItem asChild>
+                    <Link href={`/folder/${item.id}`}>
+                      <Link2Icon className="!h-4 !w-4" /> Open
+                    </Link>
                   </ContextMenuItem>
-                  <ContextMenuItem>
-                    <ExternalLink className="!h-4 !w-4" /> Open
+                  <ContextMenuItem asChild>
+                    <Link href={`/folder/${item.id}`} target="_blank">
+                      <ExternalLink className="!h-4 !w-4" /> Open in New Tab
+                    </Link>
                   </ContextMenuItem>
-                  <ContextMenuItem variant="destructive">
-                    <Trash className="!h-4 !w-4" /> Delete
+                  <ContextMenuItem
+                    variant="destructive"
+                    disabled={isPending}
+                    onClick={() => {
+                      handleDelete(item.id);
+                    }}
+                  >
+                    {isPending ? (
+                      <Loader2 className="!h-4 !w-4 animate-spin" />
+                    ) : (
+                      <Trash className="!h-4 !w-4" />
+                    )}{" "}
+                    Delete
                   </ContextMenuItem>
                 </ContextMenuContent>
               </ContextMenu>
