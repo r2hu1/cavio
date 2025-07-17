@@ -4,8 +4,8 @@ import {
   timestamp,
   boolean,
   integer,
-  uuid,
 } from "drizzle-orm/pg-core";
+import { v4 as uuid } from "uuid";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
