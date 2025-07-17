@@ -1,5 +1,5 @@
 import { db } from "@/db/client";
-import { documents } from "@/db/schema";
+import { documents, folders } from "@/db/schema";
 import { polarClient } from "@/lib/polar";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { count, eq } from "drizzle-orm";
@@ -50,8 +50,16 @@ export const premiumRouter = createTRPCRouter({
       .from(documents)
       .where(eq(documents.userId, ctx.auth.user.id));
 
+    const [userFolders] = await db
+      .select({
+        count: count(folders.id),
+      })
+      .from(folders)
+      .where(eq(folders.userId, ctx.auth.user.id));
+
     return {
       documentsCount: userDocuments.count,
+      foldersCount: userFolders.count,
     };
   }),
 });
