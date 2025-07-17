@@ -12,13 +12,13 @@ import { foldersSchema, getFoldersByIdSchema } from "../schema";
 
 export const foldersRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ input, ctx }) => {
-    const [currentFolders] = await db
+    const currentFolders = await db
       .select()
       .from(folders)
       .where(eq(folders.userId, ctx.auth.user.id));
     return currentFolders;
   }),
-  create: premiumProcedure()
+  create: premiumProcedure("folder")
     .input(foldersSchema)
     .mutation(async ({ input, ctx }) => {
       const [createdFolder] = await db

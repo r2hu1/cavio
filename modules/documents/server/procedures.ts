@@ -22,7 +22,7 @@ export const documentsRouter = createTRPCRouter({
     // }
     return document;
   }),
-  create: premiumProcedure()
+  create: premiumProcedure("document")
     .input(documentSchema)
     .mutation(async ({ input, ctx }) => {
       const [document] = await db
