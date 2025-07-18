@@ -94,10 +94,11 @@ export function Pricing() {
             disabled={isLoadingSubscription || loading}
             onClick={handleCheckout}
           >
-            {!isLoadingSubscription &&
-              (!subscription?.name
+            {!isLoadingSubscription
+              ? !subscription?.name
                 ? "Continue To Upgrade"
-                : "Manage Subscription")}
+                : "Manage Subscription"
+              : "Please Wait"}
           </Button>
         </div>
       </div>
