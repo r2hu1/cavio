@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -31,6 +32,7 @@ export default function CreateFolderPopup({
   const { mutate } = useMutation(trpc.folder.create.mutationOptions());
   const [loading, setLoading] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  const router = useRouter();
 
   const handleCreateFolder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,8 +44,9 @@ export default function CreateFolderPopup({
         title: name,
       },
       {
-        onSuccess: async () => {
+        onSuccess: async (e) => {
           toast.success("Folder created successfully");
+          router.push(`/folder/${e.id}`);
           await queryClient.invalidateQueries(
             trpc.folder.getAll.queryOptions(),
           );
