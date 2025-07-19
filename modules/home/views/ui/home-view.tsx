@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import ChatInput from "@/modules/ai/views/ui/input";
 import { useAuthState } from "@/modules/auth/providers/auth-context";
 import { CornerDownLeft } from "lucide-react";
+import RecentlyViewed from "./recently-viewed";
 
 export default function HomeView() {
   const getGreetings = () => {
@@ -19,7 +20,7 @@ export default function HomeView() {
   };
   const { data: user, error, isPending } = useAuthState();
   return (
-    <div className="flex items-center justify-center py-10 pt-30">
+    <div className="flex flex-col items-center justify-center py-10 pt-30">
       <div className="max-w-3xl">
         <div className="max-w-xl mx-auto text-center space-y-4">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-medium">
@@ -38,6 +39,9 @@ export default function HomeView() {
           <ChatInput />
         </div>
       </div>
+      {/* <div className="w-full max-w-5xl mt-14">
+        <RecentlyViewed />
+      </div> */}
     </div>
   );
 }

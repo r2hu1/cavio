@@ -87,7 +87,7 @@ export default function ChatInput() {
 
   return (
     <div className="w-full">
-      <div className="relative bg-neutral-900 rounded-xl border border-neutral-800">
+      <div className="relative bg-secondary dark:bg-neutral-900 rounded-xl border dark:border-neutral-800">
         <div className="overflow-y-auto">
           <Textarea
             ref={textareaRef}
@@ -103,7 +103,7 @@ export default function ChatInput() {
               "resize-none",
               "bg-transparent",
               "border-none",
-              "text-white text-sm",
+              "dark:text-white text-sm",
               "focus:outline-none",
               "focus-visible:ring-0 focus-visible:ring-offset-0",
               "placeholder:text-neutral-500 placeholder:text-sm",
@@ -138,14 +138,18 @@ export default function ChatInput() {
             <button
               type="button"
               className={cn(
-                "px-1.5 py-1.5 rounded-lg text-sm transition-colors border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1",
-                value.trim() ? "bg-white text-black" : "text-zinc-400",
+                "px-1.5 py-1.5 rounded-lg text-sm transition-colors border dark:border-zinc-700 dark:hover:border-zinc-600 dark:hover:bg-zinc-800 flex items-center justify-between gap-1",
+                value.trim()
+                  ? "bg-primary text-primary-foreground dark:bg-white dark:text-black"
+                  : "text-zinc-400",
               )}
             >
               <ArrowUpIcon
                 className={cn(
                   "w-4 h-4",
-                  value.trim() ? "text-black" : "text-zinc-400",
+                  value.trim()
+                    ? "text-primary-foreground dark:text-black"
+                    : "text-zinc-400",
                 )}
               />
               <span className="sr-only">Send</span>
@@ -177,7 +181,7 @@ function ActionButton({ icon, label }: ActionButtonProps) {
   return (
     <button
       type="button"
-      className="flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 rounded-full border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+      className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-full border dark:text-white cursor-pointer transition-colors"
     >
       {icon}
       <span className="text-xs">{label}</span>
