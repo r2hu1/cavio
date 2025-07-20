@@ -36,19 +36,19 @@ export default function RecentFolders() {
         </div>
       )}
       {!isPending && (!data || data?.length === 0) && (
-        <div className="w-full mt-28">
-          <div className="w-full grid place-content-center place-items-center">
+        <div className="h-72 mt-24 flex items-center justify-center px-6 sm:px-0">
+          <div className="place-content-center grid place-items-center">
             <div className="bg-sidebar rounded-lg h-14 w-full sm:w-[400px] border max-w-xl"></div>
-            <div className="flex items-center justify-center flex-col bg-secondary rounded-lg h-14 w-[calc(100%+50px)] sm:w-[450px] border z-10 -mt-8 max-w-2xl"></div>
-            <div className="bg-sidebar -mt-8 rounded-lg h-14 w-full sm:w-[400px] border max-w-xl"></div>
-          </div>
-          <div className="mt-5 w-full text-center">
-            <h1 className="text-sm sm:text-base text-foreground/80">
-              Its so empty here :(
-            </h1>
-            <p className="text-xs sm:text-sm text-foreground/50">
-              Open or edit a folder to see it here.
-            </p>
+            <div className="bg-secondary rounded-lg h-14 w-[calc(100%+50px)] sm:w-[450px] border z-10 -mt-6 max-w-2xl"></div>
+            <div className="bg-sidebar rounded-lg h-14 w-full sm:w-[400px] -mt-6 border max-w-xl"></div>
+            <div className="text-center mt-7 space-y-2">
+              <h1 className="text-base text-foreground">
+                Its so empty here :(
+              </h1>
+              <p className="text-xs sm:text-sm -mt-1 text-foreground/80">
+                Open or create a folder to see it here.
+              </p>
+            </div>
           </div>
         </div>
       )}
