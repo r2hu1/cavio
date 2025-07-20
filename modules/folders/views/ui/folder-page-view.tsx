@@ -22,6 +22,8 @@ import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
 import { cn } from "@/lib/utils";
+import { Suspense, useEffect } from "react";
+import FolderSettingsPopup from "./folder-settings-popup";
 
 export default function FolderPageView() {
   const { id } = useParams();
@@ -30,35 +32,31 @@ export default function FolderPageView() {
   const { data, isLoading, error } = useQuery(
     trpc.document.getAllByFolderId.queryOptions({ folderId: id as string }),
   );
-  if (!isLoading) {
-    console.log(data);
-  }
-  if (error) {
-    console.error(error);
-  }
+
   return (
     <div>
       <CreateWithAI />
       <Header />
       <div
         className={cn(
-          "mt-8 grid gap-3",
+          "mt-8 grid gap-4",
           isLoading && "sm:grid-cols-2",
           data && data.length >= 2 && "sm:grid-cols-2",
         )}
       >
-        {!isLoading &&
-          data &&
-          data.map((document, index) => (
-            <DocumentCard
-              folderId={id as string}
-              id={document.id}
-              name={document.title}
-              key={index}
-              createdAt={document.createdAt}
-              updatedAt={document.updatedAt}
-            />
-          ))}
+        <Suspense>
+          {!isLoading &&
+            data?.map((document, index) => (
+              <DocumentCard
+                folderId={id as string}
+                id={document.id}
+                name={document.title}
+                key={index}
+                createdAt={document.createdAt}
+                updatedAt={document.updatedAt}
+              />
+            ))}
+        </Suspense>
         {isLoading &&
           Array.from({ length: 6 }).map((_, index) => (
             <Skeleton key={index} className="h-20 w-full" />

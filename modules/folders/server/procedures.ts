@@ -41,10 +41,11 @@ export const foldersRouter = createTRPCRouter({
         .select()
         .from(folders)
         .where(eq(folders.id, input.id));
-      if (!folder) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!folder)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
       if (folder.userId != ctx.auth.user.id)
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      return folder.documents;
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+      return folder;
     }),
   delete: protectedProcedure
     .input(getFoldersByIdSchema)

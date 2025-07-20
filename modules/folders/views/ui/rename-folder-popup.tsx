@@ -49,6 +49,9 @@ export default function RenameFolderPopup({
           await queryClient.invalidateQueries(
             trpc.folder.getAll.queryOptions(),
           );
+          await queryClient.invalidateQueries(
+            trpc.folder.getById.queryOptions({ id: folderId }),
+          );
         },
         onError: (error) => {
           toast.error(error.message);

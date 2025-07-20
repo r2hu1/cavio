@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import ChatInput from "@/modules/ai/views/ui/input";
 import { useAuthState } from "@/modules/auth/providers/auth-context";
-import { CornerDownLeft } from "lucide-react";
+import { ClockFading, CornerDownLeft } from "lucide-react";
 import RecentlyViewed from "./recently-viewed";
+import { useEffect } from "react";
 
 export default function HomeView() {
   const getGreetings = () => {
@@ -19,6 +20,7 @@ export default function HomeView() {
     }
   };
   const { data: user, error, isPending } = useAuthState();
+
   return (
     <div>
       <div className="text-center space-y-4">
