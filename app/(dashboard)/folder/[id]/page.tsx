@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 export default function FolderPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
       <FolderPageView />
     </Suspense>
   );

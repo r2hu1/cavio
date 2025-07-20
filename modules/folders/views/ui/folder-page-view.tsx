@@ -9,28 +9,45 @@ import {
   ArrowUpRight,
   Bolt,
   FilePlus,
+  Loader2,
   PencilLine,
   Sparkles,
 } from "lucide-react";
 import CreateWithAI from "./create-with-ai";
+import Header from "./header";
+import DocumentCard from "@/modules/documents/views/ui/document-card";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
 export default function FolderPageView() {
+  const { id } = useParams();
+
+  const trpc = useTRPC();
+  const { data, isLoading, error } = useQuery(
+    trpc.document.getAllByFolderId.queryOptions({ folderId: id as string }),
+  );
+  if (!isLoading) {
+    console.log(data);
+  }
+  if (error) {
+    console.error(error);
+  }
   return (
     <div>
       <CreateWithAI />
-      <div className="flex items-center justify-between mt-10">
-        <div className="flex items-center gap-2">
-          <h1 className="text-base font-medium">Folder Name</h1>
-          <PencilLine className="!h-4 text-foreground/70 !w-4" />
-        </div>
-        <div className="flex items-center justify-center gap-2">
-          <Button size="sm" className="text-xs">
-            New File <FilePlus className="!h-3.5 !w-3.5" />
-          </Button>
-          <Button size="sm" className="w-8" variant="secondary">
-            <Bolt className="!h-3.5 !w-3.5" />
-          </Button>
-        </div>
+      <Header />
+      <div className="mt-8 flex gap-3 flex-col">
+        {!isLoading &&
+          data &&
+          data.map((document, index) => (
+            <DocumentCard name={document.title} key={index} />
+          ))}
+        {isLoading && (
+          <div className="h-32 flex items-center justify-center">
+            <Loader2 className="!h-4 !w-4 animate-spin" />
+          </div>
+        )}
       </div>
     </div>
   );

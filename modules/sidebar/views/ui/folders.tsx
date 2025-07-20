@@ -7,20 +7,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import CreateFolderPopup from "@/modules/folders/views/ui/create-folder-popup";
 import {
-  ChevronRight,
+  EllipsisVertical,
   ExternalLink,
   FilePlus,
   Folder,
-  FolderOpen,
-  FolderPlus,
   Link2Icon,
-  Loader2,
   PencilLine,
   Plus,
   Trash,
@@ -32,13 +26,15 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import RenameFolderPopup from "@/modules/folders/views/ui/rename-folder-popup";
 import DeleteFolderPopup from "@/modules/folders/views/ui/delete-folder-popup";
+import { usePathname } from "next/navigation";
+import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
 
 interface FolderProps {
   createdAt: Date | null;
@@ -54,6 +50,7 @@ export function Folders() {
   const trpc = useTRPC();
   const { data, isLoading } = useQuery(trpc.folder.getAll.queryOptions());
   const queryClient = useQueryClient();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (data) {
@@ -84,7 +81,11 @@ export function Folders() {
             <SidebarMenuItem key={index}>
               <ContextMenu key={index}>
                 <ContextMenuTrigger>
-                  <SidebarMenuButton tooltip={item.title} asChild>
+                  <SidebarMenuButton
+                    data-active={pathname === `/folder/${item.id}`}
+                    tooltip={item.title}
+                    asChild
+                  >
                     <Link href={`/folder/${item.id}`}>
                       <span>{item.title}</span>
                       <Folder className="!h-3.5 !w-3.5 ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:" />
@@ -97,6 +98,11 @@ export function Folders() {
                       <PencilLine className="!h-4 !w-4" /> Rename
                     </ContextMenuItem>
                   </RenameFolderPopup>
+                  <CreateDocumentPopup folderId={item.id}>
+                    <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+                      <FilePlus className="!h-4 !w-4" /> Add Document
+                    </ContextMenuItem>
+                  </CreateDocumentPopup>
                   <ContextMenuItem asChild>
                     <Link href={`/folder/${item.id}`}>
                       <Link2Icon className="!h-4 !w-4" /> Open

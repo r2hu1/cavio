@@ -12,14 +12,11 @@ import { documentSchema } from "../schema";
 import { TRPCError } from "@trpc/server";
 
 export const documentsRouter = createTRPCRouter({
-  get: protectedProcedure.query(async ({ input, ctx }) => {
-    const [document] = await db
+  getAll: protectedProcedure.query(async ({ input, ctx }) => {
+    const document = await db
       .select()
       .from(documents)
       .where(eq(documents.userId, ctx.auth.user.id));
-    // if (!document || document.userId !== ctx.auth.user.id) {
-    //   throw new TRPCError({ code: "UNAUTHORIZED", message: "UNAUTHORIZED" });
-    // }
     return document;
   }),
   create: premiumProcedure("document")
@@ -29,6 +26,20 @@ export const documentsRouter = createTRPCRouter({
         .insert(documents)
         .values({ ...input, userId: ctx.auth.user.id })
         .returning();
+      return document;
+    }),
+  getAllByFolderId: protectedProcedure
+    .input(z.object({ folderId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const document = await db
+        .select()
+        .from(documents)
+        .where(eq(documents.folderId, input.folderId));
+      if (document.length > 0 && document[0].userId !== ctx.auth.user.id)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "UNAUTHORIZED",
+        });
       return document;
     }),
 });

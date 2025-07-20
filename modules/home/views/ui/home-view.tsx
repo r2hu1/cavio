@@ -20,24 +20,22 @@ export default function HomeView() {
   };
   const { data: user, error, isPending } = useAuthState();
   return (
-    <div className="flex flex-col items-center justify-center py-10 pt-30">
-      <div className="max-w-3xl">
-        <div className="max-w-xl mx-auto text-center space-y-4">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-medium">
-            {getGreetings()}{" "}
-            <span className="font-bold text-indigo-700">
-              {!isPending && user?.user.name}
-            </span>
-            !
-          </h1>
-          <p className="text-sm sm:text-lg text-foreground/80">
-            Need content? Just ask. From blog posts to research papers, I’m your
-            AI writer ready to craft it all.
-          </p>
-        </div>
-        <div className="mt-10">
-          <ChatInput />
-        </div>
+    <div>
+      <div className="text-center space-y-4">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-medium">
+          {getGreetings()}{" "}
+          <span className="font-bold text-indigo-700">
+            {!isPending && user?.user.name}
+          </span>
+          !
+        </h1>
+        <p className="text-sm sm:text-lg text-foreground/80">
+          Need content? Just ask. From blog posts to research papers, I’m your
+          AI writer ready to craft it all.
+        </p>
+      </div>
+      <div className="mt-10">
+        <ChatInput />
       </div>
       {/* <div className="w-full max-w-5xl mt-14">
         <RecentlyViewed />
