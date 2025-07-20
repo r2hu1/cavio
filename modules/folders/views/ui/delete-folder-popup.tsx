@@ -52,6 +52,9 @@ export default function DeleteFolderPopup({
           await queryClient.invalidateQueries(
             trpc.premium.getFreeUsage.queryOptions(),
           );
+          await queryClient.invalidateQueries(
+            trpc.folder.getRecent.queryOptions(),
+          );
           router.push("/");
         },
         onError: (error) => {
