@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -34,6 +35,7 @@ export default function DeleteFolderPopup({
     trpc.folder.delete.mutationOptions(),
   );
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [popupOpen, setPopupOpen] = useState(false);
 
   const handleDeleteFolder = async () => {
@@ -50,6 +52,7 @@ export default function DeleteFolderPopup({
           await queryClient.invalidateQueries(
             trpc.premium.getFreeUsage.queryOptions(),
           );
+          router.push("/");
         },
         onError: (error) => {
           toast.error(error.message);

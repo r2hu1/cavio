@@ -21,6 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
+import { cn } from "@/lib/utils";
 
 export default function FolderPageView() {
   const { id } = useParams();
@@ -39,7 +40,13 @@ export default function FolderPageView() {
     <div>
       <CreateWithAI />
       <Header />
-      <div className="mt-8 grid sm:grid-cols-2 gap-3 ">
+      <div
+        className={cn(
+          "mt-8 grid gap-3",
+          isLoading && "sm:grid-cols-2",
+          data && data.length >= 2 && "sm:grid-cols-2",
+        )}
+      >
         {!isLoading &&
           data &&
           data.map((document, index) => (
