@@ -20,6 +20,7 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
 
 export default function FolderPageView() {
   const { id } = useParams();
@@ -57,18 +58,24 @@ export default function FolderPageView() {
           ))}
       </div>
       {!isLoading && data?.length === 0 && (
-        <div className="h-64 mt-24 flex items-center justify-center">
+        <div className="h-72 mt-24 flex items-center justify-center px-6 sm:px-0">
           <div className="place-content-center grid place-items-center">
             <div className="bg-sidebar rounded-lg h-14 w-full sm:w-[400px] border max-w-xl"></div>
             <div className="bg-secondary rounded-lg h-14 w-[calc(100%+50px)] sm:w-[450px] border z-10 -mt-6 max-w-2xl"></div>
             <div className="bg-sidebar rounded-lg h-14 w-full sm:w-[400px] -mt-6 border max-w-xl"></div>
-            <div className="text-center mt-7">
+            <div className="text-center mt-7 space-y-2">
               <h1 className="text-base text-foreground">
                 Its so empty here :(
               </h1>
-              <p className="text-xs sm:text-sm text-foreground/80">
+              <p className="text-xs sm:text-sm -mt-1 text-foreground/80">
                 Start by creating a new document with AI or manually.
               </p>
+              <CreateDocumentPopup folderId={id as string}>
+                <Button size="sm" className="mt-2">
+                  New Document
+                  <FilePlus className="!h-3.5 !w-3.5" />
+                </Button>
+              </CreateDocumentPopup>
             </div>
           </div>
         </div>
