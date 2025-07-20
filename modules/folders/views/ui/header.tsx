@@ -17,7 +17,8 @@ export default function Header() {
       <div className="flex items-center justify-center gap-2">
         <CreateDocumentPopup folderId={id as string}>
           <Button size="sm" className="text-xs">
-            New File <FilePlus className="!h-3.5 !w-3.5" />
+            <span className="hidden sm:flex">New File</span>{" "}
+            <FilePlus className="!h-3.5 !w-3.5" />
           </Button>
         </CreateDocumentPopup>
         <FolderSettingsPopup>

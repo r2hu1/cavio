@@ -109,9 +109,11 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              <SignOut />
+            <DropdownMenuItem asChild>
+              <SignOut className="w-full text-left justify-start hover:bg-accent">
+                <LogOut />
+                Logout
+              </SignOut>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
