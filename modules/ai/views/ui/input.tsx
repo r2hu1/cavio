@@ -158,7 +158,7 @@ export default function ChatInput() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-3 mt-4">
+      <div className="flex items-center justify-center flex-wrap gap-3 mt-4">
         <ActionButton icon={<ImageIcon className="w-4 h-4" />} label="Blog" />
         <ActionButton icon={<PenBox className="w-4 h-4" />} label="Letter" />
         <ActionButton icon={<FileUp className="w-4 h-4" />} label="Homework" />

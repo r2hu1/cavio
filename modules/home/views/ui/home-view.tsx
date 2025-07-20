@@ -39,9 +39,7 @@ export default function HomeView() {
       <div className="mt-10">
         <ChatInput />
       </div>
-      {/* <div className="w-full max-w-5xl mt-14">
-        <RecentlyViewed />
-      </div> */}
+      <RecentlyViewed />
     </div>
   );
 }
