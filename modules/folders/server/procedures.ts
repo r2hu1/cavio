@@ -4,7 +4,7 @@ import {
   premiumProcedure,
   protectedProcedure,
 } from "@/trpc/init";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 import { folders } from "@/db/schema";
@@ -91,4 +91,12 @@ export const foldersRouter = createTRPCRouter({
       }
       return updatedFolder;
     }),
+  getRecent: protectedProcedure.query(async ({ ctx }) => {
+    const recentFolders = await db
+      .select()
+      .from(folders)
+      .where(eq(folders.userId, ctx.auth.user.id))
+      .orderBy(desc(folders.createdAt));
+    return recentFolders;
+  }),
 });
