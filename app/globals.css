@@ -62,6 +62,15 @@
             background-position: 200%;
         }
     }
+    @keyframes wobble {
+        0%,
+        100% {
+            transform: translateX(-90%);
+        }
+        50% {
+            transform: translateX(90%);
+        }
+    }
 }
 
 :root {
@@ -148,5 +157,8 @@
     .hidden_scrollbar {
         scrollbar-width: none;
         -ms-overflow-style: none;
+    }
+    .animate-wobble {
+        animation: wobble 1.55s ease-in-out infinite;
     }
 }
