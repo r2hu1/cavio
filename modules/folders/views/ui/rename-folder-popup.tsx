@@ -52,6 +52,9 @@ export default function RenameFolderPopup({
           await queryClient.invalidateQueries(
             trpc.folder.getById.queryOptions({ id: folderId }),
           );
+          await queryClient.invalidateQueries(
+            trpc.folder.getRecent.queryOptions(),
+          );
         },
         onError: (error) => {
           toast.error(error.message);
@@ -79,6 +82,7 @@ export default function RenameFolderPopup({
           <CredenzaBody className="space-y-2">
             <Label htmlFor="folder-name">Folder Name</Label>
             <Input
+              required
               id="folder-name"
               name="folder-name"
               type="text"
