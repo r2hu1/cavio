@@ -36,7 +36,7 @@ export default function RecentFolders() {
         </div>
       )}
       {!isPending && (!data || data?.length === 0) && (
-        <div className="h-72 mt-20 flex items-center justify-center px-6 sm:px-0">
+        <div className="h-72 mt-10 flex items-center justify-center px-6 sm:px-0">
           <div className="place-content-center grid place-items-center">
             <div className="bg-sidebar rounded-lg h-14 w-full sm:w-[400px] border max-w-xl"></div>
             <div className="bg-secondary rounded-lg h-14 w-[calc(100%+50px)] sm:w-[450px] border z-10 -mt-6 max-w-2xl"></div>
