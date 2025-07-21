@@ -2,7 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SignOut({
   className,
@@ -13,9 +15,12 @@ export default function SignOut({
   text?: string;
   children?: React.ReactNode;
 }) {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const handleSignOut = async () => {
+    setLoading(true);
     await signOut();
+    setLoading(false);
     router.push("/");
   };
   return (
@@ -23,8 +28,9 @@ export default function SignOut({
       variant="link"
       onClick={handleSignOut}
       className={cn("hover:no-underline", className)}
+      disabled={loading}
     >
-      {children}
+      {loading ? <Loader2 className="!h-3.5 w-3.5" /> : children}
     </Button>
   );
 }
