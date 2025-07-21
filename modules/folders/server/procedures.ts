@@ -19,7 +19,8 @@ export const foldersRouter = createTRPCRouter({
     const currentFolders = await db
       .select()
       .from(folders)
-      .where(eq(folders.userId, ctx.auth.user.id));
+      .where(eq(folders.userId, ctx.auth.user.id))
+      .orderBy(desc(folders.updatedAt));
     return currentFolders;
   }),
   create: premiumProcedure("folder")
@@ -96,7 +97,8 @@ export const foldersRouter = createTRPCRouter({
       .select()
       .from(folders)
       .where(eq(folders.userId, ctx.auth.user.id))
-      .orderBy(desc(folders.createdAt));
+      .orderBy(desc(folders.updatedAt))
+      .limit(6);
     return recentFolders;
   }),
 });
