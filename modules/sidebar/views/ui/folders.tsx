@@ -49,7 +49,6 @@ export function Folders() {
   const [folders, setFolders] = useState<FolderProps[]>([]);
   const trpc = useTRPC();
   const { data, isLoading } = useQuery(trpc.folder.getAll.queryOptions());
-  const queryClient = useQueryClient();
   const pathname = usePathname();
 
   useEffect(() => {
