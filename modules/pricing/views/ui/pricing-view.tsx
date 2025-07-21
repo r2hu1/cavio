@@ -41,16 +41,10 @@ export function Pricing() {
     <div>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <Badge variant="outline" className="text-sm h-8 px-4">
-            <h1>
-              You are on{" "}
-              <span className="text-indigo-400">
-                {!isLoadingSubscription &&
-                  (subscription?.name ? subscription.name : "Free")}
-              </span>{" "}
-              Plan
-            </h1>
-          </Badge>
+          <h1 className="font-bold">
+            $<span>{selectedPlan === "yearly" ? 6.67 : 8}</span>
+            <span className="text-sm ml-1 text-foreground/80">/ month</span>
+          </h1>
           <div className="flex items-center gap-2">
             <Label htmlFor="based" className="text-xs text-foreground/70">
               Paid {selectedPlan === "yearly" ? "Yearly" : "Monthly"}
@@ -65,10 +59,7 @@ export function Pricing() {
             />
           </div>
         </div>
-        <div className="text-left">
-          <h1 className="font-bold">
-            $<span>{selectedPlan === "yearly" ? 6.67 : 8}</span>
-          </h1>
+        <div className="text-left -mt-1">
           <Features />
         </div>
         <div className="flex items-center justify-end -mb-4">
