@@ -35,19 +35,26 @@ export const FolderNav = ({ folderId }: { folderId: string }) => {
           <Skeleton className="h-4 w-20" />
         )}
       </div>
-      <div className="items-center gap-2.5 flex">
-        <FolderSettingsPopup>
-          <Button className="h-8 w-8" variant="secondary">
-            <Bolt className="!h-3.5 !w-3.5" />
-          </Button>
-        </FolderSettingsPopup>
-        <CreateDocumentPopup folderId={folderId}>
-          <Button className="h-8">
-            New Document
-            <FilePlus className="!h-3.5 !w-3.5" />
-          </Button>
-        </CreateDocumentPopup>
-      </div>
+      {!isPending ? (
+        <div className="items-center gap-2.5 flex">
+          <FolderSettingsPopup>
+            <Button className="h-8 w-8" variant="secondary">
+              <Bolt className="!h-3.5 !w-3.5" />
+            </Button>
+          </FolderSettingsPopup>
+          <CreateDocumentPopup folderId={folderId}>
+            <Button className="h-8">
+              New Document
+              <FilePlus className="!h-3.5 !w-3.5" />
+            </Button>
+          </CreateDocumentPopup>
+        </div>
+      ) : (
+        <div className="items-center gap-2.5 flex">
+          <Skeleton className="h-8 w-8" />
+          <Skeleton className="h-8 w-32" />
+        </div>
+      )}
     </div>
   );
 };

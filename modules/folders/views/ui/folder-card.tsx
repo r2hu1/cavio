@@ -1,21 +1,4 @@
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  ClockFading,
-  EllipsisVertical,
-  ExternalLink,
-  FileText,
-  Folder,
-  FolderClockIcon,
-  Link2,
-  PencilLine,
-  Trash,
-} from "lucide-react";
+import { ClockFading, ExternalLink, Folder } from "lucide-react";
 import Link from "next/link";
 
 export default function FolderCard({

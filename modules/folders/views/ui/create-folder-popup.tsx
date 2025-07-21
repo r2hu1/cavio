@@ -51,6 +51,9 @@ export default function CreateFolderPopup({
             trpc.folder.getAll.queryOptions(),
           );
           await queryClient.invalidateQueries(
+            trpc.folder.getRecent.queryOptions(),
+          );
+          await queryClient.invalidateQueries(
             trpc.premium.getFreeUsage.queryOptions(),
           );
         },
@@ -81,6 +84,7 @@ export default function CreateFolderPopup({
             <Label htmlFor="folder-name">Folder Name</Label>
             <Input
               id="folder-name"
+              required
               name="folder-name"
               type="text"
               placeholder="My Blogs"

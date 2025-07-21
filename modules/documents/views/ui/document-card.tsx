@@ -15,6 +15,8 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
+import DeleteDocumentPopup from "./delete-document-popup";
+import RenameDocumentPopup from "./rename-document-popup";
 
 export default function DocumentCard({
   folderId,
@@ -35,27 +37,38 @@ export default function DocumentCard({
         <FileText className="w-6 h-6 text-foreground/50 absolute -bottom-2 left-5" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="absolute right-0">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <button className="h-8 items-center justify-center flex w-8 cursor-pointer">
               <EllipsisVertical className="!w-3.5 !h-3.5" />
-            </Button>
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>
-              <PencilLine className="!w-4 !h-4" />
-              Rename
+            <RenameDocumentPopup documentId={id} folderId={folderId}>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <PencilLine className="!w-4 !h-4" />
+                Rename
+              </DropdownMenuItem>
+            </RenameDocumentPopup>
+            <DropdownMenuItem asChild>
+              <Link href={`/folder/${folderId}/${id}`}>
+                <Link2 className="!w-4 !h-4" />
+                Open
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link2 className="!w-4 !h-4" />
-              Open
+            <DropdownMenuItem asChild>
+              <Link target="_blank" href={`/folder/${folderId}/${id}`}>
+                <ExternalLink className="!w-4 !h-4" />
+                Open in new tab
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <ExternalLink className="!w-4 !h-4" />
-              Open in new tab
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
-              <Trash className="!w-4 !h-4" />
-              Delete
-            </DropdownMenuItem>
+            <DeleteDocumentPopup documentId={id} folderId={folderId}>
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                variant="destructive"
+              >
+                <Trash className="!w-4 !h-4" />
+                Delete
+              </DropdownMenuItem>
+            </DeleteDocumentPopup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
