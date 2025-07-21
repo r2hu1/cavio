@@ -30,7 +30,7 @@ export default function SignOut({
       className={cn("hover:no-underline", className)}
       disabled={loading}
     >
-      {loading ? <Loader2 className="!h-3.5 w-3.5" /> : children}
+      {loading ? <Loader2 className="!h-3.5 !w-3.5 animate-spin" /> : children}
     </Button>
   );
 }
