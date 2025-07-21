@@ -9,12 +9,14 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
+
   trustedOrigins: [
     "http://localhost:3000",
     "https://cavio.pro",
     "https://www.cavio.pro",
     "https://app.cavio.pro",
     "https://cavio.vercel.app",
+    "https://cavio-development-v1.vercel.app",
   ],
   emailAndPassword: {
     enabled: true,
