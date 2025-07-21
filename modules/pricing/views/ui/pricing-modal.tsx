@@ -21,14 +21,15 @@ export default function PricingModal({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="md:!max-w-2xl">
+      <DialogContent className="text-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Upgrade To Premium <Sparkles className="!h-4 !w-5" />
+            <Sparkles className="!h-4 !w-5" />
+            Upgrade To Premium
           </DialogTitle>
           <DialogDescription>
-            Access to all features and services, including unlimited access to
-            our AI features, priority support, and more.
+            Upgrade and enjoy all the benefits of premium plan. Cancel or pause
+            at any time. Enjoy!
           </DialogDescription>
           <div className="py-4 mt-1">
             <Pricing />
