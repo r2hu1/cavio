@@ -38,6 +38,10 @@ export default function RenameFolderPopup({
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get("folder-name") as string;
+    if (name.length < 5) {
+      toast.error("Folder name must be at least 5 characters long");
+      return;
+    }
     setLoading(true);
     mutate(
       {
