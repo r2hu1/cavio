@@ -1,4 +1,5 @@
 import VerifiedEmail from "@/modules/auth/views/ui/verified-email-view";
+import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import Head from "next/head";
 import { Suspense } from "react";
 
@@ -14,7 +15,7 @@ export default function EmailVerifiedPage() {
       <Head>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<PageLoader />}>
         <VerifiedEmail />
       </Suspense>
     </>

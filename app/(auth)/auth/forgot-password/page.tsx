@@ -1,4 +1,5 @@
 import ForgotPassword from "@/modules/auth/views/ui/forgot-password-view";
+import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -9,7 +10,7 @@ export const metadata = {
 
 export default function ForgotPasswordPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageLoader />}>
       <ForgotPassword />
     </Suspense>
   );

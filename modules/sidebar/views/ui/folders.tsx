@@ -35,6 +35,7 @@ import RenameFolderPopup from "@/modules/folders/views/ui/rename-folder-popup";
 import DeleteFolderPopup from "@/modules/folders/views/ui/delete-folder-popup";
 import { usePathname } from "next/navigation";
 import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
+import Tooltip from "@/components/ui/tooltip-v2";
 
 interface FolderProps {
   createdAt: Date | null;
@@ -61,8 +62,12 @@ export function Folders() {
     <SidebarGroup className="-mt-2 space-y-1">
       <SidebarGroupLabel className="group/folder flex items-center justify-between hover:bg-sidebar-accent">
         Folders
-        <CreateFolderPopup triggerClassName="hidden group-hover/folder:block h-4 w-4 rounded">
-          <Button variant="ghost" className="hover:bg-accent" size="icon">
+        <CreateFolderPopup triggerClassName="hidden group-hover/folder:flex">
+          <Button
+            variant="ghost"
+            className="hidden group-hover/folder:flex hover:!bg-input !h-5 !w-5 items-center justify-center"
+            size="icon"
+          >
             <Plus className="!h-3.5 !w-3.5" />
           </Button>
         </CreateFolderPopup>
