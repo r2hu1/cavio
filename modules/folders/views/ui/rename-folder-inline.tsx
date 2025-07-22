@@ -80,6 +80,8 @@ export default function RenameFolderInline({
       value={newFolderName}
       onChange={(e) => setNewFolderName(e.target.value)}
       onBlur={handleSave}
+      onKeyDown={(e) => e.key == "Enter" && handleSave()}
+      onKeyUp={(e) => e.key == "Escape" && setIsEditing(false)}
     />
   ) : (
     <h1
