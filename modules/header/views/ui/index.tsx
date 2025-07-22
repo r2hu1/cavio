@@ -8,7 +8,7 @@ import Tooltip from "@/components/ui/tooltip-v2";
 export default function DashboardHeader() {
   return (
     <header className="px-4 h-14 flex items-center gap-2">
-      <Tooltip text="Toggle Sidebar">
+      <Tooltip text="⌘B Toggle Sidebar">
         <SidebarTrigger />
       </Tooltip>
       <DynamicNav />

@@ -40,6 +40,10 @@ export default function RenameDocumentPopup({
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get("document-name") as string;
+    if (name.length < 5) {
+      toast.error("Name must be at least 5 characters long");
+      return;
+    }
     setLoading(true);
     mutate(
       {
