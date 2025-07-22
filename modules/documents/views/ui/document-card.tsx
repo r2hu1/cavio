@@ -85,12 +85,12 @@ export default function DocumentCard({
           <ExternalLink className="!h-3.5 !w-3.5 text-foreground/80 hidden group-hover:flex" />
         </Link>
       </div>
-      <div className="px-2.5 pb-2 flex items-center justify-between">
-        <h3 className="text-xs flex items-center gap-1 text-foreground/70">
+      <div className="px-2.5 pb-2 flex items-center justify-end sm:justify-between">
+        <h3 className="text-xs hidden sm:flex items-center gap-1 text-foreground/70">
           <ClockFading className="!w-3.5 !h-3.5" />
           {updatedAt ? new Date(updatedAt).toLocaleTimeString() : "Never"}
         </h3>
-        <h3 className="hidden sm:flex text-xs items-center gap-1 text-foreground/70">
+        <h3 className="text-xs items-center gap-1 text-foreground/70">
           {createdAt ? new Date(createdAt).toLocaleTimeString() : ".."}
         </h3>
       </div>

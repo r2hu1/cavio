@@ -20,8 +20,8 @@ export const FolderNav = ({ folderId }: { folderId: string }) => {
           </Button>
         </FolderSettingsPopup>
         <CreateDocumentPopup folderId={folderId}>
-          <Button className="h-8">
-            New Document
+          <Button className="h-8 w-8 sm:w-fit">
+            <span className="hidden sm:flex">New Document</span>
             <FilePlus className="!h-3.5 !w-3.5" />
           </Button>
         </CreateDocumentPopup>

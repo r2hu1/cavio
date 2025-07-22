@@ -157,7 +157,7 @@ export default function ChatInput() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center flex-wrap gap-3 mt-4">
+      <div className="flex items-center justify-center flex-wrap gap-3 mt-8 -mb-4">
         <ActionButton icon={<ImageIcon className="w-4 h-4" />} label="Blog" />
         <ActionButton icon={<PenBox className="w-4 h-4" />} label="Letter" />
         <ActionButton icon={<FileUp className="w-4 h-4" />} label="Homework" />
@@ -180,7 +180,7 @@ function ActionButton({ icon, label }: ActionButtonProps) {
   return (
     <button
       type="button"
-      className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-full border dark:text-white cursor-pointer transition-colors"
+      className="flex items-center gap-2 px-4 py-2 bg-secondary/80 hover:bg-secondary/60 rounded-full border dark:text-white cursor-pointer transition-colors"
     >
       {icon}
       <span className="text-xs">{label}</span>
