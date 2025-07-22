@@ -23,21 +23,23 @@ export default function RenameFolderPopup({
   folderId,
   children,
   triggerClassName,
+  folderName = "",
 }: {
   children: React.ReactNode;
   triggerClassName?: string;
   folderId: string;
+  folderName?: string;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { mutate } = useMutation(trpc.folder.update.mutationOptions());
   const [loading, setLoading] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [currFolderName, setCurrFolderName] = useState(folderName || "");
 
   const handleRenameFolder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name = formData.get("folder-name") as string;
+    const name = currFolderName;
     if (name.length < 5) {
       toast.error("Folder name must be at least 5 characters long");
       return;
@@ -91,6 +93,8 @@ export default function RenameFolderPopup({
               name="folder-name"
               type="text"
               placeholder="My Blogs"
+              value={currFolderName}
+              onChange={(e) => setCurrFolderName(e.target.value)}
             />
           </CredenzaBody>
           <CredenzaFooter>

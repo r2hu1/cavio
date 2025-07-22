@@ -31,7 +31,7 @@ export default function HomeView() {
           </span>
           !
         </h1>
-        <p className="text-sm sm:text-lg text-foreground/80">
+        <p className="text-sm max-w-2xl mx-auto sm:text-lg text-foreground/80">
           Need content? Just ask. From blog posts to research papers, I’m your
           AI writer ready to craft it all.
         </p>

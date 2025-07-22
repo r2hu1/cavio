@@ -23,7 +23,7 @@ import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-po
 import { cn } from "@/lib/utils";
 import { Suspense, useEffect } from "react";
 import FolderSettingsPopup from "./folder-settings-popup";
-import FolderAiInput from "@/modules/ai/views/folder-ai-input";
+import FolderAiInput from "@/modules/ai/views/ui/folder-ai-input";
 
 export default function FolderPageView() {
   const { id } = useParams();

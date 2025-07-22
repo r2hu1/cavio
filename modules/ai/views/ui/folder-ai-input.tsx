@@ -14,7 +14,7 @@ export default function FolderAiInput() {
       <Input
         id="prompt"
         className="pl-12 pr-14 h-12 rounded-xl"
-        placeholder="Let AI write it for you!"
+        placeholder="Create you document with AI."
       />
       <div className="flex absolute right-2 top-1/2 -translate-y-1/2 gap-2 justify-end items-center">
         <Button className="h-8 w-8">

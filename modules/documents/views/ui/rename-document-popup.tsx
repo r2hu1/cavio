@@ -24,22 +24,24 @@ export default function RenameDocumentPopup({
   children,
   triggerClassName,
   folderId,
+  documentName,
 }: {
   children: React.ReactNode;
   triggerClassName?: string;
   documentId: string;
   folderId: string;
+  documentName?: string;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { mutate } = useMutation(trpc.document.update.mutationOptions());
   const [loading, setLoading] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [currDocName, setCurrDocName] = useState(documentName || "");
 
   const handleRenameDocument = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name = formData.get("document-name") as string;
+    const name = currDocName;
     if (name.length < 5) {
       toast.error("Name must be at least 5 characters long");
       return;
@@ -90,6 +92,8 @@ export default function RenameDocumentPopup({
               name="document-name"
               type="text"
               placeholder="My Document"
+              value={currDocName}
+              onChange={(e) => setCurrDocName(e.target.value)}
             />
           </CredenzaBody>
           <CredenzaFooter>

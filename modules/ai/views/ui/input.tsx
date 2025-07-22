@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,9 @@ import {
   PlusIcon,
   PenBox,
   Code,
+  Dot,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UseAutoResizeTextareaProps {
   minHeight: number;
@@ -70,6 +73,7 @@ function useAutoResizeTextarea({
 
 export default function ChatInput() {
   const [value, setValue] = useState("");
+  const [mode, setMode] = useState("chat");
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 60,
     maxHeight: 200,
@@ -107,7 +111,7 @@ export default function ChatInput() {
               "focus:outline-none",
               "focus-visible:ring-0 focus-visible:ring-offset-0",
               "placeholder:text-neutral-500 placeholder:text-sm",
-              "min-h-[60px]",
+              "min-h-[80px]",
             )}
             style={{
               overflow: "hidden",
@@ -115,45 +119,40 @@ export default function ChatInput() {
           />
         </div>
 
-        <div className="flex items-center justify-end p-3">
-          <div className="hidden items-center gap-2">
-            <button
-              type="button"
-              className="group p-2 hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1"
+        <div className="flex items-center justify-between p-2 overflow-hidden rounded-b-xl bg-background border-t">
+          <div className="flex items-center">
+            <Button
+              variant={mode === "chat" ? "secondary" : "outline"}
+              onClick={() => setMode("chat")}
+              size="sm"
+              className="rounded-r-none border shadow-none border-r-0"
             >
-              <Paperclip className="w-4 h-4 text-white" />
-              <span className="text-xs text-zinc-400 hidden group-hover:inline transition-opacity">
-                Attach
-              </span>
-            </button>
+              {mode === "chat" && (
+                <Dot className="text-indigo-600 !h-6 !w-6 -ml-2 -mr-2" />
+              )}
+              Chat
+            </Button>
+            <Button
+              variant={mode === "build" ? "secondary" : "outline"}
+              onClick={() => setMode("build")}
+              size="sm"
+              className="rounded-l-none border shadow-none border-l-0"
+            >
+              {mode === "build" && (
+                <Dot className="text-indigo-600 !h-6 !w-6 -ml-2 -mr-2" />
+              )}
+              Build
+            </Button>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="px-2 hidden py-1 rounded-lg text-sm text-zinc-400 transition-colors border border-dashed border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 items-center justify-between gap-1"
+            <Button
+              size="sm"
+              className="h-8 border"
+              variant={value.trim() ? "default" : "outline"}
             >
-              <PlusIcon className="w-4 h-4" />
-              Project
-            </button>
-            <button
-              type="button"
-              className={cn(
-                "px-1.5 py-1.5 rounded-lg text-sm transition-colors border dark:border-zinc-700 dark:hover:border-zinc-600 dark:hover:bg-zinc-800 flex items-center justify-between gap-1",
-                value.trim()
-                  ? "bg-primary text-primary-foreground dark:bg-white dark:text-black"
-                  : "text-zinc-400",
-              )}
-            >
-              <ArrowUpIcon
-                className={cn(
-                  "w-4 h-4",
-                  value.trim()
-                    ? "text-primary-foreground dark:text-black"
-                    : "text-zinc-400",
-                )}
-              />
-              <span className="sr-only">Send</span>
-            </button>
+              <span>Send</span>
+              <ArrowUpIcon className="!h-4 !w-4" />
+            </Button>
           </div>
         </div>
       </div>

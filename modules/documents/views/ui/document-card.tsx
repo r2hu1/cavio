@@ -42,7 +42,11 @@ export default function DocumentCard({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <RenameDocumentPopup documentId={id} folderId={folderId}>
+            <RenameDocumentPopup
+              documentName={name}
+              documentId={id}
+              folderId={folderId}
+            >
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <PencilLine className="!w-4 !h-4" />
                 Rename

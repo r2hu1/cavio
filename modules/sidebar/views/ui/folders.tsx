@@ -97,7 +97,7 @@ export function Folders() {
                   </SidebarMenuButton>
                 </ContextMenuTrigger>
                 <ContextMenuContent>
-                  <RenameFolderPopup folderId={item.id}>
+                  <RenameFolderPopup folderId={item.id} folderName={item.title}>
                     <ContextMenuItem onSelect={(e) => e.preventDefault()}>
                       <PencilLine className="!h-4 !w-4" /> Rename
                     </ContextMenuItem>
