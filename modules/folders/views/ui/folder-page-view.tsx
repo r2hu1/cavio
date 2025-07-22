@@ -13,7 +13,6 @@ import {
   PencilLine,
   Sparkles,
 } from "lucide-react";
-import CreateWithAI from "./create-with-ai";
 import Header from "./header";
 import DocumentCard from "@/modules/documents/views/ui/document-card";
 import { useTRPC } from "@/trpc/client";
@@ -24,6 +23,7 @@ import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-po
 import { cn } from "@/lib/utils";
 import { Suspense, useEffect } from "react";
 import FolderSettingsPopup from "./folder-settings-popup";
+import FolderAiInput from "@/modules/ai/views/folder-ai-input";
 
 export default function FolderPageView() {
   const { id } = useParams();
@@ -35,7 +35,7 @@ export default function FolderPageView() {
 
   return (
     <div>
-      <CreateWithAI />
+      <FolderAiInput />
       <Header />
       <div
         className={cn(

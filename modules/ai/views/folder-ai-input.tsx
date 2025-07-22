@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
-export default function CreateWithAI() {
+export default function FolderAiInput() {
   return (
     <div className="relative rounded-xl w-full">
       {/* <BorderTrail /> */}
@@ -14,7 +14,7 @@ export default function CreateWithAI() {
       <Input
         id="prompt"
         className="pl-12 pr-14 h-12 rounded-xl"
-        placeholder="Ask me anything, i will write it for you!"
+        placeholder="Let AI write it for you!"
       />
       <div className="flex absolute right-2 top-1/2 -translate-y-1/2 gap-2 justify-end items-center">
         <Button className="h-8 w-8">
