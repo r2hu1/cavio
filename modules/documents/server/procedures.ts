@@ -1,12 +1,12 @@
 import { db } from "@/db/client";
-import { documents } from "@/db/schema";
+import { documents, folders } from "@/db/schema";
 import { polarClient } from "@/lib/polar";
 import {
   createTRPCRouter,
   premiumProcedure,
   protectedProcedure,
 } from "@/trpc/init";
-import { count, eq } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 import z from "zod";
 import { documentSchema } from "../schema";
 import { TRPCError } from "@trpc/server";
@@ -27,21 +27,43 @@ export const documentsRouter = createTRPCRouter({
         .insert(documents)
         .values({ ...input, userId: ctx.auth.user.id })
         .returning();
+      const existingFolder = await db
+        .select()
+        .from(folders)
+        .where(eq(folders.id, document.folderId))
+        .then((rows) => rows[0]);
+      if (!existingFolder) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Folder not found",
+        });
+      }
+      const [updatedFolder] = await db
+        .update(folders)
+        .set({ documents: [...(existingFolder.documents ?? []), document.id] })
+        .where(eq(folders.id, document.folderId))
+        .returning();
       return document;
     }),
   getAllByFolderId: protectedProcedure
     .input(z.object({ folderId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const document = await db
+      const [folder] = await db
+        .select()
+        .from(folders)
+        .where(eq(folders.id, input.folderId));
+      if (!folder) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Folder not found",
+        });
+      }
+      const documentIds = folder.documents ?? [];
+      const fullDocuments = await db
         .select()
         .from(documents)
-        .where(eq(documents.folderId, input.folderId));
-      if (document.length > 0 && document[0].userId !== ctx.auth.user.id)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "UNAUTHORIZED",
-        });
-      return document;
+        .where(inArray(documents.id, documentIds));
+      return fullDocuments;
     }),
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
