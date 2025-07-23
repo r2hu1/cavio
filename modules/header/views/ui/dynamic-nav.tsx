@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import AccountNav from "@/modules/account/views/ui/account-nav";
+import DocumentNav from "@/modules/documents/views/ui/document-nav";
 import FolderNav from "@/modules/folders/views/ui/folder-nav";
 import { Bolt, ClockFading, Share2 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -25,17 +26,7 @@ export default function DynamicNav() {
         </div>
       )}
       {folderPage && <FolderNav folderId={folderId} />}
-      {documentPage && (
-        <div className="flex items-center justify-end gap-2">
-          <Button className="h-8 w-8" variant="secondary">
-            <Bolt className="!h-3.5 !w-3.5" />
-          </Button>
-          <Button className="h-8">
-            Share
-            <Share2 className="!h-3.5 !w-3.5" />
-          </Button>
-        </div>
-      )}
+      {documentPage && <DocumentNav id={documentId} folderId={folderId} />}
       {accountPage && <AccountNav />}
     </div>
   );
