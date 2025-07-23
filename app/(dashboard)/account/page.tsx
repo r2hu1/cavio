@@ -1,5 +1,11 @@
-import AccountView from "@/modules/auth/views/ui/account-view";
+import AccountPageView from "@/modules/account/views/ui/account-page-view";
+import PageLoader from "@/modules/preloader/views/ui/page-loader";
+import { Suspense } from "react";
 
 export default async function AccountPage() {
-  return <AccountView />;
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <AccountPageView />
+    </Suspense>
+  );
 }

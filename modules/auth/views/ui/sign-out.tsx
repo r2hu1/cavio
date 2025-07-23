@@ -10,10 +10,14 @@ export default function SignOut({
   className,
   text = "Log out",
   children,
+  variant = "link",
+  size = "default",
 }: {
   className?: string;
   text?: string;
   children?: React.ReactNode;
+  variant?: "link" | "outline" | "ghost" | "default" | "secondary";
+  size?: "default" | "sm" | "lg";
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -25,10 +29,11 @@ export default function SignOut({
   };
   return (
     <Button
-      variant="link"
+      variant={variant}
       onClick={handleSignOut}
       className={cn("hover:no-underline", className)}
       disabled={loading}
+      size={size}
     >
       {loading ? <Loader2 className="!h-3.5 !w-3.5 animate-spin" /> : children}
     </Button>

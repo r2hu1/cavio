@@ -31,8 +31,8 @@ export default function CreateFolderInline({
       },
       {
         onSuccess: async (e) => {
-          toast.success("Folder created successfully");
           router.push(`/folder/${e.id}`);
+          toast.success("Folder created successfully");
           await queryClient.invalidateQueries(
             trpc.folder.getAll.queryOptions(),
           );
