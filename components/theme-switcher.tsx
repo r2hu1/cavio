@@ -15,8 +15,9 @@ export function ModeToggle() {
         setTheme(resolvedTheme == "dark" ? "light" : "dark");
       }}
       size="icon"
+      className="h-8 w-8"
     >
-      <Contrast className="h-4 w-4" />
+      <Contrast className="!h-3.5 !w-3.5" />
     </Button>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import AccountNav from "@/modules/account/views/ui/account-nav";
 import FolderNav from "@/modules/folders/views/ui/folder-nav";
 import { Bolt, ClockFading, Share2 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -9,6 +10,7 @@ export default function DynamicNav() {
   const pathname = usePathname().split("/").filter(Boolean);
   const folderPage = pathname.includes("folder") && pathname.length == 2;
   const documentPage = pathname.includes("folder") && pathname.length == 3;
+  const accountPage = pathname.includes("account") && pathname.length == 1;
   const homePage = pathname.length == 0;
   const folderId = pathname[1];
   const documentId = pathname[2];
@@ -34,6 +36,7 @@ export default function DynamicNav() {
           </Button>
         </div>
       )}
+      {accountPage && <AccountNav />}
     </div>
   );
 }
