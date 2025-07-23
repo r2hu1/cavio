@@ -27,7 +27,7 @@ export default function CreateFolderInline({
     setLoading(true);
     mutate(
       {
-        title: "Untitled Folder",
+        title: new Date().toLocaleTimeString("en-GB"),
       },
       {
         onSuccess: async (e) => {
