@@ -1,6 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import Tooltip from "@/components/ui/tooltip-v2";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -93,7 +94,9 @@ export default function RenameFolderInline({
       )}
     >
       {data?.title}
-      <PencilLine className="!h-3 !w-3 text-foreground/70" />
+      <Tooltip text="Rename Folder">
+        <PencilLine className="!h-3.5 cursor-pointer !w-3.5 text-foreground/70" />
+      </Tooltip>
     </h1>
   );
 }

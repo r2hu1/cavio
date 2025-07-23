@@ -12,6 +12,7 @@ import {
   FileText,
   Link2,
   PencilLine,
+  Settings2,
   Trash,
 } from "lucide-react";
 import Link from "next/link";
@@ -32,13 +33,28 @@ export default function DocumentCard({
   folderId: string;
 }) {
   return (
-    <div className="bg-sidebar transition hover:shadow-sm rounded-lg border overflow-hidden">
-      <div className="h-8 bg-sidebar-accent relative">
-        <FileText className="w-6 h-6 text-foreground/50 absolute -bottom-2 left-5" />
+    <div className="bg-sidebar transition hover:border-input hover:shadow-sm rounded-lg border overflow-hidden">
+      <div className="h-10 bg-sidebar-accent relative">
+        <FileText className="w-7 h-7 text-foreground/50 absolute -bottom-2 left-5" />
+      </div>
+      <div className="flex gap-3 items-center justify-between p-3 pt-4">
+        <Link
+          href={`/folder/${folderId}/${id}`}
+          className="text-sm flex items-center gap-1.5 group"
+        >
+          {name.split("").length > 18 ? name.slice(0, 18) + "..." : name}
+          <ExternalLink className="!h-3.5 !w-3.5 text-foreground/80 hidden group-hover:flex" />
+        </Link>
+      </div>
+      <div className="px-2.5 pb-2 flex items-center justify-between">
+        <h3 className="text-[11px] flex items-center gap-1 text-foreground/70">
+          <ClockFading className="!w-3 !h-3" />
+          {updatedAt ? new Date(updatedAt).toLocaleTimeString() : "Never"}
+        </h3>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="absolute right-0">
-            <button className="h-8 items-center justify-center flex w-8 cursor-pointer">
-              <EllipsisVertical className="!w-3.5 !h-3.5" />
+          <DropdownMenuTrigger asChild>
+            <button className="h-4 items-center justify-center flex w-4 cursor-pointer">
+              <Settings2 className="!w-3.5 !h-3.5 text-foreground/70" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -75,24 +91,6 @@ export default function DocumentCard({
             </DeleteDocumentPopup>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-      <div className="flex gap-3 items-center justify-between p-3 pt-4">
-        <Link
-          href={`/folder/${folderId}/${id}`}
-          className="text-sm flex items-center gap-1.5 group"
-        >
-          {name.split("").length > 45 ? name.slice(0, 45) + "..." : name}
-          <ExternalLink className="!h-3.5 !w-3.5 text-foreground/80 hidden group-hover:flex" />
-        </Link>
-      </div>
-      <div className="px-2.5 pb-2 flex items-center justify-end sm:justify-between">
-        <h3 className="text-xs hidden sm:flex items-center gap-1 text-foreground/70">
-          <ClockFading className="!w-3.5 !h-3.5" />
-          {updatedAt ? new Date(updatedAt).toLocaleTimeString() : "Never"}
-        </h3>
-        <h3 className="text-xs items-center gap-1 text-foreground/70">
-          {createdAt ? new Date(createdAt).toLocaleTimeString() : ".."}
-        </h3>
       </div>
     </div>
   );

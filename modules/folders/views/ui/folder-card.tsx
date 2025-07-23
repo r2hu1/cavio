@@ -15,7 +15,7 @@ export default function FolderCard({
   documentCount: number | undefined;
 }) {
   return (
-    <div className="bg-sidebar pb-4 transition hover:shadow-sm rounded-lg border overflow-hidden">
+    <div className="bg-sidebar hover:border-input pb-4 transition hover:shadow-sm rounded-lg border overflow-hidden">
       <div className="bg-sidebar-accent h-12 relative">
         <Folder className="!h-7 !w-7 absolute -bottom-3 left-4 text-sidebar-accent-foreground/50" />
       </div>

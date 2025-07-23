@@ -40,7 +40,7 @@ export default function RecentFolders() {
       {!isPending && (!data || data?.length === 0) && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           <CreateFolderInline>
-            <div className="bg-sidebar cursor-pointer pb-4 transition hover:shadow-sm rounded-lg border overflow-hidden">
+            <div className="bg-sidebar hover:border-input cursor-pointer pb-4 transition hover:shadow-sm rounded-lg border overflow-hidden">
               <div className="bg-sidebar-accent h-12 relative">
                 <FolderPlus className="!h-7 !w-7 absolute -bottom-3 left-4 text-sidebar-accent-foreground/50" />
               </div>

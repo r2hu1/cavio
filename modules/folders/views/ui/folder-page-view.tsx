@@ -38,13 +38,7 @@ export default function FolderPageView() {
     <div>
       <FolderAiInput />
       <Header />
-      <div
-        className={cn(
-          "mt-8 grid gap-4",
-          isLoading && "sm:grid-cols-2",
-          data && data.length >= 2 && "sm:grid-cols-2",
-        )}
-      >
+      <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <Suspense>
           {!isLoading &&
             data?.map((document, index) => (
