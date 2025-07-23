@@ -33,6 +33,7 @@ import DeleteFolderPopup from "@/modules/folders/views/ui/delete-folder-popup";
 import { usePathname } from "next/navigation";
 import CreateFolderInline from "@/modules/folders/views/ui/create-folder-inline";
 import CreateDocumentInline from "@/modules/documents/views/ui/create-document-inline";
+import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
 
 interface FolderProps {
   createdAt: Date | null;
@@ -99,11 +100,11 @@ export function Folders() {
                       <PencilLine className="!h-4 !w-4" /> Rename
                     </ContextMenuItem>
                   </RenameFolderPopup>
-                  <CreateDocumentInline folderId={item.id}>
+                  <CreateDocumentPopup folderId={item.id}>
                     <ContextMenuItem onSelect={(e) => e.preventDefault()}>
                       <FilePlus className="!h-4 !w-4" /> Add Document
                     </ContextMenuItem>
-                  </CreateDocumentInline>
+                  </CreateDocumentPopup>
                   <ContextMenuItem asChild>
                     <Link href={`/folder/${item.id}`}>
                       <Link2Icon className="!h-4 !w-4" /> Open
