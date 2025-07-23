@@ -6,6 +6,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import CreateDocumentInline from "@/modules/documents/views/ui/create-document-inline";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +22,7 @@ export default function SubFolderMenu({ folderId }: { folderId: string }) {
   const pathname = usePathname();
 
   return (
-    <SidebarMenuSub>
+    <SidebarMenuSub className="w-full">
       {isLoading && (
         <SidebarMenuSubItem className="h-8 flex items-center justify-center">
           <Loader2 className="!h-3.5 animate-spin !w-3.5" />
@@ -31,13 +32,17 @@ export default function SubFolderMenu({ folderId }: { folderId: string }) {
       {!isLoading && data && data.length > 0 && (
         <>
           {data.map((document) => (
-            <SidebarMenuSubItem key={document.id}>
+            <SidebarMenuSubItem key={document.id} className="ml-0">
               <SidebarMenuSubButton
                 isActive={pathname === `/folder/${folderId}/${document.id}`}
                 asChild
               >
                 <Link
-                  className="!text-foreground/80 text-sm"
+                  className={cn(
+                    "!text-foreground/80 text-sm",
+                    pathname === `/folder/${folderId}/${document.id}` &&
+                      "text-sidebar-foreground",
+                  )}
                   href={`/folder/${folderId}/${document.id}`}
                 >
                   {document.title}

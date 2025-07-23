@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import SubFolderMenu from "./sub-folder-menu";
+import { cn } from "@/lib/utils";
 
 interface FolderProps {
   createdAt: Date | null;
@@ -64,6 +65,7 @@ export function Folders() {
   const [folders, setFolders] = useState<FolderProps[]>([]);
   const trpc = useTRPC();
   const { data, isLoading } = useQuery(trpc.folder.getAll.queryOptions());
+  const pathname = usePathname();
 
   useEffect(() => {
     if (data) {
@@ -97,23 +99,34 @@ export function Folders() {
           folders.map((item, index) => (
             <Collapsible key={index} className="group/collapsible">
               <SidebarMenuItem>
-                <div className="flex w-full items-center hover:bg-sidebar-accent rounded-lg pr-1.5">
-                  {/* Left: Folder icon + title */}
+                <div
+                  className={cn(
+                    "flex w-full items-center hover:bg-sidebar-accent rounded-lg pr-1.5",
+                    pathname === `/folder/${item.id}` && "bg-sidebar-accent",
+                  )}
+                >
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="flex flex-1 items-center gap-2 cursor-pointer">
+                    <SidebarMenuButton
+                      isActive={pathname === `/folder/${item.id}`}
+                      className="flex flex-1 items-center gap-2 cursor-pointer"
+                    >
                       <ChevronRight className="!h-3.5 !w-3.5 transition-transform duration-200 group-hover/collapsible:flex hidden group-data-[state=open]/collapsible:rotate-90" />
                       <FolderOpen className="!h-3.5 !w-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:flex group-hover/collapsible:!hidden hidden" />
                       <Folder className="!h-3.5 !w-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:hidden group-hover/collapsible:hidden flex" />
                       <Link
                         href={`/folder/${item.id}`}
-                        className="flex items-center gap-2"
+                        className={cn(
+                          "flex items-center gap-2",
+                          pathname === `/folder/${item.id}`
+                            ? "text-foreground"
+                            : "text-foreground/80",
+                        )}
                       >
                         {item.title}
                       </Link>
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
 
-                  {/* Right: Plus Button */}
                   <CreateDocumentInline
                     folderId={item.id}
                     triggerClassName="hidden group-hover/collapsible:flex"
@@ -128,7 +141,7 @@ export function Folders() {
                   </CreateDocumentInline>
                 </div>
 
-                <CollapsibleContent className="w-full">
+                <CollapsibleContent>
                   <SubFolderMenu folderId={item.id} />
                 </CollapsibleContent>
               </SidebarMenuItem>
