@@ -8,9 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import CreateFolderPopup from "@/modules/folders/views/ui/create-folder-popup";
 import {
-  EllipsisVertical,
   ExternalLink,
   FilePlus,
   Folder,
@@ -26,16 +24,15 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useTRPC } from "@/trpc/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
 import RenameFolderPopup from "@/modules/folders/views/ui/rename-folder-popup";
 import DeleteFolderPopup from "@/modules/folders/views/ui/delete-folder-popup";
 import { usePathname } from "next/navigation";
-import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
-import Tooltip from "@/components/ui/tooltip-v2";
+import CreateFolderInline from "@/modules/folders/views/ui/create-folder-inline";
+import CreateDocumentInline from "@/modules/documents/views/ui/create-document-inline";
 
 interface FolderProps {
   createdAt: Date | null;
@@ -62,7 +59,7 @@ export function Folders() {
     <SidebarGroup className="-mt-2 space-y-1">
       <SidebarGroupLabel className="group/folder flex items-center justify-between hover:bg-sidebar-accent">
         Folders
-        <CreateFolderPopup triggerClassName="hidden group-hover/folder:flex">
+        <CreateFolderInline triggerClassName="hidden group-hover/folder:flex">
           <Button
             variant="ghost"
             className="hidden group-hover/folder:flex hover:!bg-input !h-5 !w-5 items-center justify-center"
@@ -70,7 +67,7 @@ export function Folders() {
           >
             <Plus className="!h-3.5 !w-3.5" />
           </Button>
-        </CreateFolderPopup>
+        </CreateFolderInline>
       </SidebarGroupLabel>
       <SidebarMenu>
         {isLoading && (
@@ -102,11 +99,11 @@ export function Folders() {
                       <PencilLine className="!h-4 !w-4" /> Rename
                     </ContextMenuItem>
                   </RenameFolderPopup>
-                  <CreateDocumentPopup folderId={item.id}>
+                  <CreateDocumentInline folderId={item.id}>
                     <ContextMenuItem onSelect={(e) => e.preventDefault()}>
                       <FilePlus className="!h-4 !w-4" /> Add Document
                     </ContextMenuItem>
-                  </CreateDocumentPopup>
+                  </CreateDocumentInline>
                   <ContextMenuItem asChild>
                     <Link href={`/folder/${item.id}`}>
                       <Link2Icon className="!h-4 !w-4" /> Open
@@ -132,12 +129,12 @@ export function Folders() {
           ))}
         {!isLoading && !folders.length && (
           <SidebarMenuItem>
-            <CreateFolderPopup>
-              <SidebarMenuButton className="text-sm">
+            <CreateFolderInline>
+              <SidebarMenuButton className="text-sm cursor-pointer">
                 <Plus className="!h-3.5 !w-3.5" />
                 Add new
               </SidebarMenuButton>
-            </CreateFolderPopup>
+            </CreateFolderInline>
           </SidebarMenuItem>
         )}
       </SidebarMenu>

@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { Suspense, useEffect } from "react";
 import FolderSettingsPopup from "./folder-settings-popup";
 import FolderAiInput from "@/modules/ai/views/ui/folder-ai-input";
+import CreateDocumentInline from "@/modules/documents/views/ui/create-document-inline";
 
 export default function FolderPageView() {
   const { id } = useParams();
@@ -75,12 +76,12 @@ export default function FolderPageView() {
               <p className="text-xs sm:text-sm -mt-1 text-foreground/80">
                 Start by creating a new document with AI or manually.
               </p>
-              <CreateDocumentPopup folderId={id as string}>
+              <CreateDocumentInline folderId={id as string}>
                 <Button size="sm" className="mt-2">
                   New Document
                   <FilePlus className="!h-3.5 !w-3.5" />
                 </Button>
-              </CreateDocumentPopup>
+              </CreateDocumentInline>
             </div>
           </div>
         </div>

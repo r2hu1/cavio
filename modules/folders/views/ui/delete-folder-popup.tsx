@@ -14,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -55,6 +55,7 @@ export default function DeleteFolderPopup({
           await queryClient.invalidateQueries(
             trpc.folder.getRecent.queryOptions(),
           );
+          toast.success("Folder deleted successfully");
           router.push("/");
         },
         onError: (error) => {

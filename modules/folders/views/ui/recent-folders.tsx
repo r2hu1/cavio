@@ -3,6 +3,8 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import FolderCard from "./folder-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FolderPlus } from "lucide-react";
+import CreateFolderInline from "./create-folder-inline";
 
 export default function RecentFolders() {
   const trpc = useTRPC();
@@ -36,20 +38,17 @@ export default function RecentFolders() {
         </div>
       )}
       {!isPending && (!data || data?.length === 0) && (
-        <div className="h-72 mt-10 flex items-center justify-center px-6 sm:px-0">
-          <div className="place-content-center grid place-items-center">
-            <div className="bg-sidebar rounded-lg h-14 w-full sm:w-[400px] border max-w-xl"></div>
-            <div className="bg-secondary rounded-lg h-14 w-[calc(100%+50px)] sm:w-[450px] border z-10 -mt-6 max-w-2xl"></div>
-            <div className="bg-sidebar rounded-lg h-14 w-full sm:w-[400px] -mt-6 border max-w-xl"></div>
-            <div className="text-center mt-7 space-y-2">
-              <h1 className="text-base text-foreground">
-                Its so empty here :(
-              </h1>
-              <p className="text-xs sm:text-sm -mt-1 text-foreground/80">
-                Open or create a folder to see it here.
-              </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <CreateFolderInline>
+            <div className="bg-sidebar cursor-pointer pb-4 transition hover:shadow-sm rounded-lg border overflow-hidden">
+              <div className="bg-sidebar-accent h-12 relative">
+                <FolderPlus className="!h-7 !w-7 absolute -bottom-3 left-4 text-sidebar-accent-foreground/50" />
+              </div>
+              <div className="flex text-sm gap-3 items-center justify-between p-3 pt-5">
+                New folder
+              </div>
             </div>
-          </div>
+          </CreateFolderInline>
         </div>
       )}
     </div>
