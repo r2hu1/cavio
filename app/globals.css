@@ -45,6 +45,7 @@
     --color-color-3: var(----color-3);
     --color-color-2: var(----color-2);
     --color-color-1: var(----color-1);
+    --color-brand: var(--brand);
 
     @keyframes rainbow {
         0% {
@@ -111,6 +112,7 @@
     --color-3: hsl(210 100% 63%);
     --color-4: hsl(195 100% 63%);
     --color-5: hsl(90 100% 63%);
+    --brand: oklch(0.623 0.214 259.815);
 }
 
 .dark {
@@ -145,6 +147,7 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    --brand: oklch(0.707 0.165 254.624);
 }
 
 @layer base {

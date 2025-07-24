@@ -1,8 +1,9 @@
+import Editor from "@/modules/editor/views/ui/editor";
+
 export default function DocumentPage() {
   return (
     <div>
-      <h1>Document Page</h1>
-      <p>Document ID: </p>
+      <Editor />
     </div>
   );
 }
