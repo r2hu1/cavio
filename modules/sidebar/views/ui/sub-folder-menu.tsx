@@ -22,7 +22,7 @@ export default function SubFolderMenu({ folderId }: { folderId: string }) {
   const pathname = usePathname();
 
   return (
-    <SidebarMenuSub className="w-full">
+    <SidebarMenuSub>
       {isLoading && (
         <SidebarMenuSubItem className="h-8 flex items-center justify-center">
           <Loader2 className="!h-3.5 animate-spin !w-3.5" />
