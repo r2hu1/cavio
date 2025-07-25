@@ -6,11 +6,19 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { ExternalLink, FilePlus, Link2, PencilLine, Trash } from "lucide-react";
+import {
+  ExternalLink,
+  FilePlus,
+  FolderPlus,
+  Link2,
+  PencilLine,
+  Trash,
+} from "lucide-react";
 import DeleteFolderPopup from "./delete-folder-popup";
 import RenameFolderPopup from "./rename-folder-popup";
 import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
 import Link from "next/link";
+import CreateFolderPopup from "./create-folder-popup";
 export default function FolderActionContextMenu({
   children,
   id,
@@ -38,6 +46,11 @@ export default function FolderActionContextMenu({
             <ExternalLink className="!h-3.5 !w-3.5" /> Open in new tab
           </Link>
         </ContextMenuItem>
+        <CreateFolderPopup>
+          <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+            <FolderPlus className="!h-3.5 !w-3.5" /> New folder
+          </ContextMenuItem>
+        </CreateFolderPopup>
         <CreateDocumentPopup folderId={id}>
           <ContextMenuItem onSelect={(e) => e.preventDefault()}>
             <FilePlus className="!h-3.5 !w-3.5" /> New doc

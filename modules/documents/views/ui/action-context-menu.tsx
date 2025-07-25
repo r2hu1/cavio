@@ -10,6 +10,7 @@ import { ExternalLink, FilePlus, Link2, PencilLine, Trash } from "lucide-react";
 import Link from "next/link";
 import RenameDocumentPopup from "./rename-document-popup";
 import DeleteDocumentPopup from "./delete-document-popup";
+import CreateDocumentPopup from "./create-document-popup";
 export default function DocumentActionContextMenu({
   children,
   id,
@@ -26,6 +27,11 @@ export default function DocumentActionContextMenu({
         <p className="text-xs px-2 py-1.5 text-foreground/70">
           Document Actions
         </p>
+        <CreateDocumentPopup folderId={folderId}>
+          <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+            <FilePlus className="!h-3.5 !w-3.5" /> New doc
+          </ContextMenuItem>
+        </CreateDocumentPopup>
         <RenameDocumentPopup documentId={id} folderId={folderId}>
           <ContextMenuItem onSelect={(e) => e.preventDefault()}>
             <PencilLine className="!h-3.5 !w-3.5" /> Rename
