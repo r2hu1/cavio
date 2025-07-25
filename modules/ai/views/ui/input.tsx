@@ -119,28 +119,22 @@ export default function ChatInput() {
           />
         </div>
 
-        <div className="flex items-center justify-between p-2 overflow-hidden rounded-b-xl bg-background border-t">
-          <div className="flex items-center">
+        <div className="flex items-center justify-between p-2 overflow-hidden rounded-b-xl">
+          <div className="flex gap-1.5 items-center">
             <Button
-              variant={mode === "chat" ? "secondary" : "outline"}
+              variant={mode === "chat" ? "default" : "outline"}
               onClick={() => setMode("chat")}
               size="sm"
-              className="rounded-r-none border shadow-none border-r-0"
+              className="rounded-full cursor-pointer border px-4 h-7 shadow-none"
             >
-              {mode === "chat" && (
-                <Dot className="text-indigo-600 !h-6 !w-6 -ml-2 -mr-2" />
-              )}
               Chat
             </Button>
             <Button
-              variant={mode === "build" ? "secondary" : "outline"}
+              variant={mode === "build" ? "default" : "outline"}
               onClick={() => setMode("build")}
               size="sm"
-              className="rounded-l-none border shadow-none border-l-0"
+              className="rounded-full cursor-pointer px-4 h-7 border shadow-none"
             >
-              {mode === "build" && (
-                <Dot className="text-indigo-600 !h-6 !w-6 -ml-2 -mr-2" />
-              )}
               Build
             </Button>
           </div>

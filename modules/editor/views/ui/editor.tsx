@@ -8,22 +8,82 @@ import { EditorKit } from "@/components/editor/editor-kit";
 import { CopilotKit } from "@/components/editor/plugins/copilot-kit";
 import { Editor, EditorContainer } from "@/components/ui/editor";
 
-const initialValue = [
-  { type: "h1", children: [{ text: "New Document" }] },
+export const initialValue = [
   {
-    type: "p",
-    children: [{ text: "Type '/' at start of line to see tools." }],
+    type: "h1",
+    children: [{ text: "Untitled Document" }],
   },
   {
     type: "p",
+    children: [{ text: "" }],
+  },
+  {
+    type: "blockquote",
     children: [
-      { text: "Press space with an empty string on the start to trigger AI." },
+      {
+        text: "Type “/” to open the command menu.",
+      },
+    ],
+  },
+  {
+    type: "blockquote",
+    children: [
+      {
+        text: "Press space on an empty line to ask AI for help.",
+      },
     ],
   },
   {
     type: "p",
     children: [
-      { text: "Click here or on the 'New Document' and start writing." },
+      {
+        text: "Welcome! This is your space to write, brainstorm, or plan.",
+      },
+    ],
+  },
+  {
+    type: "h2",
+    children: [{ text: "Getting Started" }],
+  },
+  {
+    type: "ul",
+    children: [
+      {
+        type: "li",
+        children: [
+          {
+            text: "Use the slash (/) command to insert blocks like headings, lists, or images.",
+          },
+        ],
+      },
+      {
+        type: "li",
+        children: [
+          {
+            text: 'Hit "space" on a new line to trigger the AI assistant.',
+          },
+        ],
+      },
+      {
+        type: "li",
+        children: [
+          {
+            text: "Select text to access formatting options.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "p",
+    children: [{ text: "" }],
+  },
+  {
+    type: "callout",
+    children: [
+      {
+        text: "Try starting with a brain dump or outline — don’t worry about perfection!",
+      },
     ],
   },
 ];
