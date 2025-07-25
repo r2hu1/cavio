@@ -83,7 +83,7 @@ export const documents = pgTable("documents", {
   isPublished: boolean("is_published").notNull().default(false),
   url: text("url").notNull().default(""),
   privacy: text("privacy").notNull().default("private"),
-
+  collaborators: text("collaborators").array().default([]),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
@@ -101,21 +101,16 @@ export const folders = pgTable("folders", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   documents: text("documents").array().default([]),
+  privacy: text("privacy").notNull().default("private"),
+  isPublished: boolean("is_published").notNull().default(false),
+  url: text("url").notNull().default(""),
+  collaborators: text("collaborators").array().default([]),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
   updatedAt: timestamp("updated_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
-});
-
-export const folderDocuments = pgTable("folder_documents", {
-  folderId: text("folder_id")
-    .notNull()
-    .references(() => folders.id, { onDelete: "cascade" }),
-  documentId: text("document_id")
-    .notNull()
-    .references(() => documents.id, { onDelete: "cascade" }),
 });
 
 const aiChatHistory = pgTable("ai_chat_history", {
