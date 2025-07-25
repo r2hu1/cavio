@@ -66,21 +66,50 @@ export const documentsRouter = createTRPCRouter({
       return fullDocuments;
     }),
   delete: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string(), folderId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const document = await db
         .select()
         .from(documents)
         .where(eq(documents.id, input.id));
-      if (document.length > 0 && document[0].userId !== ctx.auth.user.id)
+
+      if (!document.length)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Document not found",
+        });
+
+      if (document[0].userId !== ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "UNAUTHORIZED",
+          message: "You do not have permission to delete this document",
         });
-      const deletedDocument = await db
+
+      const [folder] = await db
+        .select()
+        .from(folders)
+        .where(eq(folders.id, input.folderId));
+
+      if (!folder)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Folder not found",
+        });
+
+      const updatedDocuments = (folder.documents ?? []).filter(
+        (docId) => docId !== input.id,
+      );
+
+      await db
+        .update(folders)
+        .set({ documents: updatedDocuments })
+        .where(eq(folders.id, input.folderId));
+
+      const [deletedDocument] = await db
         .delete(documents)
         .where(eq(documents.id, input.id))
         .returning();
+
       return deletedDocument;
     }),
   update: protectedProcedure

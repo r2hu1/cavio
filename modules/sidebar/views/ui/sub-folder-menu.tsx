@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import DocumentActionContextMenu from "@/modules/documents/views/ui/action-context-menu";
 import CreateDocumentInline from "@/modules/documents/views/ui/create-document-inline";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
@@ -33,21 +34,23 @@ export default function SubFolderMenu({ folderId }: { folderId: string }) {
         <>
           {data.map((document) => (
             <SidebarMenuSubItem key={document.id} className="ml-0">
-              <SidebarMenuSubButton
-                isActive={pathname === `/folder/${folderId}/${document.id}`}
-                asChild
-              >
-                <Link
-                  className={cn(
-                    "!text-foreground/80 text-sm",
-                    pathname === `/folder/${folderId}/${document.id}` &&
-                      "text-sidebar-foreground",
-                  )}
-                  href={`/folder/${folderId}/${document.id}`}
+              <DocumentActionContextMenu id={document.id} folderId={folderId}>
+                <SidebarMenuSubButton
+                  isActive={pathname === `/folder/${folderId}/${document.id}`}
+                  asChild
                 >
-                  {document.title}
-                </Link>
-              </SidebarMenuSubButton>
+                  <Link
+                    className={cn(
+                      "!text-foreground/80 text-sm",
+                      pathname === `/folder/${folderId}/${document.id}` &&
+                        "text-sidebar-foreground",
+                    )}
+                    href={`/folder/${folderId}/${document.id}`}
+                  >
+                    {document.title}
+                  </Link>
+                </SidebarMenuSubButton>
+              </DocumentActionContextMenu>
             </SidebarMenuSubItem>
           ))}
         </>

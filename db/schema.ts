@@ -113,7 +113,7 @@ export const folders = pgTable("folders", {
   ),
 });
 
-const aiChatHistory = pgTable("ai_chat_history", {
+export const aiChatHistory = pgTable("ai_chat_history", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => uuid().toString()),

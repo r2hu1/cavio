@@ -45,6 +45,7 @@ export default function DeleteDocumentPopup({
     mutate(
       {
         id: documentId,
+        folderId: folderId,
       },
       {
         onSuccess: async () => {

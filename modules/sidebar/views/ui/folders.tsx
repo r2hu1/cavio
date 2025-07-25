@@ -72,14 +72,14 @@ export function Folders() {
         {folders.length > 0 &&
           folders.map((item, index) => (
             <Collapsible key={index} className="group/collapsible">
-              <FolderActionContextMenu id={item.id}>
-                <SidebarMenuItem>
-                  <div
-                    className={cn(
-                      "flex w-full items-center hover:bg-sidebar-accent rounded-lg pr-1.5",
-                      pathname === `/folder/${item.id}` && "bg-sidebar-accent",
-                    )}
-                  >
+              <SidebarMenuItem>
+                <div
+                  className={cn(
+                    "flex w-full items-center hover:bg-sidebar-accent rounded-lg pr-1.5",
+                    pathname === `/folder/${item.id}` && "bg-sidebar-accent",
+                  )}
+                >
+                  <FolderActionContextMenu id={item.id}>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         isActive={pathname === `/folder/${item.id}`}
@@ -101,26 +101,26 @@ export function Folders() {
                         </Link>
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
+                  </FolderActionContextMenu>
 
-                    <CreateDocumentInline
-                      folderId={item.id}
-                      triggerClassName="hidden group-hover/collapsible:flex"
+                  <CreateDocumentInline
+                    folderId={item.id}
+                    triggerClassName="hidden group-hover/collapsible:flex"
+                  >
+                    <Button
+                      variant="ghost"
+                      className="hover:!bg-input !h-5 !w-5 items-center justify-center group-hover/collapsible:flex hidden"
+                      size="icon"
                     >
-                      <Button
-                        variant="ghost"
-                        className="hover:!bg-input !h-5 !w-5 items-center justify-center group-hover/collapsible:flex hidden"
-                        size="icon"
-                      >
-                        <Plus className="text-foreground !h-3.5 !w-3.5" />
-                      </Button>
-                    </CreateDocumentInline>
-                  </div>
+                      <Plus className="text-foreground !h-3.5 !w-3.5" />
+                    </Button>
+                  </CreateDocumentInline>
+                </div>
 
-                  <CollapsibleContent>
-                    <SubFolderMenu folderId={item.id} />
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </FolderActionContextMenu>
+                <CollapsibleContent>
+                  <SubFolderMenu folderId={item.id} />
+                </CollapsibleContent>
+              </SidebarMenuItem>
             </Collapsible>
           ))}
 

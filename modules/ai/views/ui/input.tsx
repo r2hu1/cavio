@@ -4,7 +4,6 @@ import { useEffect, useRef, useCallback } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import {
   ImageIcon,
   FileUp,
@@ -17,6 +16,8 @@ import {
   PenBox,
   Code,
   Dot,
+  LayoutTemplate,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -24,6 +25,34 @@ interface UseAutoResizeTextareaProps {
   minHeight: number;
   maxHeight?: number;
 }
+
+const templates = [
+  {
+    name: "Blog",
+    content: "A blog post on ",
+    icon: <ImageIcon className="!w-4 !h-4" />,
+  },
+  {
+    name: "Letter",
+    content: "A letter to ",
+    icon: <FileUp className="!w-4 !h-4" />,
+  },
+  {
+    name: "Research",
+    content: "A research paper on ",
+    icon: <FileText className="!w-4 !h-4" />,
+  },
+  {
+    name: "Journal",
+    content: "An journal entry on ",
+    icon: <MonitorIcon className="!w-4 !h-4" />,
+  },
+  {
+    name: "News",
+    content: "An news article on ",
+    icon: <CircleUserRound className="!w-4 !h-4" />,
+  },
+];
 
 function useAutoResizeTextarea({
   minHeight,
@@ -102,17 +131,7 @@ export default function ChatInput() {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Write a film script with..."
-            className={cn(
-              "w-full px-4 py-3",
-              "resize-none",
-              "bg-transparent",
-              "border-none",
-              "dark:text-white text-sm",
-              "focus:outline-none",
-              "focus-visible:ring-0 focus-visible:ring-offset-0",
-              "placeholder:text-neutral-500 placeholder:text-sm",
-              "min-h-[80px]",
-            )}
+            className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[80px]"
             style={{
               overflow: "hidden",
             }}
@@ -120,46 +139,69 @@ export default function ChatInput() {
         </div>
 
         <div className="flex items-center justify-between p-2 overflow-hidden rounded-b-xl">
-          <div className="flex gap-1.5 items-center">
+          <div className="flex gap-1 px-1 items-center">
             <Button
-              variant={mode === "chat" ? "default" : "outline"}
+              variant={mode === "chat" ? "default" : "secondary"}
               onClick={() => setMode("chat")}
               size="sm"
-              className="rounded-full cursor-pointer border px-4 h-7 shadow-none"
+              className="cursor-pointer text-xs h-6 shadow-none"
             >
               Chat
             </Button>
             <Button
-              variant={mode === "build" ? "default" : "outline"}
+              variant={mode === "build" ? "default" : "secondary"}
               onClick={() => setMode("build")}
               size="sm"
-              className="rounded-full cursor-pointer px-4 h-7 border shadow-none"
+              className="cursor-pointer h-6 text-xs shadow-none"
             >
               Build
+            </Button>
+            <Button
+              variant={mode === "research" ? "default" : "secondary"}
+              onClick={() => setMode("research")}
+              size="sm"
+              className="cursor-pointer h-6 text-xs shadow-none"
+            >
+              Research
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              className="h-8 border"
-              variant={value.trim() ? "default" : "outline"}
+              className="h-8 w-8"
+              variant={value.trim() ? "default" : "secondary"}
             >
-              <span>Send</span>
               <ArrowUpIcon className="!h-4 !w-4" />
             </Button>
           </div>
         </div>
       </div>
 
+      {/* <div className="mt-20 space-y-7 !-mb-7">
+        <h1 className="text-sm flex items-center gap-2 text-foreground/80">
+          <LayoutTemplate className="!h-3.5 !w-3.5" /> Templates.
+        </h1>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="space-y-1 cursor-pointer bg-sidebar border hover:border-input transition rounded-lg p-2">
+            <ImageIcon className="!w-6 !h-6 text-foreground/60" />
+            <h1 className="text-sm font-medium">Creative Blog</h1>
+            <p className="text-sm text-foreground/80">
+              Create a blog post with a creative and engaging content.
+            </p>
+          </div>
+        </div>
+      </div> */}
       <div className="flex items-center justify-center flex-wrap gap-3 mt-8 -mb-4">
-        <ActionButton icon={<ImageIcon className="w-4 h-4" />} label="Blog" />
-        <ActionButton icon={<PenBox className="w-4 h-4" />} label="Letter" />
-        <ActionButton icon={<FileUp className="w-4 h-4" />} label="Homework" />
-        <ActionButton icon={<Code className="w-4 h-4" />} label="Script" />
-        <ActionButton
-          icon={<CircleUserRound className="w-4 h-4" />}
-          label="Journal"
-        />
+        {templates.map((template) => (
+          <ActionButton
+            key={template.name}
+            icon={template.icon}
+            label={template.name}
+            onClick={() => {
+              setValue(template.content);
+            }}
+          />
+        ))}
       </div>
     </div>
   );
@@ -168,16 +210,19 @@ export default function ChatInput() {
 interface ActionButtonProps {
   icon: React.ReactNode;
   label: string;
+  onClick?: () => void;
 }
 
-function ActionButton({ icon, label }: ActionButtonProps) {
+function ActionButton({ icon, label, onClick }: ActionButtonProps) {
   return (
-    <button
-      type="button"
-      className="flex items-center gap-2 px-4 py-2 bg-secondary/80 hover:bg-secondary/60 rounded-full border dark:text-white cursor-pointer transition-colors"
+    <Button
+      variant="outline"
+      className="!px-4 rounded-full"
+      size="sm"
+      onClick={onClick}
     >
       {icon}
       <span className="text-xs">{label}</span>
-    </button>
+    </Button>
   );
 }
