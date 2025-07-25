@@ -123,6 +123,12 @@ export const documentsRouter = createTRPCRouter({
         .select()
         .from(documents)
         .where(eq(documents.id, input.id));
+      if (document.length < 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "NOT_FOUND",
+        });
+      }
       if (document.length > 0 && document[0].userId !== ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",

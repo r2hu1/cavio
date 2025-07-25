@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PencilLine } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -26,9 +27,13 @@ export default function RenameDocumentInline({
   const { data, isPending, error } = useQuery(
     trpc.document.get.queryOptions({ id: documentId }),
   );
+  const router = useRouter();
   useEffect(() => {
     if (error) {
       toast.error(error.message);
+      if (error.message.split(" ").includes("undefined")) {
+        router.push("/");
+      }
     }
     if (data) {
       setNewDocumentName(data.title);

@@ -11,9 +11,6 @@ export default function RecentFolders() {
   const { data, isPending, error } = useQuery(
     trpc.folder.getRecent.queryOptions(),
   );
-  if (!isPending) {
-    console.log(data);
-  }
   return (
     <div>
       {isPending && (

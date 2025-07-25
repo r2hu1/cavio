@@ -8,6 +8,10 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data, error, isPending, refetch } = useSession();
 
+  // if (error) {
+  //   console.log(error.message);
+  // }
+
   return (
     <AuthContext.Provider value={{ data, error, isPending, refetch }}>
       {children}

@@ -1,9 +1,11 @@
-import Editor from "@/modules/editor/views/ui/editor";
+import DocumentPageView from "@/modules/documents/views/ui/document-page-view";
+import PageLoader from "@/modules/preloader/views/ui/page-loader";
+import { Suspense } from "react";
 
 export default function DocumentPage() {
   return (
-    <div>
-      <Editor />
-    </div>
+    <Suspense fallback={<PageLoader />}>
+      <DocumentPageView />
+    </Suspense>
   );
 }

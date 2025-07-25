@@ -8,6 +8,7 @@ import type {
 } from "@radix-ui/react-dropdown-menu";
 
 import { useComposedRef } from "@udecode/cn";
+//@ts-ignore
 import debounce from "lodash/debounce.js";
 import { EraserIcon, PlusIcon } from "lucide-react";
 import { useEditorRef, useEditorSelector } from "platejs/react";
