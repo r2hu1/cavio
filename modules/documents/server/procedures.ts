@@ -11,6 +11,7 @@ import z from "zod";
 import { documentSchema } from "../schema";
 import { TRPCError } from "@trpc/server";
 import { title } from "process";
+import { url } from "inspector/promises";
 
 export const documentsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ input, ctx }) => {
@@ -118,6 +119,10 @@ export const documentsRouter = createTRPCRouter({
         id: z.string(),
         title: z.string(),
         content: z.string().optional(),
+        isPublished: z.boolean().optional().default(false),
+        privacy: z.string().optional().default("private"),
+        collaborators: z.array(z.string()).optional().default([]),
+        url: z.string().optional().default(""),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -125,20 +130,41 @@ export const documentsRouter = createTRPCRouter({
         .select()
         .from(documents)
         .where(eq(documents.id, input.id));
+
       if (document.length > 0 && document[0].userId !== ctx.auth.user.id)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "UNAUTHORIZED",
         });
+
       const isContent = input.content !== undefined;
+      const isPrivacy = input.privacy !== undefined;
+      const isCollaborators = input.collaborators !== undefined;
+      const isUrl = input.url !== undefined;
+      const isPublished = input.isPublished !== undefined;
+
       const [updatedDocument] = await db
         .update(documents)
         .set({
           title: input.title,
           content: isContent ? input.content : document[0].content,
+          isPublished: isPublished
+            ? input.isPublished
+            : document[0].isPublished,
+          privacy: isPrivacy ? input.privacy : document[0].privacy,
+          collaborators: isCollaborators
+            ? [
+                ...(document[0].collaborators ?? []),
+                ...(Array.isArray(input.collaborators)
+                  ? input.collaborators
+                  : [input.collaborators]),
+              ]
+            : document[0].collaborators,
+          url: isUrl ? input.url : document[0].url,
         })
         .where(eq(documents.id, input.id))
         .returning();
+
       return [updatedDocument];
     }),
   get: protectedProcedure
