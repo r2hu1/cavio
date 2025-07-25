@@ -33,7 +33,7 @@ export function FloatingToolbarButtons() {
           <ToolbarGroup>
             <AIToolbarButton tooltip="AI commands">
               <WandSparklesIcon />
-              Ask AI
+              <span className="text-sm">Ask AI</span>
             </AIToolbarButton>
           </ToolbarGroup>
 
@@ -74,7 +74,7 @@ export function FloatingToolbarButtons() {
       )}
 
       <ToolbarGroup>
-        <CommentToolbarButton />
+        {/* <CommentToolbarButton /> */}
         <SuggestionToolbarButton />
 
         {!readOnly && <MoreToolbarButton />}

@@ -2,6 +2,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import DashboardSidebarHeader from "./header";
 import { NavUser } from "./user";
@@ -11,7 +12,7 @@ import DashboardNav from "./dashboard";
 
 export function DashboardSidebar() {
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="sidebar">
       <DashboardSidebarHeader />
       <SidebarContent className="hidden_scrollbar">
         <DashboardNav />
@@ -21,6 +22,7 @@ export function DashboardSidebar() {
         <Useage />
         <NavUser />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }

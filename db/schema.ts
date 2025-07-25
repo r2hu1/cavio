@@ -4,6 +4,7 @@ import {
   timestamp,
   boolean,
   integer,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { v4 as uuid } from "uuid";
 
@@ -71,14 +72,18 @@ export const documents = pgTable("documents", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => uuid().toString()),
-  title: text("title").notNull().default("unnamed"),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  content: text("content").notNull(),
   folderId: text("folder_id")
     .notNull()
     .references(() => folders.id, { onDelete: "cascade" }),
+  title: text("title").notNull().default("unnamed"),
+  content: text("content").notNull(),
+  isPublished: boolean("is_published").notNull().default(false),
+  url: text("url").notNull().default(""),
+  privacy: text("privacy").notNull().default("private"),
+
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
@@ -111,4 +116,37 @@ export const folderDocuments = pgTable("folder_documents", {
   documentId: text("document_id")
     .notNull()
     .references(() => documents.id, { onDelete: "cascade" }),
+});
+
+const aiChatHistory = pgTable("ai_chat_history", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuid().toString()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  title: text("title").notNull().default("unnamed"),
+  messages: jsonb("messages").notNull().default([]),
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+});
+
+export const aiAutocompletionHistory = pgTable("ai_autocompletion_history", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuid().toString()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  completions: integer("completions").notNull().default(0),
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
 });
