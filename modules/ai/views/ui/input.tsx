@@ -120,7 +120,7 @@ export default function ChatInput() {
 
   return (
     <div className="w-full">
-      <div className="relative bg-secondary dark:bg-neutral-900 rounded-xl border dark:border-neutral-800">
+      <div className="relative bg-background shadow-xl dark:shadow-none shadow-foreground/5 dark:bg-neutral-900 rounded-xl border border-input/50 dark:border-neutral-800">
         <div className="overflow-y-auto">
           <Textarea
             ref={textareaRef}
@@ -131,14 +131,14 @@ export default function ChatInput() {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Write a film script with..."
-            className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[80px]"
+            className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
             style={{
               overflow: "hidden",
             }}
           />
         </div>
 
-        <div className="flex items-center justify-between p-2 overflow-hidden rounded-b-xl">
+        <div className="flex items-center justify-between p-2 pt-0 overflow-hidden rounded-b-xl">
           <div className="flex gap-1 px-1 items-center">
             <Button
               variant={mode === "chat" ? "default" : "secondary"}
@@ -191,7 +191,7 @@ export default function ChatInput() {
           </div>
         </div>
       </div> */}
-      <div className="flex items-center justify-center flex-wrap gap-3 mt-8 -mb-4">
+      {/* <div className="flex items-center justify-center flex-wrap gap-3 mt-8 -mb-4">
         {templates.map((template) => (
           <ActionButton
             key={template.name}
@@ -202,7 +202,7 @@ export default function ChatInput() {
             }}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

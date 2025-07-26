@@ -22,15 +22,24 @@ CREATE TABLE "ai_autocompletion_history" (
 	"updated_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "ai_chat_history" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"title" text DEFAULT 'unnamed' NOT NULL,
+	"messages" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"created_at" timestamp,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
 CREATE TABLE "documents" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"folder_id" text NOT NULL,
 	"title" text DEFAULT 'unnamed' NOT NULL,
-	"content" text NOT NULL,
-	"is_published" boolean DEFAULT false NOT NULL,
-	"url" text DEFAULT '' NOT NULL,
-	"privacy" text DEFAULT 'private' NOT NULL,
+	"content" json DEFAULT '[]'::json NOT NULL,
+	"is_published" boolean DEFAULT false,
+	"url" text DEFAULT '',
+	"privacy" text DEFAULT 'private',
 	"collaborators" text[] DEFAULT '{}',
 	"created_at" timestamp,
 	"updated_at" timestamp
@@ -83,6 +92,7 @@ CREATE TABLE "verification" (
 --> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "ai_autocompletion_history" ADD CONSTRAINT "ai_autocompletion_history_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "ai_chat_history" ADD CONSTRAINT "ai_chat_history_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "documents" ADD CONSTRAINT "documents_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "documents" ADD CONSTRAINT "documents_folder_id_folders_id_fk" FOREIGN KEY ("folder_id") REFERENCES "public"."folders"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "folders" ADD CONSTRAINT "folders_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

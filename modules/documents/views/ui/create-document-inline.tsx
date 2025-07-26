@@ -29,7 +29,6 @@ export default function CreateDocumentInline({
       {
         title: "Untitled Document",
         folderId: folderId,
-        content: "",
       },
       {
         onSuccess: async (e) => {

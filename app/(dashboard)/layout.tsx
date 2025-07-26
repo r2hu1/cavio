@@ -10,11 +10,11 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthProvider>
-      <SidebarProvider>
+      <SidebarProvider className="overflow-x-hidden">
         <DashboardSidebar />
         <SidebarInset>
           <DashboardHeader />
-          <div className="px-6 max-w-5xl w-full mx-auto py-10">{children}</div>
+          <div className="px-6 md:px-10 lg:px-32 py-10">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </AuthProvider>

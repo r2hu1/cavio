@@ -14,14 +14,15 @@ export default function RecentFolders() {
   return (
     <div>
       {isPending && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="sm:grid-cols-3 grid md:flex items-center flex-wrap gap-3">
           {Array.from({ length: 5 }, (_, i) => (
             <Skeleton key={i} className="h-28 w-full" />
           ))}
         </div>
       )}
+
       {!isPending && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="sm:grid-cols-3 grid md:flex items-center flex-wrap gap-3">
           {data?.map((folder) => (
             <FolderCard
               key={folder.id}
@@ -35,15 +36,14 @@ export default function RecentFolders() {
         </div>
       )}
       {!isPending && (!data || data?.length === 0) && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="w-fit">
           <CreateFolderInline>
-            <div className="bg-sidebar hover:border-input cursor-pointer pb-4 transition hover:shadow-sm rounded-lg border overflow-hidden">
-              <div className="bg-sidebar-accent h-12 relative">
-                <FolderPlus className="!h-7 !w-7 absolute -bottom-3 left-4 text-sidebar-accent-foreground/50" />
+            <div className="flex cursor-pointer hover:border-input transition items-center gap-6 border bg-secondary rounded-lg py-2.5 px-3.5">
+              <div>
+                <h1 className="text-sm">Create Folder</h1>
+                <p className="text-[12px] text-foreground/80">Empty folder</p>
               </div>
-              <div className="flex text-sm gap-3 items-center justify-between p-3 pt-5">
-                New folder
-              </div>
+              <FolderPlus className="text-foreground/80 !h-4 !w-4" />
             </div>
           </CreateFolderInline>
         </div>

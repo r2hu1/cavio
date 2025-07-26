@@ -26,7 +26,12 @@ export const documentsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const [document] = await db
         .insert(documents)
-        .values({ ...input, userId: ctx.auth.user.id })
+        .values({
+          title: input.title,
+          folderId: input.folderId,
+          content: [],
+          userId: ctx.auth.user.id,
+        })
         .returning();
       const existingFolder = await db
         .select()
@@ -117,12 +122,7 @@ export const documentsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        title: z.string(),
-        content: z.string().optional(),
-        isPublished: z.boolean().optional().default(false),
-        privacy: z.string().optional().default("private"),
-        collaborators: z.array(z.string()).optional().default([]),
-        url: z.string().optional().default(""),
+        content: z.array(z.any()),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -137,30 +137,14 @@ export const documentsRouter = createTRPCRouter({
           message: "UNAUTHORIZED",
         });
 
-      const isContent = input.content !== undefined;
-      const isPrivacy = input.privacy !== undefined;
-      const isCollaborators = input.collaborators !== undefined;
-      const isUrl = input.url !== undefined;
-      const isPublished = input.isPublished !== undefined;
+      const serializedContent = input.content.map((block) =>
+        JSON.stringify(block),
+      );
 
       const [updatedDocument] = await db
         .update(documents)
         .set({
-          title: input.title,
-          content: isContent ? input.content : document[0].content,
-          isPublished: isPublished
-            ? input.isPublished
-            : document[0].isPublished,
-          privacy: isPrivacy ? input.privacy : document[0].privacy,
-          collaborators: isCollaborators
-            ? [
-                ...(document[0].collaborators ?? []),
-                ...(Array.isArray(input.collaborators)
-                  ? input.collaborators
-                  : [input.collaborators]),
-              ]
-            : document[0].collaborators,
-          url: isUrl ? input.url : document[0].url,
+          content: serializedContent,
         })
         .where(eq(documents.id, input.id))
         .returning();

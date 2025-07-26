@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import ChatInput from "@/modules/ai/views/ui/input";
 import { useAuthState } from "@/modules/auth/providers/auth-context";
-import { ClockFading, CornerDownLeft } from "lucide-react";
+import { ClockFading, CornerDownLeft, Folder, FolderOpen } from "lucide-react";
 import RecentlyViewed from "./recently-viewed";
 import { useEffect } from "react";
+import RecentFolders from "@/modules/folders/views/ui/recent-folders";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function HomeView() {
   const getGreetings = () => {
@@ -23,23 +25,13 @@ export default function HomeView() {
 
   return (
     <div>
-      <div className="text-center space-y-4">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-medium">
-          {getGreetings()}{" "}
-          <span className="font-bold text-indigo-700">
-            {!isPending && user?.user.name}
-          </span>
-          !
+      <h1 className="text-lg sm:text-xl font-medium">My Workspace</h1>
+      <div className="mt-10 space-y-5">
+        <h1 className="text-sm text-foreground/80 flex items-center gap-2">
+          <FolderOpen className="!h-3.5 !w-3.5" /> Recent Folders
         </h1>
-        <p className="text-sm max-w-2xl mx-auto sm:text-lg text-foreground/80">
-          Need content? Just ask. From blog posts to research papers, I’m your
-          AI writer ready to craft it all.
-        </p>
+        <RecentFolders />
       </div>
-      <div className="mt-10">
-        <ChatInput />
-      </div>
-      <RecentlyViewed />
     </div>
   );
 }

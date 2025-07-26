@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -88,6 +88,7 @@
     "dayjs": "^1.11.13",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.3",
+    "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.3",
     "html2canvas-pro": "^1.5.11",
     "lodash": "^4.17.21",

@@ -17,19 +17,17 @@ export default function FolderCard({
 }) {
   return (
     <FolderActionContextMenu id={id}>
-      <div className="bg-sidebar hover:border-input pb-4 transition hover:shadow-sm rounded-lg border overflow-hidden">
-        <div className="bg-sidebar-accent h-12 relative">
-          <Folder className="!h-7 !w-7 absolute -bottom-3 left-4 text-sidebar-accent-foreground/50" />
+      <Link href={`/folder/${id}`}>
+        <div className="flex md:w-fit cursor-pointer hover:border-input transition justify-between items-center gap-10 border bg-sidebar rounded-lg py-2.5 px-3.5">
+          <div>
+            <h1 className="text-sm">{name}</h1>
+            <p className="text-[13px] text-foreground/80">
+              {documentCount ?? 0} Documents
+            </p>
+          </div>
+          <Folder className="text-foreground/80 !h-4 !w-4" />
         </div>
-        <div className="flex gap-3 items-center justify-between p-3 pt-5">
-          <Link
-            href={`/folder/${id}`}
-            className="text-sm flex items-center justify-between w-full gap-1.5 group"
-          >
-            {name.split("").length > 16 ? name.slice(0, 16) + "..." : name}
-          </Link>
-        </div>
-      </div>
+      </Link>
     </FolderActionContextMenu>
   );
 }

@@ -5,6 +5,7 @@ import {
   boolean,
   integer,
   jsonb,
+  json,
 } from "drizzle-orm/pg-core";
 import { v4 as uuid } from "uuid";
 
@@ -79,10 +80,10 @@ export const documents = pgTable("documents", {
     .notNull()
     .references(() => folders.id, { onDelete: "cascade" }),
   title: text("title").notNull().default("unnamed"),
-  content: text("content").notNull(),
-  isPublished: boolean("is_published").notNull().default(false),
-  url: text("url").notNull().default(""),
-  privacy: text("privacy").notNull().default("private"),
+  content: json("content").$type<any>().notNull().default([]),
+  isPublished: boolean("is_published").default(false),
+  url: text("url").default(""),
+  privacy: text("privacy").default("private"),
   collaborators: text("collaborators").array().default([]),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
