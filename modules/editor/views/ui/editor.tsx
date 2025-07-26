@@ -1,159 +1,156 @@
 "use client";
-
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Plate, usePlateEditor } from "platejs/react";
-
 import { EditorKit } from "@/components/editor/editor-kit";
 import { CopilotKit } from "@/components/editor/plugins/copilot-kit";
 import { Editor as EditorPlate, EditorContainer } from "@/components/ui/editor";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Value } from "platejs";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const initialValue = [
-  {
-    type: "h1",
-    children: [{ text: "Untitled Document" }],
-  },
-  {
-    type: "p",
-    children: [{ text: "" }],
-  },
-  {
-    type: "blockquote",
-    children: [
-      {
-        text: "Type “/” to open the command menu.",
-      },
-    ],
-  },
-  {
-    type: "blockquote",
-    children: [
-      {
-        text: "Press space on an empty line to ask AI for help.",
-      },
-    ],
-  },
-  {
-    type: "p",
-    children: [
-      {
-        text: "Welcome! This is your space to write, brainstorm, or plan.",
-      },
-    ],
-  },
-  {
-    type: "h2",
-    children: [{ text: "Getting Started" }],
-  },
-  {
-    type: "ul",
-    children: [
-      {
-        type: "li",
-        children: [
-          {
-            text: "Use the slash (/) command to insert blocks like headings, lists, or images.",
-          },
-        ],
-      },
-      {
-        type: "li",
-        children: [
-          {
-            text: 'Hit "space" on a new line to trigger the AI assistant.',
-          },
-        ],
-      },
-      {
-        type: "li",
-        children: [
-          {
-            text: "Select text to access formatting options.",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    type: "p",
-    children: [{ text: "" }],
-  },
-  {
-    type: "callout",
-    children: [
-      {
-        text: "Try starting with a brain dump or outline — don’t worry about perfection!",
-      },
-    ],
-  },
-];
+interface EditorProps {
+  id: string;
+}
 
-export default function Editor({ id }: { id: string }) {
-  const [value, setValue] = useState<any>([]);
+export default function Editor({ id }: EditorProps) {
+  const defaultValue = [
+    {
+      type: "p",
+      children: [{ text: "" }],
+    },
+  ];
+
+  const [value, setValue] = useState<any>(defaultValue);
   const debouncedValue = useDebounce(value, 2000);
-  const [loading, setLoading] = useState(false);
+  const hasLoadedFromDB = useRef(false);
   const trpc = useTRPC();
-  const { mutate, error } = useMutation(trpc.document.update.mutationOptions());
 
   const { data, isPending } = useQuery(trpc.document.get.queryOptions({ id }));
+  const { mutate } = useMutation(trpc.document.update.mutationOptions());
+  const [loading, setLoading] = useState(false);
 
+  // Initialize editor with proper configuration
   const editor = usePlateEditor({
     plugins: [...CopilotKit, ...EditorKit],
-    value: value || initialValue,
+    value: defaultValue,
+    autoSelect: "end",
   });
 
-  const handleValueChange = useCallback((e: any) => {
-    setValue(e.value);
-  }, []);
-
+  // Load data from database
   useEffect(() => {
-    if (!debouncedValue) return;
-    if (!data) return;
-    setLoading(true);
-    mutate(
-      {
-        content: debouncedValue,
-        id: data.id,
-      },
-      {
-        onSuccess: () => {
-          setLoading(false);
-        },
-        onError: (e) => {
-          toast.error("Failed to update document");
-          console.error(e);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-      },
-    );
-  }, [debouncedValue]);
-
-  useEffect(() => {
-    if (data?.content) {
+    if (data?.content && !hasLoadedFromDB.current) {
       try {
-        const parsed = Array.isArray(data.content)
-          ? data.content.map((c) => JSON.parse(c))
-          : initialValue;
+        let parsed: any = [];
+        if (typeof data.content === "string") {
+          parsed = JSON.parse(data.content);
+          // Check if it's an array of strings instead of array of objects
+          if (Array.isArray(parsed) && typeof parsed[0] === "string") {
+            parsed = parsed.map((item: string) => JSON.parse(item));
+          }
+        } else {
+          parsed = data.content;
+        }
 
-        setValue(parsed);
+        // Ensure we have valid editor content
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setValue(parsed);
+        } else {
+          setValue([
+            {
+              type: "p",
+              children: [{ text: "" }],
+            },
+          ]);
+        }
+        hasLoadedFromDB.current = true;
       } catch (err) {
-        console.error("Error parsing content from DB:", err);
-        setValue(initialValue);
+        console.error("Error parsing document content:", err);
+        setValue([
+          {
+            type: "p",
+            children: [{ text: "" }],
+          },
+        ]);
+        hasLoadedFromDB.current = true;
       }
     }
-  }, [data]);
+  }, [data?.content, isPending]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (
+      !hasLoadedFromDB.current ||
+      !debouncedValue ||
+      !data?.id ||
+      !Array.isArray(debouncedValue)
+    )
+      return;
+
+    try {
+      let original;
+      if (typeof data.content === "string") {
+        original = JSON.parse(data.content);
+      } else {
+        original = data.content;
+      }
+
+      // Compare current value with original - use a safer comparison
+      const currentValueString = JSON.stringify(debouncedValue);
+      const originalString = JSON.stringify(original);
+
+      if (currentValueString === originalString) {
+        return;
+      }
+
+      setLoading(true);
+      mutate(
+        { id: data.id, content: debouncedValue },
+        {
+          onSuccess: () => {
+            setLoading(false);
+            toast.success("Document saved successfully");
+          },
+          onError: (err) => {
+            setLoading(false);
+            toast.error("Failed to save document");
+            console.error("Save error:", err);
+          },
+        },
+      );
+    } catch (err) {
+      console.error("Error comparing or updating document:", err);
+      setLoading(false);
+    }
+  }, [debouncedValue, data?.id, data?.content, mutate]);
+
+  const handleValueChange = useCallback((event: any) => {
+    // Extract just the value from the event object to avoid circular references
+    const newValue = event?.value || event;
+    if (Array.isArray(newValue)) {
+      setValue(newValue);
+    }
+  }, []);
+
+  if (isPending) {
+    return <div>Loading editor...</div>;
+  }
 
   return (
-    <Plate editor={editor} onValueChange={handleValueChange}>
-      <EditorContainer variant="default">
-        <EditorPlate variant="ai" placeholder="New Document" />
-      </EditorContainer>
-    </Plate>
+    <div className="relative">
+      {loading && (
+        <div className="absolute top-2 right-2 text-sm text-gray-500">
+          Saving...
+        </div>
+      )}
+      <Plate editor={editor} onValueChange={handleValueChange}>
+        <EditorContainer variant="default">
+          <EditorPlate
+            variant="ai"
+            placeholder="Click here to start writing."
+          />
+        </EditorContainer>
+      </Plate>
+    </div>
   );
 }

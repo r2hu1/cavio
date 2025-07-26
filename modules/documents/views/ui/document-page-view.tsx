@@ -6,6 +6,7 @@ export default function DocumentPageView() {
   const params = useParams();
   const documentId = params.documentId;
   const pageId = params.id;
+  console.log("DocumentPageView", documentId);
 
   return (
     <div>

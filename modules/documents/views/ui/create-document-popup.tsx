@@ -49,7 +49,6 @@ export default function CreateDocumentPopup({
       {
         title: name,
         folderId: folderId,
-        content: "",
       },
       {
         onSuccess: async (e) => {

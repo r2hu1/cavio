@@ -122,7 +122,8 @@ export const documentsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        content: z.array(z.any()),
+        content: z.array(z.any()).optional(),
+        title: z.string().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -137,14 +138,15 @@ export const documentsRouter = createTRPCRouter({
           message: "UNAUTHORIZED",
         });
 
-      const serializedContent = input.content.map((block) =>
-        JSON.stringify(block),
-      );
+      const serializedContent = input.content
+        ? input.content.map((block) => JSON.stringify(block))
+        : document[0].content;
 
       const [updatedDocument] = await db
         .update(documents)
         .set({
           content: serializedContent,
+          title: input.title || document[0].title,
         })
         .where(eq(documents.id, input.id))
         .returning();
