@@ -21,5 +21,13 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/pro", "/account", "/auth/sign-up", "/auth/sign-in"],
+  matcher: [
+    "/",
+    "/pro",
+    "/account",
+    "/auth/sign-up",
+    "/auth/sign-in",
+    "/folder/:folderId",
+    "/folder/:folderId/:id",
+  ],
 };

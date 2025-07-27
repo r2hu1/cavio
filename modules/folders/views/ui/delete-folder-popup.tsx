@@ -55,6 +55,9 @@ export default function DeleteFolderPopup({
           await queryClient.invalidateQueries(
             trpc.folder.getRecent.queryOptions(),
           );
+          await queryClient.invalidateQueries(
+            trpc.document.getRecent.queryOptions(),
+          );
           toast.success("Folder deleted successfully");
           router.push("/");
         },

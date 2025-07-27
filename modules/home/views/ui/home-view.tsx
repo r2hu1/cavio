@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import RecentFolders from "@/modules/folders/views/ui/recent-folders";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import RecentDocuments from "@/modules/documents/views/ui/recent-documents";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function HomeView() {
   const getGreetings = () => {
@@ -35,11 +36,13 @@ export default function HomeView() {
       <div className="space-y-10">
         <h1 className="text-xl flex items-center justify-center gap-2 sm:text-2xl font-bold">
           {getGreetings()},{" "}
-          <img
-            src={user?.user?.image}
-            alt={user?.user?.name}
-            className="h-6 w-6 rounded-full"
-          />
+          <Avatar>
+            <AvatarFallback className="text-sm bg-indigo-700">
+              {user?.user?.name?.charAt(0)}
+              {user?.user?.name?.slice(-1)}
+            </AvatarFallback>
+            <AvatarImage src={user?.user?.image} />
+          </Avatar>
           <span className="text-foreground/80">{user?.user?.name}</span>
         </h1>
         <ChatInput />

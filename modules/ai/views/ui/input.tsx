@@ -20,6 +20,10 @@ import {
   FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PricingModal from "@/modules/pricing/views/ui/pricing-modal";
+import { useQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/trpc/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UseAutoResizeTextareaProps {
   minHeight: number;
@@ -118,6 +122,11 @@ export default function ChatInput() {
     }
   };
 
+  const trpc = useTRPC();
+  const { data, isPending } = useQuery(
+    trpc.premium.getCurrentSubscription.queryOptions(),
+  );
+
   return (
     <div className="w-full">
       <div className="relative bg-background shadow-xl dark:shadow-none shadow-foreground/5 dark:bg-neutral-900 rounded-xl border border-input/50 dark:border-neutral-800">
@@ -148,22 +157,48 @@ export default function ChatInput() {
             >
               Chat
             </Button>
-            <Button
-              variant={mode === "build" ? "default" : "secondary"}
-              onClick={() => setMode("build")}
-              size="sm"
-              className="cursor-pointer h-6 text-xs shadow-none"
-            >
-              Build
-            </Button>
-            <Button
-              variant={mode === "research" ? "default" : "secondary"}
-              onClick={() => setMode("research")}
-              size="sm"
-              className="cursor-pointer h-6 text-xs shadow-none"
-            >
-              Research
-            </Button>
+            {!isPending && data ? (
+              <Button
+                variant={mode === "build" ? "default" : "secondary"}
+                onClick={() => setMode("build")}
+                size="sm"
+                className="cursor-pointer h-6 text-xs shadow-none"
+              >
+                Build
+              </Button>
+            ) : (
+              <PricingModal>
+                <Button
+                  variant={"secondary"}
+                  size="sm"
+                  className="cursor-pointer h-6 text-xs shadow-none"
+                  disabled={isPending}
+                >
+                  Build
+                </Button>
+              </PricingModal>
+            )}
+            {!isPending && data ? (
+              <Button
+                variant={mode === "research" ? "default" : "secondary"}
+                onClick={() => setMode("research")}
+                size="sm"
+                className="cursor-pointer h-6 text-xs shadow-none"
+              >
+                Research
+              </Button>
+            ) : (
+              <PricingModal>
+                <Button
+                  variant={"secondary"}
+                  size="sm"
+                  className="cursor-pointer h-6 text-xs shadow-none"
+                  disabled={isPending}
+                >
+                  Research
+                </Button>
+              </PricingModal>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Button

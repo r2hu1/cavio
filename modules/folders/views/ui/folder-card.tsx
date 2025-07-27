@@ -18,10 +18,10 @@ export default function FolderCard({
   return (
     <FolderActionContextMenu id={id}>
       <Link href={`/folder/${id}`}>
-        <div className="flex md:w-fit cursor-pointer hover:border-input transition justify-between items-center gap-10 border bg-sidebar rounded-lg py-2.5 px-3.5">
+        <div className="shadow-none hover:shadow-lg shadow-foreground/5 dark:shadow-none flex md:w-fit cursor-pointer hover:border-input transition justify-between items-center gap-10 border bg-background dark:bg-sidebar rounded-lg py-2.5 px-3.5">
           <div>
             <h1 className="text-sm">{name}</h1>
-            <p className="text-[13px] text-foreground/80">
+            <p className="text-[13px] text-foreground/70">
               {documentCount ?? 0} Documents
             </p>
           </div>
