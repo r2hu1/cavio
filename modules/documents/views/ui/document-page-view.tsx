@@ -9,7 +9,7 @@ export default function DocumentPageView() {
   console.log("DocumentPageView", documentId);
 
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       {/* <h1 className="text-xl font-bold sm:text-3xl md:text-4xl sm:mt-10 mb-6">
         Test Document
       </h1> */}
