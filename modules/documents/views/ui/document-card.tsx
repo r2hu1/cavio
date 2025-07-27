@@ -35,7 +35,7 @@ export default function DocumentCard({
 }) {
   return (
     <DocumentActionContextMenu folderId={folderId} id={id}>
-      <div className="bg-sidebar transition hover:border-input hover:shadow-sm rounded-lg border overflow-hidden">
+      <div className="bg-sidebar cursor-pointer transition hover:border-input hover:shadow-sm rounded-lg border overflow-hidden">
         <div className="h-10 bg-sidebar-accent relative">
           <FileText className="w-7 h-7 text-foreground/50 absolute -bottom-2 left-5" />
         </div>
@@ -45,7 +45,6 @@ export default function DocumentCard({
             className="text-sm flex items-center gap-1.5 group"
           >
             {name.split("").length > 18 ? name.slice(0, 18) + "..." : name}
-            <ExternalLink className="!h-3.5 !w-3.5 text-foreground/80 hidden group-hover:flex" />
           </Link>
         </div>
         <div className="px-2.5 pb-2 flex items-center justify-between">
@@ -53,46 +52,6 @@ export default function DocumentCard({
             <ClockFading className="!w-3 !h-3" />
             {updatedAt ? new Date(updatedAt).toLocaleTimeString() : "Never"}
           </h3>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="h-4 items-center justify-center flex w-4 cursor-pointer">
-                <Settings2 className="!w-3.5 !h-3.5 text-foreground/70" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <RenameDocumentPopup
-                documentName={name}
-                documentId={id}
-                folderId={folderId}
-              >
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <PencilLine className="!w-4 !h-4" />
-                  Rename
-                </DropdownMenuItem>
-              </RenameDocumentPopup>
-              <DropdownMenuItem asChild>
-                <Link href={`/folder/${folderId}/${id}`}>
-                  <Link2 className="!w-4 !h-4" />
-                  Open
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link target="_blank" href={`/folder/${folderId}/${id}`}>
-                  <ExternalLink className="!w-4 !h-4" />
-                  Open in new tab
-                </Link>
-              </DropdownMenuItem>
-              <DeleteDocumentPopup documentId={id} folderId={folderId}>
-                <DropdownMenuItem
-                  onSelect={(e) => e.preventDefault()}
-                  variant="destructive"
-                >
-                  <Trash className="!w-4 !h-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DeleteDocumentPopup>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
     </DocumentActionContextMenu>

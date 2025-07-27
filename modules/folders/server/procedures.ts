@@ -98,7 +98,7 @@ export const foldersRouter = createTRPCRouter({
       .from(folders)
       .where(eq(folders.userId, ctx.auth.user.id))
       .orderBy(desc(folders.updatedAt))
-      .limit(8);
+      .limit(6);
     return recentFolders;
   }),
 });

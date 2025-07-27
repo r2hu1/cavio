@@ -6,7 +6,7 @@ import {
   premiumProcedure,
   protectedProcedure,
 } from "@/trpc/init";
-import { count, eq, inArray } from "drizzle-orm";
+import { count, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
 import { documentSchema } from "../schema";
 import { TRPCError } from "@trpc/server";
@@ -177,4 +177,14 @@ export const documentsRouter = createTRPCRouter({
         });
       return document[0];
     }),
+  getRecent: protectedProcedure.query(async ({ ctx }) => {
+    const document = await db
+      .select()
+      .from(documents)
+      .where(eq(documents.userId, ctx.auth.user.id))
+      .orderBy(desc(documents.updatedAt))
+      .limit(6);
+
+    return document;
+  }),
 });

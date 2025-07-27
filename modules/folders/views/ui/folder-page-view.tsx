@@ -35,7 +35,7 @@ export default function FolderPageView() {
   );
 
   return (
-    <div>
+    <div className="max-w-4xl mx-auto">
       <FolderAiInput />
       <Header />
       <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
