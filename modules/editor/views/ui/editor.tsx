@@ -51,7 +51,7 @@ export default function Editor({ id }: { id: string }) {
   }, [isPending, data]);
 
   useEffect(() => {
-    if (debouncedValue !== defaultValue) {
+    if (data?.content.map((block: any) => JSON.parse(block)) != defaultValue) {
       setLoading(true);
       mutate({ id, content: debouncedValue });
       setLoading(false);
