@@ -51,7 +51,7 @@ export default function Editor({ id }: { id: string }) {
   }, [isPending, data]);
 
   useEffect(() => {
-    if (defaultValue != debouncedValue && debouncedValue) {
+    if (defaultValue != debouncedValue && defaultValue !== value) {
       setLoading(true);
       mutate({ id, content: debouncedValue });
       setLoading(false);
