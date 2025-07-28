@@ -7,8 +7,8 @@ import { Editor as EditorPlate, EditorContainer } from "@/components/ui/editor";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
+import { useEditorState } from "../../providers/editor-state-provider";
 
 export default function Editor({ id }: { id: string }) {
   const [defaultValue, setDefaultValue] = useState<any>([]);
@@ -19,7 +19,7 @@ export default function Editor({ id }: { id: string }) {
 
   const { data, isPending } = useQuery(trpc.document.get.queryOptions({ id }));
   const { mutate } = useMutation(trpc.document.update.mutationOptions());
-  const [loading, setLoading] = useState(false);
+  const { setState } = useEditorState();
 
   const handleValueChange = useCallback((event: any) => {
     const newValue = event?.value || event;
@@ -43,18 +43,21 @@ export default function Editor({ id }: { id: string }) {
         //@ts-ignore
         value: data.content.map((block: any) => JSON.parse(block)),
         autoSelect: "end",
-        onReady: ({ editor, value }) => {
-          console.info("Editor ready with value:", value);
-        },
       });
     }
   }, [isPending, data]);
 
   useEffect(() => {
     if (defaultValue != debouncedValue && defaultValue !== value) {
-      setLoading(true);
-      mutate({ id, content: debouncedValue });
-      setLoading(false);
+      setState(true);
+      mutate(
+        { id, content: debouncedValue },
+        {
+          onSettled: () => {
+            setState(false);
+          },
+        },
+      );
     }
   }, [debouncedValue]);
 
