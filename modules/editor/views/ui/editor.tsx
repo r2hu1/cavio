@@ -19,7 +19,7 @@ export default function Editor({ id }: { id: string }) {
 
   const { data, isPending } = useQuery(trpc.document.get.queryOptions({ id }));
   const { mutate } = useMutation(trpc.document.update.mutationOptions());
-  const { setState } = useEditorState();
+  const { setState, excluded } = useEditorState();
 
   const handleValueChange = useCallback((event: any) => {
     const newValue = event?.value || event;
@@ -29,7 +29,10 @@ export default function Editor({ id }: { id: string }) {
   }, []);
 
   const editor = usePlateEditor({
-    plugins: [...CopilotKit, ...EditorKit],
+    plugins: [
+      ...(!excluded.includes("autocomplete") ? CopilotKit : []),
+      ...EditorKit,
+    ],
     autoSelect: "end",
     //@ts-ignore
     shouldInitialize: false,

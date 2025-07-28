@@ -9,9 +9,12 @@ export const EditorStateProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, setState] = useState<boolean>(false);
+  const [excluded, setExcluded] = useState([]);
 
   return (
-    <EditorStateContext.Provider value={{ state, setState }}>
+    <EditorStateContext.Provider
+      value={{ state, setState, excluded, setExcluded }}
+    >
       {children}
     </EditorStateContext.Provider>
   );
