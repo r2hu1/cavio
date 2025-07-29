@@ -5,6 +5,7 @@ import FolderCard from "./folder-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FolderPlus } from "lucide-react";
 import CreateFolderInline from "./create-folder-inline";
+import { Button } from "@/components/ui/button";
 
 export default function RecentFolders() {
   const trpc = useTRPC();
@@ -34,16 +35,12 @@ export default function RecentFolders() {
         </div>
       )}
       {!isPending && (!data || data?.length === 0) && (
-        <div className="w-fit">
-          <CreateFolderInline>
-            <div className="flex cursor-pointer hover:border-input transition items-center gap-6 border bg-secondary rounded-lg py-2.5 px-3.5">
-              <div>
-                <h1 className="text-sm">Create Folder</h1>
-                <p className="text-[12px] text-foreground/80">Empty folder</p>
-              </div>
-              <FolderPlus className="text-foreground/80 !h-4 !w-4" />
-            </div>
-          </CreateFolderInline>
+        <div className="w-full border border-input rounded-lg border-dashed flex items-center text-center justify-center h-40">
+          <div>
+            <h1 className="text-sm text-foreground/80">
+              Open or create a folder to see it here!
+            </h1>
+          </div>
         </div>
       )}
     </div>

@@ -34,14 +34,11 @@ export default function RecentDocuments() {
         </div>
       )}
       {!isPending && (!data || data?.length === 0) && (
-        <div className="w-fit">
-          <div className="flex cursor-pointer hover:border-input transition items-center gap-6 border bg-sidebar rounded-lg py-2.5 px-3.5">
-            <div>
-              <h1 className="text-sm">Nothing Here :(</h1>
-              <p className="text-[12px] text-foreground/80">
-                Create or open a document to see it here.
-              </p>
-            </div>
+        <div className="w-full border border-input rounded-lg border-dashed flex items-center text-center justify-center h-40">
+          <div>
+            <h1 className="text-sm text-foreground/80">
+              Open or create a document to see it here!
+            </h1>
           </div>
         </div>
       )}
