@@ -30,6 +30,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import DeleteDocumentPopup from "./delete-document-popup";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 
 export default function DocumentNav({
   id,
@@ -38,8 +40,19 @@ export default function DocumentNav({
   id: string;
   folderId: string;
 }) {
-  const { state, setExcluded, excluded } = useEditorState();
+  const { state } = useEditorState();
   const [shareOpen, setShareOpen] = useState(false);
+
+  // const trpc = useTRPC();
+  // const { data, isPending, error } = useQuery(
+  //   trpc.document.get.queryOptions({ id }),
+  // );
+
+  // const handleExport = async(type:"PDF" | "MDX" | "JSON")=>{
+  //   if (isPending) return;
+  //   const node = data?.content.map((block: any) => JSON.parse(block));
+
+  // }
 
   return (
     <div className="flex items-center justify-between">
@@ -77,25 +90,6 @@ export default function DocumentNav({
                 inputClassName="text-sm"
                 folderId={folderId}
               />
-              <div className="flex items-center mt-4 justify-between">
-                <Label
-                  htmlFor="autocomplete"
-                  className="text-sm text-foreground/80"
-                >
-                  AI Autocomplete
-                </Label>
-                <Switch
-                  id="autocomplete"
-                  onCheckedChange={(checked) => {
-                    setExcluded((prev: string[]) =>
-                      checked
-                        ? prev.filter((item) => item !== "autocomplete")
-                        : [...prev, "autocomplete"],
-                    );
-                  }}
-                  checked={!excluded.includes("autocomplete")}
-                />
-              </div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="privacy" className="text-sm text-foreground/80">
                   Private
