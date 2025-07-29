@@ -9,6 +9,7 @@ import {
   FileText,
   Folder,
   FolderOpen,
+  FolderPlus,
 } from "lucide-react";
 import RecentlyViewed from "./recently-viewed";
 import { useEffect } from "react";
@@ -16,6 +17,7 @@ import RecentFolders from "@/modules/folders/views/ui/recent-folders";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import RecentDocuments from "@/modules/documents/views/ui/recent-documents";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CreateFolderInline from "@/modules/folders/views/ui/create-folder-inline";
 
 export default function HomeView() {
   const getGreetings = () => {
@@ -48,15 +50,28 @@ export default function HomeView() {
         <ChatInput />
       </div>
       <div className="mt-20 space-y-5">
-        <h1 className="text-sm text-foreground/80 flex items-center gap-2">
-          <FolderOpen className="!h-3.5 !w-3.5" /> Recent Folders
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-sm text-foreground/80 flex items-center gap-2">
+            <FolderOpen className="!h-3.5 !w-3.5" /> Recent Folders
+          </h1>
+          <CreateFolderInline>
+            <Button
+              size="sm"
+              className="h-[22px] px-2 text-xs"
+              variant="default"
+            >
+              New <FolderPlus className="!h-2.5 !w-2.5" />
+            </Button>
+          </CreateFolderInline>
+        </div>
         <RecentFolders />
       </div>
       <div className="mt-15 space-y-5">
-        <h1 className="text-sm text-foreground/80 flex items-center gap-2">
-          <FileText className="!h-3.5 !w-3.5" /> Recent Documents
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-sm text-foreground/80 flex items-center gap-2">
+            <FileText className="!h-3.5 !w-3.5" /> Recent Documents
+          </h1>
+        </div>
         <RecentDocuments />
       </div>
     </div>
