@@ -64,6 +64,9 @@ export default function RenameDocumentInline({
           await queryClient.invalidateQueries(
             trpc.document.get.queryOptions({ id: documentId }),
           );
+          await queryClient.invalidateQueries(
+            trpc.document.getRecent.queryOptions(),
+          );
         },
         onError: (error) => {
           toast.error(error.message);
