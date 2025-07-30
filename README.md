@@ -64,6 +64,26 @@ Once done, copy the values into your local `.env` file:
 * Use `.env.example` as a reference
 * Rename it to `.env` and fill in the required variables
 
+## ▶️ Run the Project
+
+After setting up your environment variables, install the dependencies:
+
+```bash
+pnpm install
+# or
+npm install
+```
+
+Then start the development server:
+
+```bash
+pnpm run dev
+# or
+npm run dev
+```
+
+Once running, open [http://localhost:3000](http://localhost:3000) in your browser 🚀
+
 
 ## 🤝 Contribution
 
