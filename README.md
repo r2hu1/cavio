@@ -1,10 +1,9 @@
 # Slate (In Development)
 
-```**Slate** was initially intended to be a closed-source project, but I figured—why not open-source it? That way, others can learn, contribute, or build on top of it.```
+**Slate** was initially intended to be a closed-source project, but I figured—why not open-source it? That way, others can learn, contribute, or build on top of it.
 
 It's a **Notion-like note-taking app**, but not just for notes—Slate is designed for **content writing, script drafting, blogging, journaling**, and more.
 
----
 
 ## 🚀 Features
 
@@ -29,7 +28,6 @@ Initially, I thought—why not build something inspired by Notion, rather than r
 * **And more...**
   Expect continuous improvements and new features
 
----
 
 ## 🧱 Tech Stack
 
@@ -52,14 +50,12 @@ Initially, I thought—why not build something inspired by Notion, rather than r
 * **Better Auth**
   Auth system compatible with Polar SDK
 
----
 
 ## 🤝 Contribution
 
 Coming soon — I’ll be opening contributions once core functionality is stable.
 If you’re interested in helping, feel free to star the repo and DM me via [GitHub](https://github.com/r2hu1).
 
----
 
 ## 📄 License
 
