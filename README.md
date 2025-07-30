@@ -27,7 +27,7 @@ Initially, I thought—why not build something inspired by Notion, rather than r
   Inline suggestions while you're typing
 * **And more...**
   Expect continuous improvements and new features
-
+  
 
 ## 🧱 Tech Stack
 
@@ -51,10 +51,28 @@ Initially, I thought—why not build something inspired by Notion, rather than r
   Auth system compatible with Polar SDK
 
 
+## 🛠️ Setup Locally
+
+To run the project locally, you'll need to configure a few things in your **Google Cloud Console** and **GitHub Apps**:
+
+1. **Create a Google Cloud Project** *(skip if you already have one)*
+2. **Create an OAuth client** in Google Cloud
+3. **Create a GitHub App**
+
+Once done, copy the values into your local `.env` file:
+
+* Use `.env.example` as a reference
+* Rename it to `.env` and fill in the required variables
+
+
 ## 🤝 Contribution
 
-Coming soon — I’ll be opening contributions once core functionality is stable.
-If you’re interested in helping, feel free to star the repo and DM me via [GitHub](https://github.com/r2hu1).
+We welcome contributions from everyone!
+
+1. **Fork** this repository  
+2. **Clone** your fork  
+3. **Fix a bug** or **add a new feature**  
+4. **Create a pull request** – I’ll review and merge it!
 
 
 ## 📄 License
