@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Slate (In Development)
 
-## Getting Started
+```**Slate** was initially intended to be a closed-source project, but I figured—why not open-source it? That way, others can learn, contribute, or build on top of it.```
 
-First, run the development server:
+It's a **Notion-like note-taking app**, but not just for notes—Slate is designed for **content writing, script drafting, blogging, journaling**, and more.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Initially, I thought—why not build something inspired by Notion, rather than replicating it entirely? So while some features may feel familiar, the goal isn't to make a one-to-one copy.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* **Folders**
+  File system-style document management
+* **Documents**
+  Pages where you write and structure your content
+* **AI for Everything** *(coming soon)*
+  AI that writes, creates, fixes, and enhances your content
+* **Realtime Updates**
+  Creating or editing folders/documents reflects live in the UI wherever relevant
+* **Search Across Workspaces**
+  Quickly find any document, regardless of where it's stored
+* **Document Sharing**
+  Share documents securely with others
+* **Rich Text Editor**
+  Fully-featured editor with formatting, embeds, and more
+* **AI Autocomplete** *(like Copilot)*
+  Inline suggestions while you're typing
+* **And more...**
+  Expect continuous improvements and new features
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🧱 Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Next.js**
+* **tRPC**
+  Type-safe API layer — a powerful alternative to REST/fetch
+* **Postgres (via Xata)**
+  [xata.io](https://lite.xata.io) — free plan includes 15GB of storage
+* **Drizzle ORM**
+* **AI SDK**
+  For streaming responses, context-aware AI, etc.
+* **Nodemailer**
+  Used for email notifications
+* **Tailwind CSS**
+  Utility-first styling
+* **shadcn/ui**
+  Component system for consistent UI
+* **Polar SDK**
+  A Stripe wrapper built for developers — handles programmatic payments
+* **Better Auth**
+  Auth system compatible with Polar SDK
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🤝 Contribution
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Coming soon — I’ll be opening contributions once core functionality is stable.
+If you’re interested in helping, feel free to star the repo and DM me via [GitHub](https://github.com/r2hu1).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📄 License
+
+Slate is **free for personal use**.
+However, **monetization is not allowed** without prior written consent.
+If you're interested in using Slate commercially, please connect with me for discussion.
