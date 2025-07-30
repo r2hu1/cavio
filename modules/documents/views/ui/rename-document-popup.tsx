@@ -60,6 +60,9 @@ export default function RenameDocumentPopup({
           await queryClient.invalidateQueries(
             trpc.document.getAllByFolderId.queryOptions({ folderId }),
           );
+          await queryClient.invalidateQueries(
+            trpc.document.getRecent.queryOptions(),
+          );
         },
         onError: (error) => {
           toast.error(error.message);
