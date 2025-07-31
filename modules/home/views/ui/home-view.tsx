@@ -36,7 +36,7 @@ export default function HomeView() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="space-y-10">
-        <h1 className="text-xl flex items-center justify-center gap-2 sm:text-2xl font-bold">
+        <h1 className="text-xl flex items-center justify-center flex-wrap gap-2 sm:text-2xl font-bold">
           {getGreetings()},{" "}
           <Avatar>
             <AvatarFallback className="text-sm bg-indigo-700">
