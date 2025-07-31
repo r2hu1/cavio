@@ -33,10 +33,18 @@ import SocialSignInButton from "./social-signin-view";
 import SharedLogo from "@/components/shared-logo";
 
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  firstName: z.string().min(2).max(100),
-  lastName: z.string().min(2).max(100),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" }),
+  firstName: z
+    .string()
+    .min(4, { message: "First name must be at least 4 characters long" })
+    .max(100, { message: "First name must be at most 100 characters long" }),
+  lastName: z
+    .string()
+    .min(4, { message: "Last name must be at least 4 characters long" })
+    .max(100, { message: "Last name must be at most 100 characters long" }),
 });
 
 export default function SignUpForm({
