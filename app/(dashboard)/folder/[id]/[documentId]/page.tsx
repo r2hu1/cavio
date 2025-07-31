@@ -2,13 +2,14 @@ import DocumentPageView from "@/modules/documents/views/ui/document-page-view";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import { createTRPCContext } from "@/trpc/init";
 import { appRouter } from "@/trpc/routers/_app";
+import { Metadata } from "next";
 import { Suspense } from "react";
 
 export const generateMetadata = async ({
   params,
 }: {
-  params: { documentId: string };
-}) => {
+  params: Promise<{ documentId: string }>;
+}): Promise<Metadata> => {
   const { documentId } = await params;
   const caller = appRouter.createCaller(await createTRPCContext());
   const doc = await caller.document.get({ id: documentId });
