@@ -93,6 +93,11 @@ export default function SearchPopup({
     },
   ];
 
+  const handleOnSelect = (href: string) => {
+    router.push(href);
+    setOpen(false);
+  };
+
   return (
     <div>
       <button
@@ -115,7 +120,7 @@ export default function SearchPopup({
               folders.map((folder) => (
                 <CommandItem
                   key={folder.id}
-                  onSelect={() => router.push(`/folder/${folder.id}`)}
+                  onSelect={() => handleOnSelect(`/folder/${folder.id}`)}
                   className="flex items-center"
                 >
                   <FolderIcon className="!h-3.5 !w-3.5" />
@@ -135,7 +140,9 @@ export default function SearchPopup({
                 <CommandItem
                   key={document.id}
                   onSelect={() =>
-                    router.push(`/folder/${document.folderId}/${document.id}`)
+                    handleOnSelect(
+                      `/folder/${document.folderId}/${document.id}`,
+                    )
                   }
                   className="flex items-center"
                 >
@@ -153,7 +160,7 @@ export default function SearchPopup({
             {navigations.map((navigation) => (
               <CommandItem
                 key={navigation.label}
-                onSelect={() => router.push(navigation.href)}
+                onSelect={() => handleOnSelect(navigation.href)}
                 className="flex items-center"
               >
                 {navigation.icon}
