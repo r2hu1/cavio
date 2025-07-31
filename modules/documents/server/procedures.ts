@@ -16,7 +16,14 @@ import { url } from "inspector/promises";
 export const documentsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ input, ctx }) => {
     const document = await db
-      .select()
+      .select({
+        id: documents.id,
+        title: documents.title,
+        folderId: documents.folderId,
+        userId: documents.userId,
+        createdAt: documents.createdAt,
+        updatedAt: documents.updatedAt,
+      })
       .from(documents)
       .where(eq(documents.userId, ctx.auth.user.id));
     return document;
