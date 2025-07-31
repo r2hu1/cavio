@@ -1,6 +1,8 @@
 import { streamText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { appRouter } from "@/trpc/routers/_app";
+import { createTRPCContext } from "@/trpc/init";
 
 // export const runtime = "edge";
 
@@ -9,9 +11,16 @@ const ai = new GoogleGenAI({});
 export async function POST(req: Request) {
   const { prompt: messages } = await req.json();
   if (!messages || messages.length === 0) {
+    return NextResponse.json({ status: 200 });
+  }
+
+  const caller = appRouter.createCaller(await createTRPCContext());
+  const currSub = await caller.premium.getActiveSubscription();
+
+  if (!currSub) {
     return NextResponse.json(
       {
-        completion: "0",
+        text: "Upgrade to premium to use AI Autocomplete",
       },
       { status: 200 },
     );
