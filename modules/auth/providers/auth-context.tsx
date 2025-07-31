@@ -1,16 +1,20 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
 import Preloader from "@/modules/preloader/views/ui";
-import { createContext, useContext } from "react";
+import { useRouter } from "next/navigation";
+import { createContext, useContext, useEffect } from "react";
 
 const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data, error, isPending, refetch } = useSession();
+  const router = useRouter();
 
-  // if (error) {
-  //   console.log(error.message);
-  // }
+  useEffect(() => {
+    if (isPending && !data) {
+      router.push("/auth/sign-in");
+    }
+  }, [isPending]);
 
   return (
     <AuthContext.Provider value={{ data, error, isPending, refetch }}>
