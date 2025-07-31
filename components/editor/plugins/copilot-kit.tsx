@@ -18,10 +18,6 @@ export const CopilotKit = [
         api: "/api/ai/copilot",
         onError: (e) => {
           console.error(e);
-          // Mock the API response. Remove it when you implement the route /api/ai/copilot
-          api.copilot.setBlockSuggestion({
-            text: stripMarkdown("upgrade to premium to use AI autocomple!"),
-          });
         },
         onFinish: (_, completion) => {
           if (completion === "0") return;
