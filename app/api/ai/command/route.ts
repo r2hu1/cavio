@@ -2,9 +2,20 @@ import type { NextRequest } from "next/server";
 import { generateText, streamText } from "ai";
 import { NextResponse } from "next/server";
 import { googleai } from "@/lib/google-ai";
+import { isSubscribed } from "@/lib/cache";
 
 export async function POST(req: NextRequest) {
   const { messages, system } = await req.json();
+
+  const isPremium = await isSubscribed();
+  if (!isPremium) {
+    return NextResponse.json(
+      {
+        text: "Upgrade to premium to use Chat AI",
+      },
+      { status: 401 },
+    );
+  }
 
   try {
     const result = await streamText({
