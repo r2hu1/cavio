@@ -64,6 +64,7 @@ export function AIMenu() {
     null,
   );
 
+  //@ts-ignore
   const content = useLastAssistantMessage()?.content;
 
   React.useEffect(() => {
