@@ -1,12 +1,9 @@
-import { streamText } from "ai";
+import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { appRouter } from "@/trpc/routers/_app";
 import { createTRPCContext } from "@/trpc/init";
-
-// export const runtime = "edge";
-
-const ai = new GoogleGenAI({});
+import { googleai } from "@/lib/google-ai";
+import { isSubscribed } from "@/lib/cache";
 
 export async function POST(req: Request) {
   const { prompt: messages } = await req.json();
@@ -14,10 +11,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 200 });
   }
 
-  const caller = appRouter.createCaller(await createTRPCContext());
-  const currSub = await caller.premium.getActiveSubscription();
-
-  if (!currSub) {
+  const isPremium = await isSubscribed();
+  if (!isPremium) {
     return NextResponse.json(
       {
         text: "Upgrade to premium to use AI Autocomplete",
@@ -26,11 +21,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const completion = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: messages,
-    config: {
-      systemInstruction: `You are an advanced AI writing assistant, similar to VSCode Copilot but for general text. Your task is to predict and generate the next part of the text based on the given context.
+  const completion = await generateText({
+    model: googleai("models/gemini-2.0-flash") as any,
+    prompt: messages,
+    system: `You are an advanced AI writing assistant, similar to VSCode Copilot but for general text. Your task is to predict and generate the next part of the text based on the given context.
 
     Rules:
       - Continue the text naturally up to the next punctuation mark (., ,, ;, :, ?, or !).
@@ -41,16 +35,12 @@ export async function POST(req: Request) {
       - CRITICAL: Always end with a punctuation mark.
       - CRITICAL: Avoid starting a new block. Do not use block formatting like >, #, 1., 2., -, etc. The suggestion should continue in the same block as the context.
       - If no context is provided or you can't generate a continuation, return "0" without explanation.`,
-      thinkingConfig: {
-        thinkingBudget: 0,
-      },
-    },
   });
 
   // console.log(completion);
   return NextResponse.json(
     {
-      text: completion?.candidates?.[0]?.content?.parts?.[0]?.text,
+      text: completion.text,
     },
     { status: 200 },
   );
