@@ -29,5 +29,9 @@ export const config = {
     "/auth/sign-in",
     "/folder/:folderId",
     "/folder/:folderId/:id",
+    "/api/ai",
+    "/api/ai/copilot",
+    "/api/ai/command",
+    "/api/ai/chat",
   ],
 };
