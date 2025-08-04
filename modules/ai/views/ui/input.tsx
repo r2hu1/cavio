@@ -24,6 +24,7 @@ import PricingModal from "@/modules/pricing/views/ui/pricing-modal";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 interface UseAutoResizeTextareaProps {
   minHeight: number;
@@ -104,21 +105,34 @@ function useAutoResizeTextarea({
   return { textareaRef, adjustHeight };
 }
 
-export default function ChatInput() {
-  const [value, setValue] = useState("");
-  const [mode, setMode] = useState("chat");
+export default function ChatInput({
+  content = "",
+  type = "chat",
+}: {
+  content?: string;
+  type?: string;
+}) {
+  const [value, setValue] = useState(content);
+  const [mode, setMode] = useState(type);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 60,
     maxHeight: 200,
   });
 
+  const router = useRouter();
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim()) {
-        setValue("");
-        adjustHeight(true);
+        router.push(`/chat?content=${value}&type=${mode}`);
       }
+    }
+  };
+
+  const handleClick = () => {
+    if (value.trim()) {
+      router.push(`/chat?content=${value}&type=${mode}`);
     }
   };
 
@@ -151,7 +165,10 @@ export default function ChatInput() {
           <div className="flex gap-1 px-1 items-center">
             <Button
               variant={mode === "chat" ? "default" : "secondary"}
-              onClick={() => setMode("chat")}
+              onClick={() => {
+                setMode("chat");
+                handleClick();
+              }}
               size="sm"
               className="cursor-pointer text-xs h-6 shadow-none"
             >
@@ -160,7 +177,10 @@ export default function ChatInput() {
             {!isPending && data ? (
               <Button
                 variant={mode === "build" ? "default" : "secondary"}
-                onClick={() => setMode("build")}
+                onClick={() => {
+                  setMode("build");
+                  handleClick();
+                }}
                 size="sm"
                 className="cursor-pointer h-6 text-xs shadow-none"
               >
@@ -181,7 +201,10 @@ export default function ChatInput() {
             {!isPending && data ? (
               <Button
                 variant={mode === "research" ? "default" : "secondary"}
-                onClick={() => setMode("research")}
+                onClick={() => {
+                  setMode("research");
+                  handleClick();
+                }}
                 size="sm"
                 className="cursor-pointer h-6 text-xs shadow-none"
               >
