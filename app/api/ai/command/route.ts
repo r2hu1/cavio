@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { generateText, streamText } from "ai";
 import { NextResponse } from "next/server";
 import { googleai } from "@/lib/google-ai";
-import { isSubscribed } from "@/lib/cache";
+import { isSubscribed } from "@/lib/cache/premium";
 
 export async function POST(req: NextRequest) {
   const { messages, system } = await req.json();

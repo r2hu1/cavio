@@ -27,7 +27,7 @@ export default function NewChatPageView() {
         <h1>{content} </h1>
         <h1>{type} </h1>
       </div>
-      <div className="fixed bottom-0 left-0 w-full flex items-center justify-center">
+      <div className="absolute bottom-0 left-0 w-full flex items-center justify-center">
         <div className="mb-10 w-full max-w-5xl">
           <ChatInput />
         </div>
