@@ -34,7 +34,9 @@ export async function POST(req: Request) {
       - Don't include """ in your response.
       - CRITICAL: Always end with a punctuation mark.
       - CRITICAL: Avoid starting a new block. Do not use block formatting like >, #, 1., 2., -, etc. The suggestion should continue in the same block as the context.
-      - If no context is provided or you can't generate a continuation, return "" without explanation.`,
+      - If no context is provided or you can't generate a continuation, return "" without explanation.
+      - CRITICAL: Don't return any information about yourself or your capabilities.
+      `,
   });
 
   // console.log(completion);
