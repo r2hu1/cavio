@@ -11,9 +11,9 @@ import { TRPCError } from "@trpc/server";
 import { title } from "process";
 import { url } from "inspector/promises";
 import { aiChatHistory } from "@/db/schema";
-import { isSubscribed } from "@/lib/cache";
 import { generateText } from "ai";
 import { googleai } from "@/lib/google-ai";
+import { isSubscribed } from "@/lib/cache/premium";
 
 export const aiRouter = createTRPCRouter({
   create: protectedProcedure
