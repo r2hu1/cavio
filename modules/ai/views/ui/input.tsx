@@ -24,7 +24,7 @@ import PricingModal from "@/modules/pricing/views/ui/pricing-modal";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface UseAutoResizeTextareaProps {
   minHeight: number;
@@ -130,7 +130,9 @@ export default function ChatInput({
     }
   };
 
+  const pathname = usePathname();
   const handleClick = () => {
+    if (pathname != "/") return;
     if (value.trim()) {
       router.push(`/chat?content=${value}&type=${mode}`);
     }
@@ -140,6 +142,11 @@ export default function ChatInput({
   const { data, isPending } = useQuery(
     trpc.premium.getCurrentSubscription.queryOptions(),
   );
+
+  useEffect(() => {
+    setValue(content);
+    setMode(type);
+  }, [content, type]);
 
   return (
     <div className="w-full">

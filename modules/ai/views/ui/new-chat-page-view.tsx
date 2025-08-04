@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ChatInput from "./input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function NewChatPageView() {
   const router = useRouter();
@@ -22,14 +23,14 @@ export default function NewChatPageView() {
   }, []);
 
   return (
-    <div className="relative">
+    <div className="h-svh">
       <div>
         <h1>{content} </h1>
         <h1>{type} </h1>
       </div>
-      <div className="absolute bottom-0 left-0 w-full flex items-center justify-center">
-        <div className="mb-10 w-full max-w-5xl">
-          <ChatInput />
+      <div className="sticky bottom-0 w-full flex items-center justify-center">
+        <div className="w-full px-20">
+          <ChatInput content={content} type={type} />
         </div>
       </div>
     </div>
