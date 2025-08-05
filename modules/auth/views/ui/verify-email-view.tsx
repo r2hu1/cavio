@@ -25,11 +25,6 @@ export default function VerifyEmail() {
             your inbox and click the link to verify your email address.
           </p>
         </CardContent>
-        <CardFooter>
-          <Button asChild className="w-full mt-2">
-            <Link href="/auth/sign-in">Sign In</Link>
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
