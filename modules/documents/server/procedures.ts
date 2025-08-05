@@ -25,7 +25,7 @@ export const documentsRouter = createTRPCRouter({
         updatedAt: documents.updatedAt,
       })
       .from(documents)
-      .where(eq(documents.userId, ctx.auth.user.id));
+      .where(eq(documents.userId, ctx.auth.session.userId));
     return document;
   }),
   create: premiumProcedure("document")
@@ -37,7 +37,7 @@ export const documentsRouter = createTRPCRouter({
           title: input.title,
           folderId: input.folderId,
           content: [],
-          userId: ctx.auth.user.id,
+          userId: ctx.auth.session.userId,
         })
         .returning();
       const existingFolder = await db
@@ -92,7 +92,7 @@ export const documentsRouter = createTRPCRouter({
           message: "Document not found",
         });
 
-      if (document[0].userId !== ctx.auth.user.id)
+      if (document[0].userId !== ctx.auth.session.userId)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "You do not have permission to delete this document",
@@ -139,7 +139,7 @@ export const documentsRouter = createTRPCRouter({
         .from(documents)
         .where(eq(documents.id, input.id));
 
-      if (document.length > 0 && document[0].userId !== ctx.auth.user.id)
+      if (document.length > 0 && document[0].userId !== ctx.auth.session.userId)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "UNAUTHORIZED",
@@ -177,7 +177,7 @@ export const documentsRouter = createTRPCRouter({
           message: "NOT_FOUND",
         });
       }
-      if (document.length > 0 && document[0].userId !== ctx.auth.user.id)
+      if (document.length > 0 && document[0].userId !== ctx.auth.session.userId)
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "UNAUTHORIZED",
@@ -188,7 +188,7 @@ export const documentsRouter = createTRPCRouter({
     const document = await db
       .select()
       .from(documents)
-      .where(eq(documents.userId, ctx.auth.user.id))
+      .where(eq(documents.userId, ctx.auth.session.userId))
       .orderBy(desc(documents.updatedAt))
       .limit(6);
 

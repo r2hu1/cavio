@@ -38,7 +38,7 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
 export const premiumProcedure = (name: "folder" | "document") =>
   protectedProcedure.use(async ({ ctx, next }) => {
     const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
+      externalId: ctx.auth.session.userId,
     });
     const isPremium = customer.activeSubscriptions.length > 0;
     const table = name === "folder" ? folders : documents;
@@ -47,7 +47,7 @@ export const premiumProcedure = (name: "folder" | "document") =>
         count: count(table.id),
       })
       .from(table)
-      .where(eq(table.userId, ctx.auth.user.id));
+      .where(eq(table.userId, ctx.auth.session.userId));
 
     const max_limit = name === "folder" ? MAX_FREE_FOLDERS : MAX_FREE_DOCUMENTS;
     const isFreeLimitReached = contents.count >= max_limit;

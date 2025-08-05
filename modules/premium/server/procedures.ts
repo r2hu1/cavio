@@ -15,7 +15,7 @@ export const premiumRouter = createTRPCRouter({
   }),
   getCurrentSubscription: protectedProcedure.query(async ({ ctx }) => {
     const products = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
+      externalId: ctx.auth.session.userId,
     });
     const subscriptions = products.activeSubscriptions[0];
     if (!subscriptions) {
@@ -28,7 +28,7 @@ export const premiumRouter = createTRPCRouter({
   }),
   getActiveSubscription: protectedProcedure.query(async ({ ctx }) => {
     const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
+      externalId: ctx.auth.session.userId,
     });
     const subscriptions = customer.activeSubscriptions[0];
     if (!subscriptions) return false;
@@ -38,7 +38,7 @@ export const premiumRouter = createTRPCRouter({
   }),
   getFreeUsage: protectedProcedure.query(async ({ ctx }) => {
     const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
+      externalId: ctx.auth.session.userId,
     });
     const subscriptions = customer.activeSubscriptions[0];
     if (subscriptions) return null;
@@ -48,14 +48,14 @@ export const premiumRouter = createTRPCRouter({
         count: count(documents.id),
       })
       .from(documents)
-      .where(eq(documents.userId, ctx.auth.user.id));
+      .where(eq(documents.userId, ctx.auth.session.userId));
 
     const [userFolders] = await db
       .select({
         count: count(folders.id),
       })
       .from(folders)
-      .where(eq(folders.userId, ctx.auth.user.id));
+      .where(eq(folders.userId, ctx.auth.session.userId));
 
     return {
       documentsCount: userDocuments.count,

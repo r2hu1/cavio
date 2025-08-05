@@ -19,7 +19,7 @@ export const foldersRouter = createTRPCRouter({
     const currentFolders = await db
       .select()
       .from(folders)
-      .where(eq(folders.userId, ctx.auth.user.id))
+      .where(eq(folders.userId, ctx.auth.session.userId))
       .orderBy(desc(folders.updatedAt));
     return currentFolders;
   }),
@@ -30,7 +30,7 @@ export const foldersRouter = createTRPCRouter({
         .insert(folders)
         .values({
           title: input.title,
-          userId: ctx.auth.user.id,
+          userId: ctx.auth.session.userId,
         })
         .returning();
       return createdFolder;
@@ -44,7 +44,7 @@ export const foldersRouter = createTRPCRouter({
         .where(eq(folders.id, input.id));
       if (!folder)
         throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
-      if (folder.userId != ctx.auth.user.id)
+      if (folder.userId != ctx.auth.session.userId)
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
       return folder;
     }),
@@ -57,7 +57,7 @@ export const foldersRouter = createTRPCRouter({
         .returning();
       if (!deletedFolder)
         throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
-      if (deletedFolder.userId != ctx.auth.user.id)
+      if (deletedFolder.userId != ctx.auth.session.userId)
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
       return deletedFolder;
     }),
@@ -70,7 +70,7 @@ export const foldersRouter = createTRPCRouter({
       if (!existingFolder) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
       }
-      if (existingFolder.userId !== ctx.auth.user.id) {
+      if (existingFolder.userId !== ctx.auth.session.userId) {
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
       }
       const updatedData: Partial<typeof folders.$inferInsert> = {
@@ -96,7 +96,7 @@ export const foldersRouter = createTRPCRouter({
     const recentFolders = await db
       .select()
       .from(folders)
-      .where(eq(folders.userId, ctx.auth.user.id))
+      .where(eq(folders.userId, ctx.auth.session.userId))
       .orderBy(desc(folders.updatedAt))
       .limit(6);
     return recentFolders;
