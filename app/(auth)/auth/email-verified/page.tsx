@@ -1,9 +1,10 @@
 import VerifiedEmail from "@/modules/auth/views/ui/verified-email-view";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
+import { Metadata } from "next";
 import Head from "next/head";
 import { Suspense } from "react";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Email Verified Successfully",
   description:
     "Your email has been verified. You can now sign in and enjoy full access to your account",
