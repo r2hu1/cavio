@@ -1,22 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useEffect } from "react";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import {
   ImageIcon,
   FileUp,
-  Figma,
   MonitorIcon,
   CircleUserRound,
   ArrowUpIcon,
-  Paperclip,
-  PlusIcon,
-  PenBox,
-  Code,
-  Dot,
-  LayoutTemplate,
   FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,11 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter } from "next/navigation";
-
-interface UseAutoResizeTextareaProps {
-  minHeight: number;
-  maxHeight?: number;
-}
+import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
 
 const templates = [
   {
@@ -58,52 +46,6 @@ const templates = [
     icon: <CircleUserRound className="!w-4 !h-4" />,
   },
 ];
-
-function useAutoResizeTextarea({
-  minHeight,
-  maxHeight,
-}: UseAutoResizeTextareaProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const adjustHeight = useCallback(
-    (reset?: boolean) => {
-      const textarea = textareaRef.current;
-      if (!textarea) return;
-
-      if (reset) {
-        textarea.style.height = `${minHeight}px`;
-        return;
-      }
-
-      textarea.style.height = `${minHeight}px`;
-
-      const newHeight = Math.max(
-        minHeight,
-        Math.min(textarea.scrollHeight, maxHeight ?? Number.POSITIVE_INFINITY),
-      );
-
-      textarea.style.height = `${newHeight}px`;
-    },
-    [minHeight, maxHeight],
-  );
-
-  useEffect(() => {
-    // Set initial height
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = `${minHeight}px`;
-    }
-  }, [minHeight]);
-
-  // Adjust height on window resize
-  useEffect(() => {
-    const handleResize = () => adjustHeight();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [adjustHeight]);
-
-  return { textareaRef, adjustHeight };
-}
 
 export default function ChatInput({
   content = "",
