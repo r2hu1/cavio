@@ -23,9 +23,14 @@ export default function SignOut({
   const router = useRouter();
   const handleSignOut = async () => {
     setLoading(true);
-    await signOut();
+    try {
+      await signOut();
+    } catch {
+      router.refresh();
+    } finally {
+      router.push("/auth/sign-in");
+    }
     setLoading(false);
-    router.push("/");
   };
   return (
     <Button
