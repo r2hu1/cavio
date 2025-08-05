@@ -25,6 +25,7 @@ export const aiRouter = createTRPCRouter({
         - Always format your output as MDX (Markdown + optional JSX components)
         - Use proper headings (\`#\`, \`##\`, etc.), lists (\`*\`), blockquotes (\`>\`), code blocks (\`\`\`js\`\`\`), and JSX elements if relevant
         - Never include raw plain text outside Markdown or JSX
+        - When you are out of or close to the maximum token limit, gracefully end your response with an appropriate closing statement or summary, ensuring the output remains valid and complete in MDX format.
 
         ## Output Constraints
         - Do **not** wrap the output in code fences (\`\`\`)

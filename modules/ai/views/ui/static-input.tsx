@@ -31,6 +31,7 @@ export default function StaticInput() {
   } = useAiChatInputState();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (pending) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim()) {
@@ -123,7 +124,7 @@ export default function StaticInput() {
             </div>
             <Button
               size="sm"
-              className="h-8 border"
+              className="h-8 border flex items-center"
               variant={value.trim() ? "default" : "outline"}
               disabled={pending}
             >
