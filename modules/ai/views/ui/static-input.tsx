@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 import PricingModal from "@/modules/pricing/views/ui/pricing-modal";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useAiChatInputState } from "../providers/input-provider";
 
 export default function StaticInput() {
   const trpc = useTRPC();
@@ -23,10 +24,19 @@ export default function StaticInput() {
   const [value, setValue] = useState("");
   const [mode, setMode] = useState<"chat" | "build" | "research">("chat");
 
+  const {
+    setValue: setStateValue,
+    setMode: setStateMode,
+    pending,
+  } = useAiChatInputState();
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim()) {
+        setStateValue(value);
+        setStateMode(mode);
+        setValue("");
       }
     }
   };
@@ -35,7 +45,7 @@ export default function StaticInput() {
   return (
     <div
       className={cn(
-        "p-3 bottom-0 fixed w-full max-w-5xl mx-auto right-0 left-0 transition",
+        "p-3 bottom-0 fixed w-full sm:!max-w-3xl md:max-w-5xl mx-auto right-0 left-0 transition",
         open && "md:left-64",
       )}
     >
@@ -115,9 +125,14 @@ export default function StaticInput() {
               size="sm"
               className="h-8 border"
               variant={value.trim() ? "default" : "outline"}
+              disabled={pending}
             >
               Send
-              <ArrowUpIcon className="!h-4 !w-4" />
+              {!pending ? (
+                <ArrowUpIcon className="!h-4 !w-4" />
+              ) : (
+                <Loader2 className="!h-4 !w-4 animate-spin" />
+              )}
             </Button>
           </div>
         </div>
