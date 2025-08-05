@@ -110,10 +110,10 @@ export default function ChatInput({
   type = "chat",
 }: {
   content?: string;
-  type?: string;
+  type?: "chat" | "build" | "research";
 }) {
   const [value, setValue] = useState(content);
-  const [mode, setMode] = useState(type);
+  const [mode, setMode] = useState<"chat" | "build" | "research">("chat");
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 60,
     maxHeight: 200,
@@ -148,6 +148,12 @@ export default function ChatInput({
     setMode(type);
   }, [content, type]);
 
+  const placeHolder = {
+    chat: "Hey what is meant by ...",
+    build: "Write a film script with...",
+    research: "Do a research on rise of minecraft",
+  };
+
   return (
     <div className="w-full">
       <div className="relative bg-background shadow-xl dark:shadow-none shadow-foreground/5 dark:bg-neutral-900 rounded-xl border border-input/50 dark:border-neutral-800">
@@ -160,7 +166,7 @@ export default function ChatInput({
               adjustHeight();
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Write a film script with..."
+            placeholder={placeHolder[mode]}
             className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
             style={{
               overflow: "hidden",

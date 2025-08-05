@@ -30,7 +30,10 @@ export default function NewChatPageView() {
       </div>
       <div className="sticky bottom-0 w-full flex items-center justify-center">
         <div className="w-full px-20">
-          <ChatInput content={content} type={type} />
+          <ChatInput
+            content={content}
+            type={type as "chat" | "build" | "research"}
+          />
         </div>
       </div>
     </div>
