@@ -1,5 +1,5 @@
 {
-  "id": "97c314ba-a865-4970-8d64-ee53cb66c951",
+  "id": "b60c1a77-b2cb-4ce8-8ac2-cb3056293189",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -190,8 +190,8 @@
           "notNull": true,
           "default": "'unnamed'"
         },
-        "messages": {
-          "name": "messages",
+        "content": {
+          "name": "content",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": true,

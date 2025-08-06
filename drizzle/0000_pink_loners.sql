@@ -26,7 +26,7 @@ CREATE TABLE "ai_chat_history" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"title" text DEFAULT 'unnamed' NOT NULL,
-	"messages" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"content" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"created_at" timestamp,
 	"updated_at" timestamp
 );

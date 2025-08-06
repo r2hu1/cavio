@@ -122,7 +122,7 @@ export const aiChatHistory = pgTable("ai_chat_history", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   title: text("title").notNull().default("unnamed"),
-  messages: jsonb("messages").notNull().default([]),
+  content: jsonb("content").notNull().default([]),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
