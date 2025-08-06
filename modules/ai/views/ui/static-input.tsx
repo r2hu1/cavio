@@ -41,6 +41,16 @@ export default function StaticInput() {
       }
     }
   };
+
+  const handleClick = () => {
+    if (pending) return;
+    if (value.trim()) {
+      setStateValue(value);
+      setStateMode(mode);
+      setValue("");
+    }
+  };
+
   const { open } = useSidebar();
 
   return (
@@ -127,6 +137,7 @@ export default function StaticInput() {
               className="h-8 border flex items-center"
               variant={value.trim() ? "default" : "outline"}
               disabled={pending}
+              onClick={handleClick}
             >
               Send
               {!pending ? (

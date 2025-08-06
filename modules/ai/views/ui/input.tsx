@@ -18,6 +18,7 @@ import { useTRPC } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter } from "next/navigation";
 import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
+import { useAiChatInputState } from "../providers/input-provider";
 
 const templates = [
   {
@@ -63,11 +64,15 @@ export default function ChatInput({
 
   const router = useRouter();
 
+  const { setValue: setStateValue, setMode: setStateMode } =
+    useAiChatInputState();
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim()) {
-        router.push(`/chat?content=${value}&type=${mode}`);
+        setStateValue(value);
+        setStateMode(mode);
+        router.push(`/chat`);
       }
     }
   };
@@ -76,7 +81,9 @@ export default function ChatInput({
   const handleClick = () => {
     if (pathname != "/") return;
     if (value.trim()) {
-      router.push(`/chat?content=${value}&type=${mode}`);
+      setStateValue(value);
+      setStateMode(mode);
+      router.push(`/chat`);
     }
   };
 
@@ -84,11 +91,6 @@ export default function ChatInput({
   const { data, isPending } = useQuery(
     trpc.premium.getCurrentSubscription.queryOptions(),
   );
-
-  useEffect(() => {
-    setValue(content);
-    setMode(type);
-  }, [content, type]);
 
   const placeHolder = {
     chat: "Hey what is meant by ...",
@@ -183,6 +185,7 @@ export default function ChatInput({
               size="sm"
               className="h-8 w-8"
               variant={value.trim() ? "default" : "secondary"}
+              onClick={handleClick}
             >
               <ArrowUpIcon className="!h-4 !w-4" />
             </Button>

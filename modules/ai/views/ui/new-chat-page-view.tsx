@@ -22,6 +22,9 @@ import {
 } from "lucide-react";
 import Tooltip from "@/components/ui/tooltip-v2";
 import { Button } from "@/components/ui/button";
+import { db } from "@/db/client";
+import { aiChatHistory } from "@/db/schema";
+import { isAuthenticated } from "@/lib/cache/auth";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
@@ -66,7 +69,8 @@ export default function NewChatPageView() {
     },
   ]);
 
-  useEffect(() => {
+  const handleReq = async () => {
+    if (!stateValue) return;
     setStatePending(true);
     history.push({ role: "user", content: stateValue });
     mutate(
@@ -78,7 +82,7 @@ export default function NewChatPageView() {
         onError: (error) => {
           toast.error(error.message);
         },
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
           console.log(data);
           history.push({ role: "ai", content: data });
         },
@@ -87,6 +91,9 @@ export default function NewChatPageView() {
         },
       },
     );
+  };
+  useEffect(() => {
+    handleReq();
   }, [stateValue]);
 
   const [aiThinkingIndex, setAiThinkingIndex] = useState(0);
@@ -132,7 +139,7 @@ export default function NewChatPageView() {
                   }
                   id={String(index)}
                 />
-                <div className="flex gap-2.5 items-center justify-start">
+                <div className="flex gap-2.5 mt-4 items-center justify-start">
                   <Tooltip text="Save as file">
                     <Button size="icon" variant="ghost" className="h-8 w-8">
                       <Download className="!h-3.5 !w-3.5" />
