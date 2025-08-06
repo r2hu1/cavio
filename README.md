@@ -4,6 +4,12 @@
 
 It's a **Notion-like note-taking app**, but not just for notes—Slate is designed for **content writing, script drafting, blogging, journaling**, and more.
 
+## Preview of current build
+
+| ![Dashboard](/public/dashboard.png) | ![Folder](/public/folder-page.png) |
+|------------------------------------|------------------------------------|
+| ![Document](/public/document-page.png) | ![AI Chat](/public/ai-chat.png) |
+
 
 ## 🚀 Features
 
@@ -27,7 +33,7 @@ Initially, I thought—why not build something inspired by Notion, rather than r
   Inline suggestions while you're typing
 * **And more...**
   Expect continuous improvements and new features
-  
+
 
 ## 🧱 Tech Stack
 
@@ -89,9 +95,9 @@ Once running, open [http://localhost:3000](http://localhost:3000) in your browse
 
 We welcome contributions from everyone!
 
-1. **Fork** this repository  
-2. **Clone** your fork  
-3. **Fix a bug** or **add a new feature**  
+1. **Fork** this repository
+2. **Clone** your fork
+3. **Fix a bug** or **add a new feature**
 4. **Create a pull request** – I’ll review and merge it!
 
 
