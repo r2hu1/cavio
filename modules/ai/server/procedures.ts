@@ -132,20 +132,27 @@ export const aiRouter = createTRPCRouter({
   deleteHistory: protectedProcedure
     .input(
       z.object({
-        chatId: z.string(),
+        chatId: z.string().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const [existing] = await db
-        .delete(aiChatHistory)
-        .where(eq(aiChatHistory.id, input.chatId))
-        .returning();
-      if (!existing) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Error the requested is invalid",
-        });
+      if (input.chatId) {
+        const [existing] = await db
+          .delete(aiChatHistory)
+          .where(eq(aiChatHistory.id, input.chatId))
+          .returning();
+        if (!existing) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Error the requested is invalid",
+          });
+        }
+        return existing;
       }
+      const existing = await db
+        .delete(aiChatHistory)
+        .where(eq(aiChatHistory.userId, ctx.auth.session.userId))
+        .returning();
       return existing;
     }),
 });

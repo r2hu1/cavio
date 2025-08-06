@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { Loader2, Trash } from "lucide-react";
 import { toast } from "sonner";
 
 export default function HistoryPopup({
@@ -33,6 +33,20 @@ export default function HistoryPopup({
       {
         chatId: id,
       },
+      {
+        onError: (error) => {
+          toast.error(error.message);
+        },
+        onSuccess: async () => {
+          await queryClient.invalidateQueries(trpc.ai.history.queryOptions());
+        },
+      },
+    );
+  };
+  const handleDeleteAll = async () => {
+    if (isDeleting) return;
+    mutate(
+      {},
       {
         onError: (error) => {
           toast.error(error.message);
@@ -68,10 +82,25 @@ export default function HistoryPopup({
                   </Button>
                 </div>
               ))}
+            {isPending && (
+              <div className="flex items-center h-32 justify-center">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
+            )}
+            {!isPending && !data?.length && (
+              <div className="flex border rounded-lg items-center h-32 justify-center">
+                <p className="text-sm text-foreground/80">Nothing yet :(</p>
+              </div>
+            )}
           </SheetDescription>
         </SheetHeader>
         <SheetFooter>
-          <Button disabled={!data}>Delete All</Button>
+          <Button
+            disabled={!data?.length || isDeleting}
+            onClick={handleDeleteAll}
+          >
+            Delete All
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
