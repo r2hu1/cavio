@@ -62,6 +62,7 @@ export default function IdChatPageView({ params }: { params: string }) {
 
   const handleReq = async () => {
     if (!stateValue) return;
+    if (isPending) return;
     setStatePending(true);
     history.push({ role: "user", content: stateValue });
     mutate(
@@ -89,7 +90,7 @@ export default function IdChatPageView({ params }: { params: string }) {
   };
 
   useEffect(() => {
-    if (historyPending || historyError) return;
+    if (historyPending || historyError || isPending) return;
     handleReq();
   }, [stateValue]);
 

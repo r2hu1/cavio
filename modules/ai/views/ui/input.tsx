@@ -124,7 +124,6 @@ export default function ChatInput({
               variant={mode === "chat" ? "default" : "secondary"}
               onClick={() => {
                 setMode("chat");
-                handleClick();
               }}
               size="sm"
               className="cursor-pointer text-xs h-6 shadow-none"
@@ -136,7 +135,6 @@ export default function ChatInput({
                 variant={mode === "build" ? "default" : "secondary"}
                 onClick={() => {
                   setMode("build");
-                  handleClick();
                 }}
                 size="sm"
                 className="cursor-pointer h-6 text-xs shadow-none"
@@ -160,7 +158,6 @@ export default function ChatInput({
                 variant={mode === "research" ? "default" : "secondary"}
                 onClick={() => {
                   setMode("research");
-                  handleClick();
                 }}
                 size="sm"
                 className="cursor-pointer h-6 text-xs shadow-none"

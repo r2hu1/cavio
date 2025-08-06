@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import AccountNav from "@/modules/account/views/ui/account-nav";
+import HistoryPopup from "@/modules/ai/views/ui/history-popup";
 import DocumentNav from "@/modules/documents/views/ui/document-nav";
 import FolderNav from "@/modules/folders/views/ui/folder-nav";
 import { Bolt, ClockFading, Share2 } from "lucide-react";
@@ -20,9 +21,11 @@ export default function DynamicNav() {
     <div className="w-full">
       {homePage && (
         <div className="flex items-center justify-end">
-          <Button size="icon" className="h-8 w-8" variant="secondary">
-            <ClockFading className="!h-3.5 !w-3.5" />
-          </Button>
+          <HistoryPopup>
+            <Button size="icon" className="h-8 w-8" variant="secondary">
+              <ClockFading className="!h-3.5 !w-3.5" />
+            </Button>
+          </HistoryPopup>
         </div>
       )}
       {folderPage && <FolderNav folderId={folderId} />}

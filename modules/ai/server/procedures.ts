@@ -119,4 +119,11 @@ export const aiRouter = createTRPCRouter({
       }
       return existing;
     }),
+  history: protectedProcedure.query(async ({ input, ctx }) => {
+    const existing = await db
+      .select()
+      .from(aiChatHistory)
+      .where(eq(aiChatHistory.userId, ctx.auth.session.userId));
+    return existing;
+  }),
 });

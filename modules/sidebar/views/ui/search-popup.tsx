@@ -47,6 +47,11 @@ export default function SearchPopup({
     isPending: isDocumentsPending,
     error: documentsError,
   } = useQuery(trpc.document.getAll.queryOptions());
+  const {
+    data: history,
+    isPending: historyPending,
+    error: historyError,
+  } = useQuery(trpc.ai.history.queryOptions());
 
   const navigations: Array<{
     icon: React.ReactNode;
@@ -168,6 +173,18 @@ export default function SearchPopup({
                 <ArrowUpLeftFromSquareIcon className="ml-auto !h-3.5 !w-3.5" />
               </CommandItem>
             ))}
+          </CommandGroup>
+          <CommandGroup heading="AI Chats">
+            {!historyPending &&
+              history &&
+              history.map((item, index) => (
+                <CommandItem
+                  onSelect={() => handleOnSelect(`/chat/${item.id}`)}
+                  key={index}
+                >
+                  {item.title}
+                </CommandItem>
+              ))}
           </CommandGroup>
         </CommandList>
         <div className="px-2 bg-accent py-1 pt-2">
