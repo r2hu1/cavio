@@ -64,9 +64,10 @@ export const foldersRouter = createTRPCRouter({
   update: protectedProcedure
     .input(updateFoldersByIdSchema)
     .mutation(async ({ input, ctx }) => {
-      const existingFolder = await db.query.folders.findFirst({
-        where: (folders, { eq }) => eq(folders.id, input.id),
-      });
+      const [existingFolder] = await db
+        .select()
+        .from(folders)
+        .where(eq(folders.id, input.id));
       if (!existingFolder) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
       }
