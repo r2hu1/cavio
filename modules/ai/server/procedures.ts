@@ -4,10 +4,19 @@ import { TRPCError } from "@trpc/server";
 import { generateText } from "ai";
 import { googleai } from "@/lib/google-ai";
 import { isSubscribed } from "@/lib/cache/premium";
+import { db } from "@/db/client";
+import { aiChatHistory } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const aiRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ content: z.string(), typeOfModel: z.string() }))
+    .input(
+      z.object({
+        content: z.string(),
+        typeOfModel: z.string(),
+        chatId: z.string().optional(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const isPremium = await isSubscribed();
       if (!isPremium && input.typeOfModel !== "chat") {
@@ -39,6 +48,75 @@ export const aiRouter = createTRPCRouter({
           message: "Error something went wrong, please try again!",
         });
       }
-      return res.text;
+      if (input.chatId) {
+        const [currRec] = await db
+          .select()
+          .from(aiChatHistory)
+          .where(eq(aiChatHistory.id, input.chatId));
+        if (currRec) {
+          await db.update(aiChatHistory).set({
+            title: currRec.title,
+            content: [
+              ...((currRec.content as any) || []),
+              {
+                role: "user",
+                content: input.content,
+              },
+              {
+                role: "ai",
+                content: res.text,
+              },
+            ],
+          });
+          return {
+            text: res.text,
+            id: null,
+          };
+        }
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Error the requested is invalid",
+        });
+      }
+      const [createdRecord] = await db
+        .insert(aiChatHistory)
+        .values({
+          title: input.content.slice(0, 200),
+          content: [
+            {
+              role: "user",
+              content: input.content,
+            },
+            {
+              role: "ai",
+              content: res.text,
+            },
+          ],
+          userId: ctx.auth.session.userId,
+        })
+        .returning();
+      return {
+        text: res.text,
+        id: createdRecord.id,
+      };
+    }),
+  getExisting: protectedProcedure
+    .input(
+      z.object({
+        chatId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const [existing] = await db
+        .select()
+        .from(aiChatHistory)
+        .where(eq(aiChatHistory.id, input.chatId));
+      if (existing.userId != ctx.auth.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "UNAUTHORIZED",
+        });
+      }
+      return existing;
     }),
 });

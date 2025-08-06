@@ -6,7 +6,7 @@ import ChatInput from "./input";
 import { Textarea } from "@/components/ui/textarea";
 import StaticInput from "./static-input";
 import { useAiChatInputState } from "../providers/input-provider";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { toast } from "sonner";
 import { MarkdownContent } from "@/components/ui/markdown-content";
@@ -28,7 +28,7 @@ import { isAuthenticated } from "@/lib/cache/auth";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
-export default function NewChatPageView({ params }: { params?: string }) {
+export default function IdChatPageView({ params }: { params: string }) {
   const router = useRouter();
 
   const {
@@ -40,6 +40,11 @@ export default function NewChatPageView({ params }: { params?: string }) {
   } = useAiChatInputState();
 
   const trpc = useTRPC();
+  const {
+    data: historyData,
+    isPending: historyPending,
+    error: historyError,
+  } = useQuery(trpc.ai.getExisting.queryOptions({ chatId: params }));
   const { mutate, data, error, isPending } = useMutation(
     trpc.ai.create.mutationOptions({}),
   );
@@ -82,9 +87,17 @@ export default function NewChatPageView({ params }: { params?: string }) {
       },
     );
   };
+
   useEffect(() => {
+    if (historyPending || historyError) return;
     handleReq();
   }, [stateValue]);
+
+  useEffect(() => {
+    if (historyData) {
+      setHistory([...(historyData?.content as any)]);
+    }
+  }, [historyPending]);
 
   const [aiThinkingIndex, setAiThinkingIndex] = useState(0);
 
