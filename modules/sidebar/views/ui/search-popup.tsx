@@ -180,7 +180,7 @@ export default function SearchPopup({
               history.map((item, index) => (
                 <CommandItem
                   onSelect={() => handleOnSelect(`/chat/${item.id}`)}
-                  key={index}
+                  key={item.id}
                 >
                   {item.title}
                 </CommandItem>

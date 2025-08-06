@@ -6,7 +6,7 @@ import ChatInput from "./input";
 import { Textarea } from "@/components/ui/textarea";
 import StaticInput from "./static-input";
 import { useAiChatInputState } from "../providers/input-provider";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { toast } from "sonner";
 import { MarkdownContent } from "@/components/ui/markdown-content";
@@ -55,8 +55,10 @@ export default function NewChatPageView({ params }: { params?: string }) {
     },
   ]);
 
+  const queryClient = useQueryClient();
   const handleReq = async () => {
     if (!stateValue) return;
+    if (isPending) return;
     setStatePending(true);
     history.push({ role: "user", content: stateValue });
     mutate(
@@ -75,6 +77,7 @@ export default function NewChatPageView({ params }: { params?: string }) {
           if (data?.id) {
             router.push(`/chat/${data.id}`);
           }
+          await queryClient.invalidateQueries(trpc.ai.history.queryOptions());
         },
         onSettled: () => {
           setStatePending(false);
@@ -83,6 +86,7 @@ export default function NewChatPageView({ params }: { params?: string }) {
     );
   };
   useEffect(() => {
+    if (isPending) return;
     handleReq();
   }, [stateValue]);
 
