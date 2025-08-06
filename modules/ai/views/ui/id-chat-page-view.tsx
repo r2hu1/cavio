@@ -67,7 +67,6 @@ export default function IdChatPageView({ params }: { params: string }) {
     if (isPending) return;
     setStatePending(true);
     setHistory((prev) => [...prev, { role: "user", content: stateValue }]);
-    stateSetValue("");
     mutate(
       {
         content: stateValue,
@@ -98,7 +97,6 @@ export default function IdChatPageView({ params }: { params: string }) {
     if (historyPending || historyError || isPending) return;
     if (!stateValue.trim()) return;
     handleReq();
-    stateSetValue("");
   }, [stateValue]);
 
   useEffect(() => {
