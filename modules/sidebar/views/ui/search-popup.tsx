@@ -18,11 +18,13 @@ import { useRouter } from "next/navigation";
 import {
   ArrowUpLeftFromSquareIcon,
   BoltIcon,
+  ClockFading,
   FileText,
   FolderIcon,
   FolderPlusIcon,
   HomeIcon,
   IconNode,
+  PlusCircleIcon,
   UserIcon,
 } from "lucide-react";
 
@@ -183,8 +185,18 @@ export default function SearchPopup({
                   key={item.id}
                 >
                   {item.title}
+                  <ClockFading className="!h-3.5 !w-3.5 ml-auto" />
                 </CommandItem>
               ))}
+            {!history && (
+              <CommandItem
+                onSelect={() => handleOnSelect("/chat")}
+                key="new-chat"
+              >
+                Start New Chat
+                <PlusCircleIcon className="ml-auto !h-3.5 !w-3.5" />
+              </CommandItem>
+            )}
           </CommandGroup>
         </CommandList>
         <div className="px-2 bg-accent py-1 pt-2">

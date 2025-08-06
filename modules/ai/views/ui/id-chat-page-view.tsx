@@ -25,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { db } from "@/db/client";
 import { aiChatHistory } from "@/db/schema";
 import { isAuthenticated } from "@/lib/cache/auth";
+import PageLoader from "@/modules/preloader/views/ui/page-loader";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
@@ -64,7 +66,8 @@ export default function IdChatPageView({ params }: { params: string }) {
     if (!stateValue) return;
     if (isPending) return;
     setStatePending(true);
-    history.push({ role: "user", content: stateValue });
+    setHistory((prev) => [...prev, { role: "user", content: stateValue }]);
+    stateSetValue("");
     mutate(
       {
         content: stateValue,
@@ -76,8 +79,10 @@ export default function IdChatPageView({ params }: { params: string }) {
           toast.error(error.message);
         },
         onSuccess: async (data) => {
-          console.log(data);
-          history.push({ role: "ai", content: data?.text as string });
+          setHistory((prev) => [
+            ...prev,
+            { role: "ai", content: data.text as string },
+          ]);
           if (data?.id) {
             router.push(`/chat/${data.id}`);
           }
@@ -90,7 +95,7 @@ export default function IdChatPageView({ params }: { params: string }) {
   };
 
   useEffect(() => {
-    if (historyPending || historyError || isPending) return;
+    if (historyPending || historyError || isPending || !stateValue) return;
     handleReq();
   }, [stateValue]);
 
@@ -111,8 +116,30 @@ export default function IdChatPageView({ params }: { params: string }) {
   }, [isPending]);
 
   return (
-    <div className="max-w-3xl mx-auto pb-60">
-      <div className="flex flex-col gap-14">
+    <div className="max-w-3xl mx-auto pb-56">
+      {isPending && !history && (
+        <div className="max-w-3xl mx-auto space-y-10">
+          <div className="flex flex-col items-end justify-end gap-2">
+            <Skeleton className="h-20 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+          <div className="grid gap-2">
+            <Skeleton className="h-32 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+          <div className="flex flex-col items-end justify-end gap-2">
+            <Skeleton className="h-20 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col gap-10">
         {history.map((item, index) => {
           if (!item.content) return null;
           if (item.role === "ai") {

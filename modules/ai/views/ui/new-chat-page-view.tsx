@@ -60,7 +60,7 @@ export default function NewChatPageView({ params }: { params?: string }) {
     if (!stateValue) return;
     if (isPending) return;
     setStatePending(true);
-    history.push({ role: "user", content: stateValue });
+    setHistory((prev) => [...prev, { role: "user", content: stateValue }]);
     mutate(
       {
         content: stateValue,
@@ -72,8 +72,10 @@ export default function NewChatPageView({ params }: { params?: string }) {
           toast.error(error.message);
         },
         onSuccess: async (data) => {
-          console.log(data);
-          history.push({ role: "ai", content: data?.text as string });
+          setHistory((prev) => [
+            ...prev,
+            { role: "ai", content: data.text as string },
+          ]);
           if (data?.id) {
             router.push(`/chat/${data.id}`);
           }
@@ -86,7 +88,7 @@ export default function NewChatPageView({ params }: { params?: string }) {
     );
   };
   useEffect(() => {
-    if (isPending) return;
+    if (isPending || !stateValue) return;
     handleReq();
   }, [stateValue]);
 
