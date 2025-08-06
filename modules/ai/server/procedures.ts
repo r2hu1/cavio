@@ -54,20 +54,23 @@ export const aiRouter = createTRPCRouter({
           .from(aiChatHistory)
           .where(eq(aiChatHistory.id, input.chatId));
         if (currRec) {
-          await db.update(aiChatHistory).set({
-            title: currRec.title,
-            content: [
-              ...((currRec.content as any) || []),
-              {
-                role: "user",
-                content: input.content,
-              },
-              {
-                role: "ai",
-                content: res.text,
-              },
-            ],
-          });
+          await db
+            .update(aiChatHistory)
+            .set({
+              title: currRec.title,
+              content: [
+                ...((currRec.content as any) || []),
+                {
+                  role: "user",
+                  content: input.content,
+                },
+                {
+                  role: "ai",
+                  content: res.text,
+                },
+              ],
+            })
+            .where(eq(aiChatHistory.id, input.chatId));
           return {
             text: res.text,
             id: null,
