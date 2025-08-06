@@ -95,8 +95,10 @@ export default function IdChatPageView({ params }: { params: string }) {
   };
 
   useEffect(() => {
-    if (historyPending || historyError || isPending || !stateValue) return;
+    if (historyPending || historyError || isPending) return;
+    if (!stateValue.trim()) return;
     handleReq();
+    stateSetValue("");
   }, [stateValue]);
 
   useEffect(() => {

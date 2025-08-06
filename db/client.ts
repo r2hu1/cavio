@@ -1,11 +1,22 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import pkg from "pg";
-const { Pool } = pkg;
-
 import * as schema from "./schema";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const { Pool } = pkg;
 
-export const db = drizzle(pool, { schema });
+declare global {
+  var _drizzleDb: ReturnType<typeof drizzle> | undefined;
+}
+
+const pool =
+  global._pgPool ??
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
+
+if (!global._pgPool) global._pgPool = pool;
+
+const db = global._drizzleDb ?? drizzle(pool, { schema });
+if (!global._drizzleDb) global._drizzleDb = db;
+
+export { db };
