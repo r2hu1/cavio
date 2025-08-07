@@ -100,6 +100,23 @@ export default function IdChatPageView({ params }: { params: string }) {
     }
   }, [stateValue, submitted, isPending, historyPending]);
 
+  const handleSave = (content:string)=>{
+    try{
+      const blob = new Blob([content], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${historyData?.title}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    catch{
+      toast.error("Something went wrong");
+    }
+  }
+
   return (
     <div className="max-w-3xl mx-auto pb-56">
       {historyPending && (
@@ -136,12 +153,15 @@ export default function IdChatPageView({ params }: { params: string }) {
                 />
                 <div className="flex gap-2.5 mt-4 items-center justify-start">
                   <Tooltip text="Save as file">
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
+                    <Button onClick={()=>handleSave(item.content.replace(/^```mdx\s*\r?\n/, "").replace(/```$/, ""))} size="icon" variant="ghost" className="h-8 w-8">
                       <Download className="!h-3.5 !w-3.5" />
                     </Button>
                   </Tooltip>
                   <Tooltip text="Copy Response">
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
+                    <Button onClick={()=>{
+                      navigator.clipboard.writeText(item.content.replace(/^```mdx\s*\r?\n/, "").replace(/```$/, ""))
+                      toast.success("Copied to clipboard")
+                    }} size="icon" variant="ghost" className="h-8 w-8">
                       <Copy className="!h-3.5 !w-3.5" />
                     </Button>
                   </Tooltip>
