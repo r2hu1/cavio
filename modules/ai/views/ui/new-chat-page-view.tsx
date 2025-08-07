@@ -109,7 +109,7 @@ export default function NewChatPageView({ params }: { params?: string }) {
 
   return (
     <div className="max-w-3xl mx-auto pb-60">
-      {!isPending && (
+      {!isPending && !submitted && !data && (
         <div className="flex items-center mt-10 justify-center gap-2">
           <div className="grid gap-6">
             <h1 className="text-center text-xl sm:text-3xl font-medium">Whats on your mind today?</h1>

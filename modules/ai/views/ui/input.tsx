@@ -64,7 +64,7 @@ export default function ChatInput({
 
   const router = useRouter();
 
-  const { setValue: setStateValue, setMode: setStateMode  } =
+  const { setValue: setStateValue, setMode: setStateMode,setSubmitted  } =
     useAiChatInputState();
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -72,6 +72,7 @@ export default function ChatInput({
       if (value.trim()) {
         setStateValue(value);
         setStateMode(mode);
+        setSubmitted(true)
         router.push(`/chat`);
       }
     }
@@ -83,6 +84,7 @@ export default function ChatInput({
     if (value.trim()) {
       setStateValue(value);
       setStateMode(mode);
+      setSubmitted(true)
       router.push(`/chat`);
     }
   };
