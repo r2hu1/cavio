@@ -11,10 +11,11 @@ export const AiChatInputProvider = ({
   const [value, setValue] = useState<any>(null);
   const [mode, setMode] = useState<any>(null);
   const [pending, setPending] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
   return (
     <AIChatInputContext.Provider
-      value={{ value, mode, setValue, setMode, pending, setPending }}
+      value={{ value, mode, setValue, setMode, pending, setPending, submitted, setSubmitted }}
     >
       {children}
     </AIChatInputContext.Provider>

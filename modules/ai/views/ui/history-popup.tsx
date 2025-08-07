@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash } from "lucide-react";
+import { ClockFading, Loader2, Trash } from "lucide-react";
 import { toast } from "sonner";
 
 export default function HistoryPopup({
@@ -70,10 +70,11 @@ export default function HistoryPopup({
                 data.map((item, index) => (
                   <div
                     key={index}
-                    className="h-12 border hover:bg-sidebar transition cursor-pointer hover:text-foreground rounded-lg flex items-center justify-between px-3 group"
+                    className="h-16 border hover:bg-sidebar transition cursor-pointer hover:text-foreground rounded-lg flex items-center justify-between px-3 group"
                   >
-                    <Link href={`/chat/${item.id}`}>
-                      <h1 className="text-sm sm:text-base">{item.title}</h1>
+                    <Link href={`/chat/${item.id}`} className="grid gap-px h-fit">
+                      <h1 className="text-sm sm:text-base items-center gap-2 flex"><ClockFading className="!h-3.5 !w-3.5"/> {item.title}</h1>
+                      <p className="text-xs !ml-6">{item.updatedAt ? new Date(item.updatedAt).toDateString() : ''}</p>
                     </Link>
                     <Button
                       size="sm"

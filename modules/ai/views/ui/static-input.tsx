@@ -28,6 +28,7 @@ export default function StaticInput() {
     setValue: setStateValue,
     setMode: setStateMode,
     pending,
+    setSubmitted,
   } = useAiChatInputState();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -36,6 +37,7 @@ export default function StaticInput() {
       e.preventDefault();
       if (value.trim()) {
         setStateValue(value);
+        setSubmitted(true);
         setStateMode(mode);
         setValue("");
       }
@@ -47,6 +49,7 @@ export default function StaticInput() {
     if (value.trim()) {
       setStateValue(value);
       setStateMode(mode);
+      setSubmitted(true);
       setValue("");
     }
   };
