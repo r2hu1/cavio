@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ClockFading, Loader2, Trash } from "lucide-react";
 import { toast } from "sonner";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function HistoryPopup({
   children,
@@ -27,6 +28,10 @@ export default function HistoryPopup({
     trpc.ai.deleteHistory.mutationOptions(),
   );
   const queryClient = useQueryClient();
+  const pathname = usePathname();
+  const router = useRouter();
+
+
   const handleDelete = async (id: string) => {
     if (isDeleting) return;
     mutate(
@@ -39,10 +44,14 @@ export default function HistoryPopup({
         },
         onSuccess: async () => {
           await queryClient.invalidateQueries(trpc.ai.history.queryOptions());
+          if(pathname === `/chat/${id}`){
+            router.push('/chat');
+          }
         },
       },
     );
   };
+
   const handleDeleteAll = async () => {
     if (isDeleting) return;
     mutate(
@@ -53,6 +62,9 @@ export default function HistoryPopup({
         },
         onSuccess: async () => {
           await queryClient.invalidateQueries(trpc.ai.history.queryOptions());
+          if(pathname.includes('/chat')){
+            router.push('/');
+          }
         },
       },
     );

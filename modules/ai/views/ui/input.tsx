@@ -20,7 +20,7 @@ import { usePathname, useRouter } from "next/navigation";
 import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
 import { useAiChatInputState } from "../providers/input-provider";
 
-const templates = [
+export const templates = [
   {
     name: "Blog",
     content: "A blog post on ",
@@ -64,7 +64,7 @@ export default function ChatInput({
 
   const router = useRouter();
 
-  const { setValue: setStateValue, setMode: setStateMode } =
+  const { setValue: setStateValue, setMode: setStateMode  } =
     useAiChatInputState();
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {

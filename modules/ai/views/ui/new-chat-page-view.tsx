@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import ChatInput from "./input";
+import ChatInput, { templates } from "./input";
 import { Textarea } from "@/components/ui/textarea";
 import StaticInput from "./static-input";
 import { useAiChatInputState } from "../providers/input-provider";
@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { db } from "@/db/client";
 import { aiChatHistory } from "@/db/schema";
 import { isAuthenticated } from "@/lib/cache/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
@@ -37,6 +38,8 @@ export default function NewChatPageView({ params }: { params?: string }) {
     setValue: stateSetValue,
     setMode: setStateMode,
     setPending: setStatePending,
+    setSubmitted,
+    submitted
   } = useAiChatInputState();
 
   const trpc = useTRPC();
@@ -88,9 +91,11 @@ export default function NewChatPageView({ params }: { params?: string }) {
     );
   };
   useEffect(() => {
-    if (isPending || !stateValue) return;
-    handleReq();
-  }, [stateValue]);
+    if (stateValue && submitted && !isPending) {
+      handleReq();
+      setSubmitted(false);
+    }
+  }, [stateValue, submitted, isPending]);
 
   const [aiThinkingIndex, setAiThinkingIndex] = useState(0);
 
@@ -104,6 +109,13 @@ export default function NewChatPageView({ params }: { params?: string }) {
 
   return (
     <div className="max-w-3xl mx-auto pb-60">
+      {!isPending && (
+        <div className="flex items-center mt-10 justify-center gap-2">
+          <div className="grid gap-6">
+            <h1 className="text-center text-xl sm:text-3xl font-medium">Whats on your mind today?</h1>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col gap-14">
         {history.map((item, index) => {
           if (!item.content) return null;

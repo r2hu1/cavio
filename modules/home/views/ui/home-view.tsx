@@ -19,18 +19,18 @@ import RecentDocuments from "@/modules/documents/views/ui/recent-documents";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CreateFolderInline from "@/modules/folders/views/ui/create-folder-inline";
 
+export const getGreetings = () => {
+  const now = new Date();
+  const hours = now.getHours();
+  if (hours >= 0 && hours < 12) {
+    return "Good morning";
+  } else if (hours >= 12 && hours < 18) {
+    return "Good afternoon";
+  } else {
+    return "Good evening";
+  }
+};
 export default function HomeView() {
-  const getGreetings = () => {
-    const now = new Date();
-    const hours = now.getHours();
-    if (hours >= 0 && hours < 12) {
-      return "Good morning";
-    } else if (hours >= 12 && hours < 18) {
-      return "Good afternoon";
-    } else {
-      return "Good evening";
-    }
-  };
   const { data: user, error, isPending } = useAuthState();
 
   return (
