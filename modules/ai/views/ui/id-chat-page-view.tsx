@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import ChatInput from "./input";
-import StaticInput from "./static-input";
 import { useAiChatInputState } from "../providers/input-provider";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
@@ -18,7 +16,7 @@ import {
 } from "lucide-react";
 import Tooltip from "@/components/ui/tooltip-v2";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import PageLoader from "@/modules/preloader/views/ui/page-loader";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
@@ -117,20 +115,15 @@ export default function IdChatPageView({ params }: { params: string }) {
     }
   }
 
+  if(!historyPending){
+    return(
+      <div className="absolute h-full w-full flex items-center justify-center">
+        <PageLoader/>
+      </div>
+      )
+  }
   return (
     <div className="max-w-3xl mx-auto pb-56">
-      {historyPending && (
-        <div className="max-w-3xl mx-auto space-y-10">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="flex flex-col items-end justify-end gap-2">
-              <Skeleton className="h-20 w-1/2" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          ))}
-        </div>
-      )}
 
       <div className="flex flex-col gap-10">
         {history.map((item, index) => {
