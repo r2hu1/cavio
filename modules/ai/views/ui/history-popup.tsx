@@ -82,15 +82,18 @@ export default function HistoryPopup({
                 data.map((item, index) => (
                   <div
                     key={index}
-                    className="h-16 border hover:bg-sidebar transition cursor-pointer hover:text-foreground rounded-lg flex items-center justify-between px-3 group"
+                    className="h-16 border hover:bg-sidebar gap-3 transition cursor-pointer hover:text-foreground rounded-lg flex items-center px-3 group"
                   >
+                    <ClockFading className="!h-8 !w-8"/>
                     <Link href={`/chat/${item.id}`} className="grid gap-px h-fit">
-                      <h1 className="text-sm sm:text-base items-center gap-2 flex"><ClockFading className="!h-3.5 !w-3.5"/> {item.title}</h1>
-                      <p className="text-xs !ml-6">{item.updatedAt ? new Date(item.updatedAt).toDateString() : ''}</p>
+                      <h1 className="text-sm sm:text-base w-full flex items-center gap-2 truncate whitespace-nowrap overflow-hidden">
+                        {item.title}
+                      </h1>
+                      <p className="text-xs">{item.updatedAt ? new Date(item.updatedAt).toDateString() : ''}</p>
                     </Link>
                     <Button
                       size="sm"
-                      className="h-8 w-8 hidden group-hover:flex !-mr-1"
+                      className="h-8 w-8 hidden ml-auto group-hover:flex"
                       variant="outline"
                       disabled={isDeleting}
                       onClick={() => handleDelete(item.id)}
