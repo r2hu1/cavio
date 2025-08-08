@@ -115,7 +115,7 @@ export default function IdChatPageView({ params }: { params: string }) {
     }
   }
 
-  if(!historyPending){
+  if(historyPending){
     return(
       <div className="absolute h-full w-full flex items-center justify-center">
         <PageLoader/>
