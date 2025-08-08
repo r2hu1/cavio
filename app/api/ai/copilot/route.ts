@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   if (!isPremium) {
     return NextResponse.json(
       {
-        text: "Upgrade to premium to use AI Autocomplete",
+        text: "",
       },
       { status: 200 },
     );
