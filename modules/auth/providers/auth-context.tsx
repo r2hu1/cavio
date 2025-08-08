@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isPending && !data) {
+    if (!isPending && !data?.session) {
       router.push("/auth/sign-in");
     }
   }, [isPending]);
