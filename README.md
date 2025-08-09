@@ -6,7 +6,7 @@ It's a **Notion-like note-taking app**, but not just for notes—Slate is design
 
 ## Preview of current build
 
-[▶ Watch the video](https://raw.githubusercontent.com/r2hu1/slate/main/public/demo-video.mp4)
+[▶ Watch the video](/public/demo-video.mp4)
 
 
 ## 🚀 Features
