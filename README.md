@@ -71,6 +71,12 @@ Once done, copy the values into your local `.env` file:
 * Use `.env.example` as a reference
 * Rename it to `.env` and fill in the required variables
 
+## 📝 Self deploy
+
+For self-hosting, there's a dedicated branch where I've removed all payment integrations (Stripe/Polar) so you can access all features without restrictions.
+
+* [Self-hosting branch](https://github.com/r2hu1/slate/tree/without-payments-for-selfhost)
+
 ## ▶️ Run the Project
 
 After setting up your environment variables, install the dependencies:
