@@ -84,7 +84,7 @@ export default function HistoryPopup({
                     key={index}
                     className="h-16 border hover:bg-sidebar gap-3 transition cursor-pointer hover:text-foreground rounded-lg flex items-center px-3 group"
                   >
-                    <ClockFading className="!h-8 !w-8"/>
+                    <ClockFading className="!min-h-4 !min-w-4"/>
                     <Link href={`/chat/${item.id}`} className="grid gap-px h-fit">
                       <h1 className="text-sm sm:text-base w-full flex items-center gap-2 truncate whitespace-nowrap overflow-hidden">
                         {item.title}
