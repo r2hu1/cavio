@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -39,6 +39,7 @@ export default function DeleteDocumentPopup({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [popupOpen, setPopupOpen] = useState(false);
+  const pathname = usePathname();
 
   const handleDeleteDocument = async () => {
     setLoading(true);
@@ -58,7 +59,9 @@ export default function DeleteDocumentPopup({
           await queryClient.invalidateQueries(
             trpc.premium.getFreeUsage.queryOptions(),
           );
-          router.push(`/folder/${folderId}`);
+          if(pathname.includes(documentId)){
+            router.push(`/folder/${folderId}`);
+          }
         },
         onError: (error) => {
           toast.error(error.message);
