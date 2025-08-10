@@ -4,11 +4,13 @@
 
 It's a **Notion-like note-taking app**, but not just for notes—Slate is designed for **content writing, script drafting, blogging, journaling**, and more.
 
+![Landing](/public/site/landing.png)
+
 ## Preview of current build
 
-| ![Dashboard](/public/dashboard.png) | ![Folder](/public/folder-page.png) |
+| ![Dashboard](/public/site/demo-dash.png) | ![Folder](/public/site/demo-folder.png) |
 |------------------------------------|------------------------------------|
-| ![Document](/public/document-page.png) | ![AI Chat](/public/ai-chat.png) |
+| ![Document](/public/document-page.png) | ![AI Chat](/public/site/demo-ai.png) |
 
 [▶️ Watch Demo](https://www.kapwing.com/e/68971253494d74d1a712ef3b)
 
