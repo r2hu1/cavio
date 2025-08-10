@@ -55,7 +55,7 @@ export default function Header() {
 			<div className="flex items-center gap-2 -mr-2">
 				{/*<ModeToggle className="!rounded-full" />*/}
 				<Button asChild className="rounded-full">
-					<Link className="text-sm" href="/">
+					<Link className="text-sm" href="/auth/sign-in">
 						Get Started
 					</Link>
 				</Button>
