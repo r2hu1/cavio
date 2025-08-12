@@ -66,8 +66,8 @@ export default function StaticInput() {
 	return (
 		<div
 			className={cn(
-				"p-3 bottom-0 fixed w-full sm:max-w-4xl mx-auto right-0 left-0 transition",
-				open && "md:left-64",
+				"p-3 bottom-0 fixed w-full sm:max-w-4xl mx-auto right-0 left-0 transition-all",
+				open && "md:left-64 transition-all",
 			)}
 		>
 			<div className="relative bg-sidebar dark:bg-card border rounded-xl shadow-lg">
