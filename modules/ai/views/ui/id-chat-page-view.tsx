@@ -12,6 +12,7 @@ import Tooltip from "@/components/ui/tooltip-v2";
 import { Button } from "@/components/ui/button";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import { Response } from "@/components/ai-elements/response";
+import { MarkdownContent } from "@/components/ui/markdown-content";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
@@ -133,9 +134,10 @@ export default function IdChatPageView({ params }: { params: string }) {
 								key={index}
 								className="prose prose-sm max-w-none dark:prose-invert relative group"
 							>
-								<Response
+								<MarkdownContent
+									id={String(index)}
 									key={index}
-									children={item.content
+									content={item.content
 										.replace(/^```mdx\s*\r?\n/, "")
 										.replace(/```$/, "")}
 								/>

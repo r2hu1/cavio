@@ -11,6 +11,7 @@ import { Brain, Copy, Download, FileText } from "lucide-react";
 import Tooltip from "@/components/ui/tooltip-v2";
 import { Button } from "@/components/ui/button";
 import { Response } from "@/components/ai-elements/response";
+import { MarkdownContent } from "@/components/ui/markdown-content";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
@@ -125,9 +126,10 @@ export default function NewChatPageView({ params }: { params?: string }) {
                   group
                 "
 							>
-								<Response
+								<MarkdownContent
+									id={String(index)}
 									key={index}
-									children={item.content
+									content={item.content
 										.replace(/^```mdx\s*\r?\n/, "")
 										.replace(/```$/, "")}
 								/>
