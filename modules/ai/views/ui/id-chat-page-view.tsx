@@ -11,7 +11,6 @@ import { Brain, Copy, Download, FileText } from "lucide-react";
 import Tooltip from "@/components/ui/tooltip-v2";
 import { Button } from "@/components/ui/button";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
-import { Response } from "@/components/ai-elements/response";
 import { MarkdownContent } from "@/components/ui/markdown-content";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
