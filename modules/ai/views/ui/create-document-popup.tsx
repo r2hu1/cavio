@@ -21,7 +21,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,6 +52,7 @@ export default function CreateDocumentWithAiPopup({
 	const router = useRouter();
 	const [dtitle, setDtitle] = useState(title);
 	const [folderId, setFolderId] = useState("");
+	const queryClient = useQueryClient();
 
 	const handleCreateDocument = async () => {
 		if (!folderId)
@@ -87,8 +88,14 @@ export default function CreateDocumentWithAiPopup({
 					content: finalContent,
 				},
 				{
-					onSuccess: (data) => {
+					onSuccess: async (data) => {
 						router.push(`/folder/${folderId}/${data.id}`);
+						await queryClient.invalidateQueries(
+							trpc.document.getAllByFolderId.queryOptions({ folderId }),
+						);
+						await queryClient.invalidateQueries(
+							trpc.premium.getFreeUsage.queryOptions(),
+						);
 					},
 					onError: (error) => {
 						toast.error(error.message);
@@ -101,7 +108,13 @@ export default function CreateDocumentWithAiPopup({
 	};
 
 	return (
-		<Credenza open={popupOpen} onOpenChange={setPopupOpen}>
+		<Credenza
+			open={popupOpen}
+			onOpenChange={() => {
+				if (isPending || createDocumentPending) return;
+				setPopupOpen(!popupOpen);
+			}}
+		>
 			<CredenzaTrigger className={triggerClassName} asChild>
 				{children}
 			</CredenzaTrigger>
