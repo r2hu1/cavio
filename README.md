@@ -22,7 +22,9 @@ Initially, I thought—why not build something inspired by Notion, rather than r
   File system-style document management
 * **Documents**
   Pages where you write and structure your content
-* **AI for Everything** *(coming soon)*
+* **Create document with AI**
+  Create a document using AI
+* **AI for Everything**
   AI that writes, creates, fixes, and enhances your content
 * **Realtime Updates**
   Creating or editing folders/documents reflects live in the UI wherever relevant
