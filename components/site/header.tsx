@@ -5,7 +5,7 @@ import { ModeToggle } from "../theme-switcher";
 
 export default function Header() {
 	return (
-		<header className="w-full bg-sidebar/80 backdrop-blur-sm sticky top-10 z-[999] border h-14 rounded-full max-w-5xl mx-auto flex items-center justify-between mt-10 px-5">
+		<header className="w-full bg-sidebar/80 backdrop-blur-sm sticky top-4 transition sm:top-10 z-[999] border h-14 rounded-full max-w-5xl mx-auto flex items-center justify-between sm:mt-10 mt-5 px-5">
 			<div>
 				<SharedLogo />
 			</div>
