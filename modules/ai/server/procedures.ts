@@ -7,7 +7,7 @@ import { isSubscribed } from "@/lib/cache/premium";
 import { db } from "@/db/client";
 import { aiChatHistory } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { SYSTEM_PROMPT } from "../constants";
+import { FORMAT_PROMPT, SYSTEM_PROMPT } from "../constants";
 
 export const aiRouter = createTRPCRouter({
 	create: protectedProcedure
@@ -156,5 +156,27 @@ export const aiRouter = createTRPCRouter({
 				.where(eq(aiChatHistory.userId, ctx.auth.session.userId))
 				.returning();
 			return existing;
+		}),
+	formatToMarkdown: protectedProcedure
+		.input(
+			z.object({
+				content: z.string(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const res = await generateText({
+				model: googleai("models/gemini-2.0-flash") as any,
+				prompt: input.content,
+				system: FORMAT_PROMPT,
+			});
+			if (!res) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Error something went wrong, please try again!",
+				});
+			}
+			return {
+				content: res.text,
+			};
 		}),
 });

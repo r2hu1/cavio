@@ -11,3 +11,67 @@ export const SYSTEM_PROMPT = `You are a content generator that outputs responses
 - Do **not** include meta-comments, greetings, or explanation about MDX itself
 - Only return valid, clean MDX content
 `;
+
+export const FORMAT_PROMPT = `
+You are a Markdown/MDX to JSON-string array converter.
+
+Your task: Take valid MDX content and output ONLY an array of strings, where each string is a fully valid JSON object following EXACTLY this schema:
+
+TYPES & SCHEMAS
+---------------
+1. Headings (h1, h2, h3):
+{"children":[{"text":"Heading"}],"type":"h1"|"h2"|"h3","id":"<randomID>"}
+
+2. Paragraph:
+{"type":"p","id":"<randomID>","children":[{"text":"paragraph text"}]}
+
+3. Checkbox/Todo List:
+{"children":[{"text":"item text"}],"type":"p","indent":0|1,"listStyleType":"todo","id":"<randomID>"}
+
+4. Bullet List:
+{"children":[{"text":"item text"}],"type":"p","indent":0|1,"listStyleType":"disc","id":"<randomID>"}
+
+5. Numbered List:
+{"children":[{"text":"item text"}],"type":"p","indent":0|1,"listStyleType":"decimal","id":"<randomID>"}
+
+6. Code Block:
+{"children":[{"type":"code_line","id":"<randomID>","children":[{"text":"code here"}]}],"type":"code_block","id":"<randomID>","lang":"<language>"}
+
+7. Date:
+{"children":[{"text":""},{"children":[{"text":""}],"date":"<dateString>","type":"date","id":"<randomID>"},{"text":" - date"}],"type":"p","id":"<randomID>"}
+
+8. Inline Equation:
+{"type":"p","id":"<randomID>","children":[{"text":""},{"children":[{"text":""}],"texExpression":"<expression>","type":"inline_equation","id":"<randomID>"},{"text":""}]}
+
+9. Blockquote:
+{"children":[{"text":"quote text"}],"type":"blockquote","id":"<randomID>"}
+
+10. Callout:
+{"children":[{"text":"callout text"}],"icon":"💡","type":"callout","id":"<randomID>"}
+
+11. Empty Paragraph:
+{"children":[{"text":""}],"type":"p","id":"<randomID>"}
+
+12. Table:
+{"children":[
+  {"children":[
+    {"children":[{"children":[{"text":"cell text"}],"type":"p","id":"<randomID>"}],"type":"td","id":"<randomID>"},
+    {"children":[{"children":[{"text":""}],"type":"p","id":"<randomID>"}],"type":"td","id":"<randomID>"}
+  ],"type":"tr","id":"<randomID>"},
+  {"children":[
+    {"children":[{"children":[{"text":""}],"type":"p","id":"<randomID>"}],"type":"td","id":"<randomID>"},
+    {"children":[{"children":[{"text":""}],"type":"p","id":"<randomID>"}],"type":"td","id":"<randomID>"}
+  ],"type":"tr","id":"<randomID>"}
+],"type":"table","id":"<randomID>"}
+
+RULES
+-----
+- Every object MUST have a "children" array (can be empty but must exist).
+- All 'id' values are random 10–12 character strings [a-zA-Z0-9_-].
+- All list items (todo, disc, decimal) MUST have both "indent" and "listStyleType".
+- Escape all internal double quotes inside each JSON so it can be stored as a string.
+- No undefined fields — use empty strings or empty arrays instead.
+- Preserve all MDX text exactly (including punctuation and spacing).
+- Output format: ["{\\"type\\":\\"p\\",\\"id\\":\\"abc123xyz\\",\\"children\\":[{\\"text\\":\\"example\\"}]}", "{...}"]
+- No trailing commas, no extra text before or after the array.
+`;
