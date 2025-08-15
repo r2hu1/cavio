@@ -29,20 +29,20 @@ export const aiRouter = createTRPCRouter({
 			const res = await generateText({
 				model: googleai("models/gemini-2.0-flash") as any,
 				prompt: `
-				  <Private>
-					 <Memory>
-					  <User>
-					   <Avatar>${ctx.auth.user.image}</Avatar>
-					   <Name>${ctx.auth.user.name}</Name>
-					   <Email>${ctx.auth.user.email}</Email>
-					   <EmailVerified>${ctx.auth.user.emailVerified}</EmailVerified>
-					   <Id>${ctx.auth.user.id}</Id>
-					  </User>
-					 </Memory>
-					</Private>
           ${input.content}
           `,
-				system: SYSTEM_PROMPT,
+				system: `
+			 <Memory>
+			  <User>
+			   <Avatar>${ctx.auth.user.image}</Avatar>
+			   <Name>${ctx.auth.user.name}</Name>
+			   <Email>${ctx.auth.user.email}</Email>
+			   <EmailVerified>${ctx.auth.user.emailVerified}</EmailVerified>
+			   <Id>${ctx.auth.user.id}</Id>
+			  </User>
+			 </Memory>
+				${SYSTEM_PROMPT},
+				`,
 			});
 			if (!res) {
 				throw new TRPCError({

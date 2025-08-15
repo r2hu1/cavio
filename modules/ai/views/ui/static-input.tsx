@@ -58,7 +58,7 @@ export default function StaticInput() {
 	const { open } = useSidebar();
 
 	useEffect(() => {
-		setValue(stateValue);
+		setValue(stateValue || "");
 	}, [stateValue]);
 
 	return (
