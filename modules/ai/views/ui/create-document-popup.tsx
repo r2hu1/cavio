@@ -13,8 +13,16 @@ import {
 } from "@/components/ui/credenza";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,13 +30,11 @@ import { toast } from "sonner";
 export default function CreateDocumentWithAiPopup({
 	children,
 	triggerClassName,
-	folderId,
 	content,
 	title,
 }: {
 	children: React.ReactNode;
 	triggerClassName?: string;
-	folderId: string;
 	content: any;
 	title: string;
 }) {
@@ -39,11 +45,17 @@ export default function CreateDocumentWithAiPopup({
 	const { mutateAsync: createDocumentAsync, isPending: createDocumentPending } =
 		useMutation(trpc.document.create.mutationOptions());
 
+	const { data: folders, isPending: foldersPending } = useQuery(
+		trpc.folder.getAll.queryOptions(),
+	);
 	const [popupOpen, setPopupOpen] = useState(false);
 	const router = useRouter();
 	const [dtitle, setDtitle] = useState(title);
+	const [folderId, setFolderId] = useState("");
 
 	const handleCreateDocument = async () => {
+		if (!folderId)
+			return toast.error("Please select a folder or create a new one");
 		try {
 			const formatted = await formatAsync({ content });
 
@@ -59,14 +71,20 @@ export default function CreateDocumentWithAiPopup({
 				toast.error("AI returned invalid JSON format");
 				return;
 			}
+
 			if (!Array.isArray(parsed)) {
 				parsed = [parsed];
 			}
+
+			const finalContent = parsed.map((item) =>
+				typeof item === "string" ? item : JSON.stringify(item),
+			);
+
 			await createDocumentAsync(
 				{
 					folderId,
 					title: dtitle,
-					content: parsed,
+					content: finalContent,
 				},
 				{
 					onSuccess: (data) => {
@@ -89,7 +107,10 @@ export default function CreateDocumentWithAiPopup({
 			</CredenzaTrigger>
 			<CredenzaContent>
 				<CredenzaHeader>
-					<CredenzaTitle>New Document</CredenzaTitle>
+					<CredenzaTitle className="flex items-center gap-2">
+						<Sparkles className="!h-3.5 !w-3.5 animate-rainbow" />
+						Document with AI
+					</CredenzaTitle>
 					<CredenzaDescription>
 						Let AI create your document.
 					</CredenzaDescription>
@@ -102,7 +123,28 @@ export default function CreateDocumentWithAiPopup({
 						id="document-name"
 						type="text"
 						placeholder="My notes"
+						className="!mb-4"
 					/>
+					<Label>Select Folder</Label>
+					<Select value={folderId} onValueChange={(e) => setFolderId(e)}>
+						<SelectTrigger className="w-full">
+							<SelectValue placeholder="Where the document saved" />
+						</SelectTrigger>
+						<SelectContent>
+							{!foldersPending &&
+								folders &&
+								folders.map((folder) => (
+									<SelectItem key={folder.id} value={folder.id}>
+										{folder.title}
+									</SelectItem>
+								))}
+							{!foldersPending && !folders?.length && (
+								<SelectItem key="empty" value="empty" disabled>
+									No Folders Found.
+								</SelectItem>
+							)}
+						</SelectContent>
+					</Select>
 				</CredenzaBody>
 				<CredenzaFooter>
 					<Button
