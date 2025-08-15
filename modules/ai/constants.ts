@@ -13,9 +13,9 @@ export const SYSTEM_PROMPT = `You are a content generator that outputs responses
 `;
 
 export const FORMAT_PROMPT = `
-You are a Markdown/MDX to JSON-string array converter.
+You are a Markdown/MDX to JSON-array converter.
 
-Your task: Take valid MDX content and output ONLY an array of strings, where each string is a fully valid JSON object following EXACTLY this schema:
+Your task: Take valid MDX content and output ONLY a JSON array of objects, where each object follows EXACTLY one of these schemas:
 
 TYPES & SCHEMAS
 ---------------
@@ -69,9 +69,8 @@ RULES
 - Every object MUST have a "children" array (can be empty but must exist).
 - All 'id' values are random 10–12 character strings [a-zA-Z0-9_-].
 - All list items (todo, disc, decimal) MUST have both "indent" and "listStyleType".
-- Escape all internal double quotes inside each JSON so it can be stored as a string.
 - No undefined fields — use empty strings or empty arrays instead.
 - Preserve all MDX text exactly (including punctuation and spacing).
-- Output format: ["{\\"type\\":\\"p\\",\\"id\\":\\"abc123xyz\\",\\"children\\":[{\\"text\\":\\"example\\"}]}", "{...}"]
+- Output format: [{"type":"p","id":"abc123xyz","children":[{"text":"example"}]}, {...}]
 - No trailing commas, no extra text before or after the array.
 `;
