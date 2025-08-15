@@ -12,6 +12,7 @@ import Tooltip from "@/components/ui/tooltip-v2";
 import { Button } from "@/components/ui/button";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import { MarkdownContent } from "@/components/ui/markdown-content";
+import CreateDocumentWithAiPopup from "./create-document-popup";
 
 const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
 
@@ -66,6 +67,7 @@ export default function IdChatPageView({ params }: { params: string }) {
 						...prev,
 						{ role: "ai", content: data.text as string },
 					]);
+					stateSetValue("");
 					if (data?.id) router.push(`/chat/${data.id}`);
 				},
 				onError: (error) => toast.error(error.message),
@@ -140,7 +142,7 @@ export default function IdChatPageView({ params }: { params: string }) {
 										.replace(/^```mdx\s*\r?\n/, "")
 										.replace(/```$/, "")}
 								/>
-								<div className="flex gap-2.5 mt-4 items-center justify-start">
+								<div className="flex gap-2.5 mt-7 items-center justify-start">
 									<Tooltip text="Save as file">
 										<Button
 											onClick={() =>
@@ -174,10 +176,12 @@ export default function IdChatPageView({ params }: { params: string }) {
 											<Copy className="!h-3.5 !w-3.5" />
 										</Button>
 									</Tooltip>
-									<Button size="sm" variant="ghost">
-										Export
-										<FileText className="!h-3.5 !w-3.5" />
-									</Button>
+									<CreateDocumentWithAiPopup
+										content={item.content}
+										title={historyData?.title || ""}
+									>
+										<Button size="sm">Create Document</Button>
+									</CreateDocumentWithAiPopup>
 								</div>
 							</div>
 						);
