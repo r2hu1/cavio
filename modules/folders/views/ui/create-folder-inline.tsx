@@ -10,51 +10,48 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function CreateFolderInline({
-  children,
-  triggerClassName,
+	children,
+	triggerClassName,
 }: {
-  children: React.ReactNode;
-  triggerClassName?: string;
+	children: React.ReactNode;
+	triggerClassName?: string;
 }) {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation(trpc.folder.create.mutationOptions());
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+	const trpc = useTRPC();
+	const queryClient = useQueryClient();
+	const { mutate } = useMutation(trpc.folder.create.mutationOptions());
+	const [loading, setLoading] = useState(false);
+	const router = useRouter();
 
-  const handleCreateFolder = async () => {
-    if (loading) return;
-    setLoading(true);
-    mutate(
-      {
-        title: new Date().toLocaleTimeString("en-GB"),
-      },
-      {
-        onSuccess: async (e) => {
-          router.push(`/folder/${e.id}`);
-          toast.success("Folder created successfully");
-          await queryClient.invalidateQueries(
-            trpc.folder.getAll.queryOptions(),
-          );
-          await queryClient.invalidateQueries(
-            trpc.folder.getRecent.queryOptions(),
-          );
-          await queryClient.invalidateQueries(
-            trpc.premium.getFreeUsage.queryOptions(),
-          );
-        },
-        onError: (error) => {
-          toast.error(error.message);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-      },
-    );
-  };
-  return (
-    <Slot onClick={handleCreateFolder} className={triggerClassName}>
-      {children}
-    </Slot>
-  );
+	const handleCreateFolder = async () => {
+		if (loading) return;
+		setLoading(true);
+		mutate(
+			{
+				title: new Date().toLocaleTimeString("en-GB"),
+			},
+			{
+				onSuccess: async (e) => {
+					router.push(`/folder/${e.id}`);
+					toast.success("Folder created successfully");
+					await queryClient.invalidateQueries(
+						trpc.folder.getAll.queryOptions(),
+					);
+					await queryClient.invalidateQueries(
+						trpc.folder.getRecent.queryOptions(),
+					);
+				},
+				onError: (error) => {
+					toast.error(error.message);
+				},
+				onSettled: () => {
+					setLoading(false);
+				},
+			},
+		);
+	};
+	return (
+		<Slot onClick={handleCreateFolder} className={triggerClassName}>
+			{children}
+		</Slot>
+	);
 }

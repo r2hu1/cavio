@@ -3,7 +3,6 @@ import z from "zod";
 import { TRPCError } from "@trpc/server";
 import { generateText } from "ai";
 import { googleai } from "@/lib/google-ai";
-import { isSubscribed } from "@/lib/cache/premium";
 import { db } from "@/db/client";
 import { aiChatHistory } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -19,13 +18,6 @@ export const aiRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
-			const isPremium = await isSubscribed();
-			if (!isPremium && input.typeOfModel !== "chat") {
-				throw new TRPCError({
-					code: "PAYMENT_REQUIRED",
-					message: `Upgrade to premium to use AI ${input.typeOfModel}`,
-				});
-			}
 			const res = await generateText({
 				model: googleai("models/gemini-2.0-flash") as any,
 				prompt: `

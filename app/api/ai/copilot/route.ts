@@ -3,28 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { appRouter } from "@/trpc/routers/_app";
 import { createTRPCContext } from "@/trpc/init";
 import { googleai } from "@/lib/google-ai";
-import { isSubscribed } from "@/lib/cache/premium";
 
 export async function POST(req: Request) {
-  const { prompt: messages } = await req.json();
-  if (!messages || messages.length === 0) {
-    return NextResponse.json({ status: 200 });
-  }
+	const { prompt: messages } = await req.json();
+	if (!messages || messages.length === 0) {
+		return NextResponse.json({ status: 200 });
+	}
 
-  const isPremium = await isSubscribed();
-  if (!isPremium) {
-    return NextResponse.json(
-      {
-        text: "",
-      },
-      { status: 200 },
-    );
-  }
-
-  const completion = await generateText({
-    model: googleai("models/gemini-2.0-flash") as any,
-    prompt: messages,
-    system: `You are an advanced AI writing assistant, similar to VSCode Copilot but for general text. Your task is to predict and generate the next part of the text based on the given context.
+	const completion = await generateText({
+		model: googleai("models/gemini-2.0-flash") as any,
+		prompt: messages,
+		system: `You are an advanced AI writing assistant, similar to VSCode Copilot but for general text. Your task is to predict and generate the next part of the text based on the given context.
 
     Rules:
       - Continue the text naturally up to the next punctuation mark (., ,, ;, :, ?," " or !).
@@ -37,13 +26,13 @@ export async function POST(req: Request) {
       - If no context is provided or you can't generate a continuation, return "" without explanation.
       - CRITICAL: Don't return any information about yourself or your capabilities.
       `,
-  });
+	});
 
-  // console.log(completion);
-  return NextResponse.json(
-    {
-      text: completion.text,
-    },
-    { status: 200 },
-  );
+	// console.log(completion);
+	return NextResponse.json(
+		{
+			text: completion.text,
+		},
+		{ status: 200 },
+	);
 }

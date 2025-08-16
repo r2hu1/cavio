@@ -1,11 +1,7 @@
 import { db } from "@/db/client";
 import { documents, folders } from "@/db/schema";
 import { polarClient } from "@/lib/polar";
-import {
-	createTRPCRouter,
-	premiumProcedure,
-	protectedProcedure,
-} from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { count, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
 import { documentSchema } from "../schema";
@@ -28,7 +24,7 @@ export const documentsRouter = createTRPCRouter({
 			.where(eq(documents.userId, ctx.auth.session.userId));
 		return document;
 	}),
-	create: premiumProcedure("document")
+	create: protectedProcedure
 		.input(documentSchema)
 		.mutation(async ({ input, ctx }) => {
 			const [document] = await db

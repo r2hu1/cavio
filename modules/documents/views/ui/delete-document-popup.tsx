@@ -59,9 +59,6 @@ export default function DeleteDocumentPopup({
 					await queryClient.invalidateQueries(
 						trpc.folder.getRecent.queryOptions(),
 					);
-					await queryClient.invalidateQueries(
-						trpc.premium.getFreeUsage.queryOptions(),
-					);
 					if (pathname.includes(documentId)) {
 						router.push(`/folder/${folderId}`);
 					}

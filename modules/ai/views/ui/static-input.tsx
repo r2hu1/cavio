@@ -4,19 +4,11 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
 import { cn } from "@/lib/utils";
-import PricingModal from "@/modules/pricing/views/ui/pricing-modal";
-import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowUpIcon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAiChatInputState } from "../providers/input-provider";
 
 export default function StaticInput() {
-	const trpc = useTRPC();
-	const { data, isPending } = useQuery(
-		trpc.premium.getCurrentSubscription.queryOptions(),
-	);
-
 	const { adjustHeight, textareaRef } = useAutoResizeTextarea({
 		minHeight: 80,
 		maxHeight: 200,
@@ -93,52 +85,26 @@ export default function StaticInput() {
 							>
 								Chat
 							</Button>
-							{!isPending && data ? (
-								<Button
-									variant={mode === "build" ? "default" : "secondary"}
-									onClick={() => {
-										setMode("build");
-									}}
-									size="sm"
-									className="cursor-pointer h-6 text-xs shadow-none"
-								>
-									Build
-								</Button>
-							) : (
-								<PricingModal>
-									<Button
-										variant={"secondary"}
-										size="sm"
-										className="cursor-pointer h-6 text-xs shadow-none"
-										disabled={isPending}
-									>
-										Build
-									</Button>
-								</PricingModal>
-							)}
-							{!isPending && data ? (
-								<Button
-									variant={mode === "research" ? "default" : "secondary"}
-									onClick={() => {
-										setMode("research");
-									}}
-									size="sm"
-									className="cursor-pointer h-6 text-xs shadow-none"
-								>
-									Research
-								</Button>
-							) : (
-								<PricingModal>
-									<Button
-										variant={"secondary"}
-										size="sm"
-										className="cursor-pointer h-6 text-xs shadow-none"
-										disabled={isPending}
-									>
-										Research
-									</Button>
-								</PricingModal>
-							)}
+							<Button
+								variant={mode === "build" ? "default" : "secondary"}
+								onClick={() => {
+									setMode("build");
+								}}
+								size="sm"
+								className="cursor-pointer h-6 text-xs shadow-none"
+							>
+								Build
+							</Button>
+							<Button
+								variant={mode === "research" ? "default" : "secondary"}
+								onClick={() => {
+									setMode("research");
+								}}
+								size="sm"
+								className="cursor-pointer h-6 text-xs shadow-none"
+							>
+								Research
+							</Button>
 						</div>
 						<Button
 							size="sm"
