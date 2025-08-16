@@ -58,7 +58,14 @@ export default function CreateDocumentWithAiPopup({
 		if (!folderId)
 			return toast.error("Please select a folder or create a new one");
 		try {
-			const formatted = await formatAsync({ content });
+			const formatted = await formatAsync(
+				{ content },
+				{
+					onError: (error) => {
+						console.error("Failed to format content:", error);
+					},
+				},
+			);
 
 			let cleaned = formatted.content
 				.replace(/^```json\s*\r?\n/, "")
@@ -95,6 +102,7 @@ export default function CreateDocumentWithAiPopup({
 						);
 					},
 					onError: (error) => {
+						console.error("Failed to create document:", error);
 						toast.error(error.message);
 					},
 				},
