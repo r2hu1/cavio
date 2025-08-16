@@ -1,6 +1,5 @@
 import { db } from "@/db/client";
 import { documents, folders } from "@/db/schema";
-import { polarClient } from "@/lib/polar";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { count, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";

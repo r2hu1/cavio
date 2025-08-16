@@ -2,7 +2,6 @@ import { db } from "@/db/client";
 import { documents, folders } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { isAuthenticated } from "@/lib/cache/auth";
-import { polarClient } from "@/lib/polar";
 import { MAX_FREE_DOCUMENTS, MAX_FREE_FOLDERS } from "@/modules/constants";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { count, eq } from "drizzle-orm";
