@@ -36,6 +36,7 @@ export default function SubFolderMenu({ folderId }: { folderId: string }) {
 						<SidebarMenuSubItem key={document.id} className="ml-0 truncate">
 							<DocumentActionContextMenu id={document.id} folderId={folderId}>
 								<SidebarMenuSubButton
+									title={document.title}
 									isActive={pathname === `/folder/${folderId}/${document.id}`}
 									asChild
 								>
