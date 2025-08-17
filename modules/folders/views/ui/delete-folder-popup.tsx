@@ -72,7 +72,13 @@ export default function DeleteFolderPopup({
 		);
 	};
 	return (
-		<Credenza open={popupOpen} onOpenChange={setPopupOpen}>
+		<Credenza
+			open={popupOpen}
+			onOpenChange={() => {
+				if (isPending) return;
+				setPopupOpen(!popupOpen);
+			}}
+		>
 			<CredenzaTrigger className={triggerClassName} asChild>
 				{children}
 			</CredenzaTrigger>

@@ -31,7 +31,9 @@ export default function CreateDocumentPopup({
 }) {
 	const trpc = useTRPC();
 	const queryClient = useQueryClient();
-	const { mutate } = useMutation(trpc.document.create.mutationOptions());
+	const { mutate, isPending } = useMutation(
+		trpc.document.create.mutationOptions(),
+	);
 	const [loading, setLoading] = useState(false);
 	const [popupOpen, setPopupOpen] = useState(false);
 	const router = useRouter();
@@ -68,7 +70,13 @@ export default function CreateDocumentPopup({
 		);
 	};
 	return (
-		<Credenza open={popupOpen} onOpenChange={setPopupOpen}>
+		<Credenza
+			open={popupOpen}
+			onOpenChange={() => {
+				if (isPending) return;
+				setPopupOpen(!popupOpen);
+			}}
+		>
 			<CredenzaTrigger className={triggerClassName} asChild>
 				{children}
 			</CredenzaTrigger>
