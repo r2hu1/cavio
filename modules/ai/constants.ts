@@ -26,13 +26,13 @@ TYPES & SCHEMAS
 {"type":"p","id":"<randomID>","children":[{"text":"paragraph text"}]}
 
 3. Checkbox/Todo List:
-{"children":[{"text":"item text"}],"type":"p","indent":0|1,"listStyleType":"todo","id":"<randomID>"}
+{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"todo","id":"<randomID>"}
 
 4. Bullet List:
-{"children":[{"text":"item text"}],"type":"p","indent":0|1,"listStyleType":"disc","id":"<randomID>"}
+{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"disc","id":"<randomID>"}
 
 5. Numbered List:
-{"children":[{"text":"item text"}],"type":"p","indent":0|1,"listStyleType":"decimal","id":"<randomID>"}
+{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"decimal","id":"<randomID>"}
 
 6. Code Block:
 {"children":[{"type":"code_line","id":"<randomID>","children":[{"text":"code here"}]}],"type":"code_block","id":"<randomID>","lang":"<language>"}
