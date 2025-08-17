@@ -9,6 +9,7 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import { useEditorState } from "../../providers/editor-state-provider";
+import { MarkdownPlugin } from "@platejs/markdown";
 
 export default function Editor({ id }: { id: string }) {
 	const [defaultValue, setDefaultValue] = useState<any>([]);
@@ -22,9 +23,9 @@ export default function Editor({ id }: { id: string }) {
 	const { setState } = useEditorState();
 
 	const handleValueChange = useCallback((event: any) => {
-		const newValue = event?.value || event;
-		if (Array.isArray(newValue)) {
-			setValue(newValue);
+		const markdownValue = editor.api.markdown.serialize();
+		if (markdownValue) {
+			setValue(markdownValue);
 		}
 	}, []);
 
@@ -39,17 +40,10 @@ export default function Editor({ id }: { id: string }) {
 
 	useEffectOnce(() => {
 		if (!isPending && data?.content) {
-			const parsedContent = data.content.map((block: any) => {
-				try {
-					return JSON.parse(block);
-				} catch {
-					return block;
-				}
-			});
-
-			setDefaultValue(parsedContent);
+			setDefaultValue(data.content);
 			editor.tf.init({
-				value: parsedContent,
+				value: (editor: any) =>
+					editor.getApi(MarkdownPlugin).markdown.deserialize(data.content),
 				autoSelect: "end",
 			});
 		}
