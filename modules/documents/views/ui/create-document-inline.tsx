@@ -32,7 +32,7 @@ export default function CreateDocumentInline({
 			},
 			{
 				onSuccess: async (e) => {
-					router.push(`/folder/${folderId}/${e.id}`);
+					// router.push(`/folder/${folderId}/${e.id}`);
 					await queryClient.invalidateQueries(
 						trpc.document.getAllByFolderId.queryOptions({ folderId }),
 					);

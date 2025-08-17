@@ -50,7 +50,7 @@ export default function CreateFolderPopup({
 			{
 				onSuccess: async (e) => {
 					toast.success("Folder created successfully");
-					router.push(`/folder/${e.id}`);
+					// router.push(`/folder/${e.id}`);
 					await queryClient.invalidateQueries(
 						trpc.folder.getAll.queryOptions(),
 					);
