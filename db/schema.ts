@@ -80,7 +80,7 @@ export const documents = pgTable("documents", {
 		.notNull()
 		.references(() => folders.id, { onDelete: "cascade" }),
 	title: text("title").notNull().default("unnamed"),
-	content: json("content").$type<any>().notNull().default([]),
+	content: text("content").notNull().default(""),
 	isPublished: boolean("is_published").default(false),
 	url: text("url").default(""),
 	privacy: text("privacy").default("private"),

@@ -1,5 +1,5 @@
 {
-  "id": "b60c1a77-b2cb-4ce8-8ac2-cb3056293189",
+  "id": "e26a06de-be65-4c02-902b-7e64d818887b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -263,10 +263,10 @@
         },
         "content": {
           "name": "content",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'[]'::json"
+          "default": "''"
         },
         "is_published": {
           "name": "is_published",

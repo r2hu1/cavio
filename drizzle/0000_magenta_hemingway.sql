@@ -36,7 +36,7 @@ CREATE TABLE "documents" (
 	"user_id" text NOT NULL,
 	"folder_id" text NOT NULL,
 	"title" text DEFAULT 'unnamed' NOT NULL,
-	"content" json DEFAULT '[]'::json NOT NULL,
+	"content" text DEFAULT '' NOT NULL,
 	"is_published" boolean DEFAULT false,
 	"url" text DEFAULT '',
 	"privacy" text DEFAULT 'private',
