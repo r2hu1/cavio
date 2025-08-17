@@ -177,7 +177,9 @@ export default function IdChatPageView({ params }: { params: string }) {
 										</Button>
 									</Tooltip>
 									<CreateDocumentWithAiPopup
-										content={item.content}
+										content={item.content
+											.replace(/^```mdx\s*\r?\n/, "")
+											.replace(/```$/, "")}
 										title={historyData?.title || ""}
 									>
 										<Button size="sm">Create Document</Button>

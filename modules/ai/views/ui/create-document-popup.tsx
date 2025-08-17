@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -39,9 +39,6 @@ export default function CreateDocumentWithAiPopup({
 	title: string;
 }) {
 	const trpc = useTRPC();
-	const { isPending, mutateAsync: formatAsync } = useMutation(
-		trpc.ai.formatToMarkdown.mutationOptions(),
-	);
 	const { mutateAsync: createDocumentAsync, isPending: createDocumentPending } =
 		useMutation(trpc.document.create.mutationOptions());
 
@@ -58,41 +55,11 @@ export default function CreateDocumentWithAiPopup({
 		if (!folderId)
 			return toast.error("Please select a folder or create a new one");
 		try {
-			const formatted = await formatAsync(
-				{ content },
-				{
-					onError: (error) => {
-						console.error("Failed to format content:", error);
-					},
-				},
-			);
-
-			let cleaned = formatted.content
-				.replace(/^```json\s*\r?\n/, "")
-				.replace(/```$/, "");
-
-			let parsed;
-			try {
-				parsed = JSON.parse(cleaned);
-			} catch (err) {
-				console.error("Failed to parse AI JSON:", err);
-				toast.error("AI returned invalid JSON format");
-				return;
-			}
-
-			if (!Array.isArray(parsed)) {
-				parsed = [parsed];
-			}
-
-			const finalContent = parsed.map((item) =>
-				typeof item === "string" ? item : JSON.stringify(item),
-			);
-
 			await createDocumentAsync(
 				{
 					folderId,
 					title: dtitle,
-					content: finalContent,
+					content,
 				},
 				{
 					onSuccess: async (data) => {
@@ -116,7 +83,7 @@ export default function CreateDocumentWithAiPopup({
 		<Credenza
 			open={popupOpen}
 			onOpenChange={() => {
-				if (isPending || createDocumentPending) return;
+				if (createDocumentPending) return;
 				setPopupOpen(!popupOpen);
 			}}
 		>
@@ -167,13 +134,12 @@ export default function CreateDocumentWithAiPopup({
 				<CredenzaFooter>
 					<Button
 						onClick={handleCreateDocument}
-						disabled={isPending || createDocumentPending}
+						disabled={createDocumentPending}
 					>
-						{isPending
-							? "Formatting..."
-							: createDocumentPending
-								? "Adding to Document..."
-								: "Continue"}
+						{createDocumentPending && (
+							<Loader2 className="!h-3.5 !w-3.5 animate-spin" />
+						)}
+						Continue
 					</Button>
 				</CredenzaFooter>
 			</CredenzaContent>

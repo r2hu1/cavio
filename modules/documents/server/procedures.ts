@@ -1,12 +1,10 @@
 import { db } from "@/db/client";
 import { documents, folders } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
 import { documentSchema } from "../schema";
 import { TRPCError } from "@trpc/server";
-import { title } from "process";
-import { url } from "inspector/promises";
 
 export const documentsRouter = createTRPCRouter({
 	getAll: protectedProcedure.query(async ({ input, ctx }) => {
@@ -31,7 +29,7 @@ export const documentsRouter = createTRPCRouter({
 				.values({
 					title: input.title,
 					folderId: input.folderId,
-					content: input.content || [],
+					content: input.content || "",
 					userId: ctx.auth.session.userId,
 				})
 				.returning();
@@ -124,7 +122,7 @@ export const documentsRouter = createTRPCRouter({
 		.input(
 			z.object({
 				id: z.string(),
-				content: z.array(z.any()).optional(),
+				content: z.string().optional(),
 				title: z.string().optional(),
 			}),
 		)
@@ -140,14 +138,10 @@ export const documentsRouter = createTRPCRouter({
 					message: "UNAUTHORIZED",
 				});
 
-			const serializedContent = input.content
-				? input.content.map((block) => JSON.stringify(block))
-				: document[0].content;
-
 			const [updatedDocument] = await db
 				.update(documents)
 				.set({
-					content: serializedContent,
+					content: input.content || document[0].content,
 					title: input.title || document[0].title,
 				})
 				.where(eq(documents.id, input.id))
