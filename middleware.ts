@@ -16,12 +16,7 @@ export async function middleware(request: NextRequest) {
 		!sessionCookie &&
 		!sessionDeProtectedRoutes.includes(request.nextUrl.pathname)
 	) {
-		try {
-			await signOut();
-		} catch {
-			// maybe loging error here
-		}
-		return NextResponse.redirect(new URL("/home", request.url));
+		return NextResponse.redirect(new URL("/auth/sign-in", request.url));
 	}
 	return NextResponse.next();
 }
