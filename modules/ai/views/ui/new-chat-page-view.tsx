@@ -65,6 +65,7 @@ export default function NewChatPageView({ params }: { params?: string }) {
 						{ role: "ai", content: data.text as string },
 					]);
 					if (data?.id) {
+						stateSetValue("");
 						router.push(`/chat/${data.id}`);
 					}
 					await queryClient.invalidateQueries(trpc.ai.history.queryOptions());
