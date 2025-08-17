@@ -5,12 +5,23 @@ import { Copy, PencilLine } from "lucide-react";
 import { useAiChatInputState } from "../providers/input-provider";
 import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export const UserChatBlock = ({ text }: { text: string }) => {
 	const { setValue: stateSetValue } = useAiChatInputState();
 
 	const handleEdit = () => {
 		stateSetValue(text);
+	};
+
+	const handleCopy = () => {
+		try {
+			navigator.clipboard.writeText(text);
+			toast.success("Copied to clipboard");
+		} catch (error) {
+			toast.error("Failed to copy text");
+			console.error("Failed to copy text:", error);
+		}
 	};
 
 	return (
@@ -35,6 +46,7 @@ export const UserChatBlock = ({ text }: { text: string }) => {
 							size="icon"
 							variant="ghost"
 							className="hover:!bg-transparent h-8 w-8"
+							onClick={handleCopy}
 						>
 							<Copy className="!h-3.5 !w-35" />
 						</Button>
