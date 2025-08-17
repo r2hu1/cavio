@@ -26,13 +26,13 @@ TYPES & SCHEMAS
 {"type":"p","id":"<randomID>","children":[{"text":"paragraph text"}]}
 
 3. Checkbox/Todo List:
-{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"todo","id":"<randomID>","listStart":(2|3|4|5|6 based on list length)}
+{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"todo","id":"<randomID>","listStart":(1|2|3|4|5|6...n based on list length)}
 
 4. Bullet List:
-{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"disc","id":"<randomID>","listStart":(2|3|4|5|6 based on list length)}
+{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"disc","id":"<randomID>","listStart":(1|2|3|4|5|6...n based on list length)}
 
 5. Numbered List:
-{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"decimal","id":"<randomID>","listStart":(2|3|4|5|6 based on list length)}
+{"children":[{"text":"item text"}],"type":"p","indent":1,"listStyleType":"decimal","id":"<randomID>","listStart":(1|2|3|4|5|6...n based on list length)}
 
 6. Code Block:
 {"children":[{"type":"code_line","id":"<randomID>","children":[{"text":"code here"}]}],"type":"code_block","id":"<randomID>","lang":"<language>"}
