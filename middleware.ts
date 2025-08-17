@@ -1,6 +1,5 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
-import { signOut } from "./lib/auth-client";
 
 export async function middleware(request: NextRequest) {
 	const sessionCookie = getSessionCookie(request);
