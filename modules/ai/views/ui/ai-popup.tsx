@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ArrowUpIcon, BotIcon, Copy } from "lucide-react";
+import { BotIcon, Copy } from "lucide-react";
 import {
 	Sheet,
 	SheetContent,
@@ -12,13 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { UserChatBlock } from "./user-chat-block";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { MarkdownContent } from "@/components/ui/markdown-content";
 import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
-import Tooltip from "@/components/ui/tooltip-v2";
 
 export default function AiPopup({
 	insert,
