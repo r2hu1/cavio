@@ -11,7 +11,6 @@ import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import { useEditorState } from "../../providers/editor-state-provider";
 import { MarkdownPlugin } from "@platejs/markdown";
 import AiPopup from "@/modules/ai/views/ui/ai-popup";
-import AiPopup from "@/modules/ai/views/ui/ai-popup";
 
 export default function Editor({ id }: { id: string }) {
 	const [defaultValue, setDefaultValue] = useState<any>([]);
