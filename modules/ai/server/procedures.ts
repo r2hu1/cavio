@@ -6,7 +6,11 @@ import { googleai } from "@/lib/google-ai";
 import { db } from "@/db/client";
 import { aiChatHistory } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { FORMAT_PROMPT, SYSTEM_PROMPT } from "../constants";
+import {
+	DOC_AI_SYSTEM_PROMPT,
+	FORMAT_PROMPT,
+	SYSTEM_PROMPT,
+} from "../constants";
 
 export const aiRouter = createTRPCRouter({
 	create: protectedProcedure
@@ -148,5 +152,46 @@ export const aiRouter = createTRPCRouter({
 				.where(eq(aiChatHistory.userId, ctx.auth.session.userId))
 				.returning();
 			return existing;
+		}),
+	documentAiChatCreate: protectedProcedure
+		.input(
+			z.object({
+				content: z.string(),
+				lastEditedDocContent: z.string().optional().default(""),
+				title: z.string(),
+			}),
+		)
+		.mutation(async ({ input, ctx }) => {
+			const memoryContext = `
+		<Memory>
+			<User>
+			  id: ${ctx.auth.user.id}
+				name: ${ctx.auth.user.name}
+				email: ${ctx.auth.user.email}
+			</User>
+			<Document>
+			  <LastEditedContent>
+			    ${input.lastEditedDocContent ?? ""}
+			  </LastEditedContent>
+			</Document>
+		</Memory>
+    `.trim();
+
+			const res = await generateText({
+				model: googleai("models/gemini-2.0-flash") as any,
+				system: `${DOC_AI_SYSTEM_PROMPT}\n\n${memoryContext}`,
+				prompt: input.content, // user’s new input
+			});
+
+			if (!res) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Error something went wrong, please try again!",
+				});
+			}
+
+			return {
+				text: res.text,
+			};
 		}),
 });

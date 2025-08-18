@@ -77,3 +77,11 @@ RULES
 - Output format: [{"type":"p","id":"abc123xyz","children":[{"text":"example"}]}, {...}]
 - No trailing commas, no extra text before or after the array.
 `;
+
+export const DOC_AI_SYSTEM_PROMPT = `
+You are a helpful assistant that generates and edits documents.
+# Rules
+- Respond strictly in MDX.
+- Use Markdown only (no HTML/JSX).
+- Keep responses concise.
+`;

@@ -30,8 +30,11 @@ export default function RenameDocumentInline({
 	const router = useRouter();
 	useEffect(() => {
 		if (error) {
-			toast.error(error.message);
 			if (error.message.split(" ").includes("undefined")) {
+				router.push("/");
+			}
+			if (error.message == "UNAUTHORIZED") {
+				toast.error("You are not authorized to view this document.");
 				router.push("/");
 			}
 		}
@@ -92,18 +95,20 @@ export default function RenameDocumentInline({
 			onKeyUp={(e) => e.key == "Escape" && setIsEditing(false)}
 		/>
 	) : (
-		<h1
+		<div
 			onClick={() => setIsEditing(!isEditing)}
 			className={cn(
-				"flex items-center gap-2 sm:max-w-5xl max-w-3xl truncate",
+				"flex items-center gap-2",
 				loading && "animate-pulse",
 				textClassName,
 			)}
 		>
-			{data?.title}
+			<h1 className="flex items-center gap-2 !w-[100px] sm:!w-full truncate">
+				{data?.title}
+			</h1>
 			<Tooltip text="Rename Document">
 				<PencilLine className="!h-3.5 cursor-pointer !w-3.5 text-foreground/70" />
 			</Tooltip>
-		</h1>
+		</div>
 	);
 }

@@ -1,0 +1,155 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import { ArrowUpIcon, BotIcon, Copy } from "lucide-react";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
+import { useEffect, useRef, useState } from "react";
+import { UserChatBlock } from "./user-chat-block";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { MarkdownContent } from "@/components/ui/markdown-content";
+import { useMutation } from "@tanstack/react-query";
+import { useTRPC } from "@/trpc/client";
+import Tooltip from "@/components/ui/tooltip-v2";
+
+export default function AiPopup({
+	insert,
+	title,
+	lastEdited,
+}: {
+	insert: any;
+	title: string | undefined;
+	lastEdited: string;
+}) {
+	const { textareaRef, adjustHeight } = useAutoResizeTextarea({
+		minHeight: 60,
+		maxHeight: 300,
+	});
+
+	const [value, setValue] = useState("");
+	const trpc = useTRPC();
+	const { mutate, isPending } = useMutation(
+		trpc.ai.documentAiChatCreate.mutationOptions(),
+	);
+
+	const [history, setHistory] = useState<{ role: string; content: string }[]>(
+		[],
+	);
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		if (e.key === "Enter" && !e.shiftKey) {
+			e.preventDefault();
+
+			if (value.trim()) {
+				setHistory((prev) => [...prev, { role: "user", content: value }]);
+
+				mutate(
+					{
+						content: value,
+						title: title || "",
+						lastEditedDocContent: lastEdited.toString(),
+					},
+					{
+						onSuccess: (data) => {
+							setValue("");
+							setHistory((prev) => [
+								...prev,
+								{ role: "ai", content: data.text },
+							]);
+							insert(data);
+						},
+					},
+				);
+			}
+		}
+	};
+
+	return (
+		<Sheet>
+			<SheetTrigger className="fixed bottom-10 right-10" asChild>
+				<Button className="rounded-full h-10 w-10" size="icon">
+					<BotIcon className="!h-4.5 !w-4.5" />
+				</Button>
+			</SheetTrigger>
+			<SheetContent>
+				<SheetHeader>
+					<SheetTitle>Slate AI</SheetTitle>
+					<SheetDescription>Ask me anything you want!</SheetDescription>
+				</SheetHeader>
+				<ScrollArea className="max-h-[calc(100%-250px)]">
+					<div className="grid gap-8 px-4">
+						{history.map((item, index) => {
+							if (!item.content) return null;
+
+							if (item.role === "ai") {
+								return (
+									<div
+										key={index}
+										className="prose prose-sm max-w-none dark:prose-invert relative group"
+									>
+										<MarkdownContent
+											id={String(index)}
+											key={index}
+											content={item.content
+												.replace(/^```mdx\s*\r?\n/, "")
+												.replace(/```$/, "")}
+										/>
+										<div className="flex gap-2.5 items-center justify-start">
+											<Button
+												size="icon"
+												onClick={() => {
+													navigator.clipboard.writeText(item.content);
+												}}
+												variant="ghost"
+												className="h-8 w-8"
+											>
+												<Copy className="!h-3.5 !w-3.5" />
+											</Button>
+										</div>
+									</div>
+								);
+							}
+
+							return (
+								<UserChatBlock
+									showToolbar={false}
+									key={index}
+									text={item.content}
+								/>
+							);
+						})}
+					</div>
+					{isPending && (
+						<span className="px-6 animate-pulse text-sm text-foreground/80">
+							Thinking...
+						</span>
+					)}
+					<ScrollBar />
+				</ScrollArea>
+				<div className="absolute bottom-4 left-0 right-0 w-full px-4">
+					<div className="relative bg-sidebar dark:bg-card border rounded-xl">
+						<Textarea
+							value={value}
+							onChange={(e) => {
+								setValue(e.target.value);
+								adjustHeight();
+							}}
+							ref={textareaRef}
+							onKeyDown={handleKeyDown}
+							placeholder="Start typing here... & press enter!"
+							className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
+						></Textarea>
+					</div>
+				</div>
+			</SheetContent>
+		</Sheet>
+	);
+}
