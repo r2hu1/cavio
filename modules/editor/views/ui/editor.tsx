@@ -77,6 +77,7 @@ export default function Editor({ id }: { id: string }) {
 						variant="ai"
 						placeholder="Click here to start writing."
 					/>
+				</EditorContainer>
 				<AiPopup
 					insert={""}
 					lastEdited={value.slice(-300)}
