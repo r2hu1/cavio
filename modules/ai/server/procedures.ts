@@ -164,6 +164,7 @@ export const aiRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const memoryContext = `
 		<Memory>
+		<Warning>Always use memory if necessary</Warning>
 			<User>
 			  id: ${ctx.auth.user.id}
 				name: ${ctx.auth.user.name}
