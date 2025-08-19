@@ -24,7 +24,11 @@ export const config = {
 	matcher: [
 		"/",
 		"/pro",
-		"/account",
+		"/settings",
+		"/settings/account",
+		"/settings/preferences",
+		"/settings/billing",
+		"/settings/danger",
 		"/auth/sign-up",
 		"/auth/sign-in",
 		"/folder/:folderId",
