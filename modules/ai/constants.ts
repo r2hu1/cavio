@@ -83,5 +83,5 @@ You are a helpful assistant that generates and edits documents.
 # Rules
 - Respond strictly in MDX.
 - Use Markdown only (no HTML/JSX).
-- Keep responses concise.
+- Keep responses short and concise.
 `;

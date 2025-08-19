@@ -170,6 +170,7 @@ export const aiRouter = createTRPCRouter({
 				email: ${ctx.auth.user.email}
 			</User>
 			<Document>
+			<Title>${input.title}</Title>
 			  <LastEditedContent>
 			    ${input.lastEditedDocContent ?? ""}
 			  </LastEditedContent>

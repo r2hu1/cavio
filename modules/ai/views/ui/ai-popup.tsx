@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { BotIcon, Copy } from "lucide-react";
+import { ArrowDown, ArrowUp, BotIcon, Copy, Loader2 } from "lucide-react";
 import {
 	Sheet,
 	SheetContent,
@@ -9,7 +9,6 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
 import { useState } from "react";
@@ -18,6 +17,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { MarkdownContent } from "@/components/ui/markdown-content";
 import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
+import { toast } from "sonner";
 
 export default function AiPopup({
 	insert,
@@ -39,6 +39,26 @@ export default function AiPopup({
 		trpc.ai.documentAiChatCreate.mutationOptions(),
 	);
 
+	const mutateFn = () => {
+		mutate(
+			{
+				content: value,
+				title: title || "",
+				lastEditedDocContent: lastEdited.toString(),
+			},
+			{
+				onSuccess: (data) => {
+					setValue("");
+					setHistory((prev) => [...prev, { role: "ai", content: data.text }]);
+					// insert(data);
+				},
+				onError: (data) => {
+					toast.error(data.message);
+				},
+			},
+		);
+	};
+
 	const [history, setHistory] = useState<{ role: string; content: string }[]>(
 		[],
 	);
@@ -49,42 +69,32 @@ export default function AiPopup({
 
 			if (value.trim()) {
 				setHistory((prev) => [...prev, { role: "user", content: value }]);
-
-				mutate(
-					{
-						content: value,
-						title: title || "",
-						lastEditedDocContent: lastEdited.toString(),
-					},
-					{
-						onSuccess: (data) => {
-							setValue("");
-							setHistory((prev) => [
-								...prev,
-								{ role: "ai", content: data.text },
-							]);
-							insert(data);
-						},
-					},
-				);
+				mutateFn();
 			}
+		}
+	};
+
+	const handleClick = () => {
+		if (value.trim()) {
+			setHistory((prev) => [...prev, { role: "user", content: value }]);
+			mutateFn();
 		}
 	};
 
 	return (
 		<Sheet>
-			<SheetTrigger className="fixed bottom-10 right-10" asChild>
+			<SheetTrigger className="fixed bottom-7 right-7" asChild>
 				<Button className="rounded-full h-10 w-10" size="icon">
 					<BotIcon className="!h-4.5 !w-4.5" />
 				</Button>
 			</SheetTrigger>
-			<SheetContent>
+			<SheetContent className="sm:!min-w-[500px] !min-w-full">
 				<SheetHeader>
 					<SheetTitle>Slate AI</SheetTitle>
 					<SheetDescription>Ask me anything you want!</SheetDescription>
 				</SheetHeader>
 				<ScrollArea className="max-h-[calc(100%-250px)]">
-					<div className="grid gap-8 px-4">
+					<div className="grid gap-6 px-4">
 						{history.map((item, index) => {
 							if (!item.content) return null;
 
@@ -118,11 +128,13 @@ export default function AiPopup({
 							}
 
 							return (
-								<UserChatBlock
-									showToolbar={false}
-									key={index}
-									text={item.content}
-								/>
+								<div className="scale-95">
+									<UserChatBlock
+										showToolbar={false}
+										key={index}
+										text={item.content}
+									/>
+								</div>
 							);
 						})}
 					</div>
@@ -134,7 +146,7 @@ export default function AiPopup({
 					<ScrollBar />
 				</ScrollArea>
 				<div className="absolute bottom-4 left-0 right-0 w-full px-4">
-					<div className="relative bg-sidebar dark:bg-card border rounded-xl">
+					<div className="relative pb-2 bg-sidebar dark:bg-card border rounded-xl">
 						<Textarea
 							value={value}
 							onChange={(e) => {
@@ -146,6 +158,20 @@ export default function AiPopup({
 							placeholder="Start typing here... & press enter!"
 							className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
 						></Textarea>
+						<div className="px-2 justify-end flex">
+							<Button
+								onClick={handleClick}
+								disabled={isPending}
+								size="icon"
+								className="h-8 w-8"
+							>
+								{isPending ? (
+									<Loader2 className="!h-3.5 !w-3.5 animate-spin" />
+								) : (
+									<ArrowUp className="!h-3.5 !w-3.5" />
+								)}
+							</Button>
+						</div>
 					</div>
 				</div>
 			</SheetContent>
