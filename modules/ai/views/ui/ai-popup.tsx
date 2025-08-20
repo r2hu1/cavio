@@ -12,8 +12,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
 import { useState } from "react";
-import { UserChatBlock } from "./user-chat-block";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { toast } from "sonner";
@@ -46,12 +44,24 @@ export default function AiPopup({
 		trpc.ai.documentAiChatCreate.mutationOptions(),
 	);
 
+	const [history, setHistory] = useState<{ role: string; content: string }[]>(
+		[],
+	);
+
 	const mutateFn = () => {
+		console.log(
+			history[history.length - 1]?.role == "ai" &&
+				history[history.length - 1]?.content.slice(-300),
+		);
 		mutate(
 			{
 				content: value,
 				title: title || "",
 				lastEditedDocContent: lastEdited.toString(),
+				previous:
+					(history[history.length - 1]?.role == "ai" &&
+						history[history.length - 1]?.content.slice(-300)) ||
+					"N/A",
 			},
 			{
 				onSuccess: (data) => {
@@ -66,10 +76,6 @@ export default function AiPopup({
 		);
 	};
 
-	const [history, setHistory] = useState<{ role: string; content: string }[]>(
-		[],
-	);
-
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
@@ -81,7 +87,8 @@ export default function AiPopup({
 		}
 	};
 
-	const handleClick = () => {
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		if (value.trim()) {
 			setHistory((prev) => [...prev, { role: "user", content: value }]);
 			mutateFn();
@@ -107,7 +114,7 @@ export default function AiPopup({
 							if (item.role === "ai") {
 								return (
 									<Message from="assistant">
-										<MessageContent className="!bg-sidebar">
+										<MessageContent className="!bg-sidebar !text-sidebar-foreground">
 											<StreamedMessage
 												key={index}
 												index={index}
@@ -135,7 +142,10 @@ export default function AiPopup({
 						<ConversationScrollButton />
 					</ConversationContent>
 				</Conversation>
-				<div className="absolute bottom-4 left-0 right-0 w-full px-4">
+				<form
+					onSubmit={handleSubmit}
+					className="absolute bottom-4 left-0 right-0 w-full px-4"
+				>
 					<div className="relative pb-2 bg-sidebar dark:bg-card border rounded-xl">
 						<Textarea
 							value={value}
@@ -150,7 +160,7 @@ export default function AiPopup({
 						></Textarea>
 						<div className="px-2 justify-end flex">
 							<Button
-								onClick={handleClick}
+								type="submit"
 								disabled={isPending}
 								size="icon"
 								className="h-8 w-8"
@@ -163,7 +173,7 @@ export default function AiPopup({
 							</Button>
 						</div>
 					</div>
-				</div>
+				</form>
 			</SheetContent>
 		</Sheet>
 	);

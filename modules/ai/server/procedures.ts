@@ -159,12 +159,14 @@ export const aiRouter = createTRPCRouter({
 				content: z.string(),
 				lastEditedDocContent: z.string().optional().default(""),
 				title: z.string(),
+				previous: z.string().optional().default(""),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
 			const memoryContext = `
 		<Memory>
 		<Warning>Always use memory if necessary</Warning>
+		<YourPreviousMinifiedResponse>${input.previous}</YourPreviousMinifiedResponse>
 			<User>
 			  id: ${ctx.auth.user.id}
 				name: ${ctx.auth.user.name}
@@ -182,7 +184,7 @@ export const aiRouter = createTRPCRouter({
 			const res = await generateText({
 				model: googleai("models/gemini-2.0-flash") as any,
 				system: `${DOC_AI_SYSTEM_PROMPT}\n\n${memoryContext}`,
-				prompt: input.content, // user’s new input
+				prompt: input.content,
 			});
 
 			if (!res) {

@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 export function useStreamText(input: string | undefined, speed = 40) {
 	const safeText = typeof input === "string" ? input : "";
 	const [streamed, setStreamed] = useState("");
+	const [completed, setCompleted] = useState(false);
 
 	useEffect(() => {
+		if (completed) return;
 		setStreamed("");
 		let i = 0;
 		const interval = setInterval(() => {
@@ -18,8 +20,9 @@ export function useStreamText(input: string | undefined, speed = 40) {
 			}
 		}, speed);
 
+		setCompleted(true);
 		return () => clearInterval(interval);
-	}, [safeText, speed]);
+	}, []);
 
 	return streamed;
 }
