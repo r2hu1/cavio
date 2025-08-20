@@ -38,7 +38,7 @@ export default function SettingsPageView() {
 								{data?.user?.email}
 							</h2>
 							<Badge>
-								{data?.user?.emailVerified ? "Verified" : "Unverified"}
+								{!data?.user?.emailVerified ? "Verified" : "Unverified"}
 							</Badge>
 						</div>
 					</div>

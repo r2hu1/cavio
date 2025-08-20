@@ -128,12 +128,8 @@ export default function AiPopup({
 							}
 
 							return (
-								<div className="scale-95">
-									<UserChatBlock
-										showToolbar={false}
-										key={index}
-										text={item.content}
-									/>
+								<div className="scale-95" key={index}>
+									<UserChatBlock showToolbar={false} text={item.content} />
 								</div>
 							);
 						})}

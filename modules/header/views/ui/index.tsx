@@ -12,7 +12,7 @@ export default function DashboardHeader() {
 		<div className="mb-14">
 			<header
 				className={cn(
-					"px-4 h-14 flex items-center gap-2 transition-all right-0 fixed top-0 w-full",
+					"px-4 h-14 flex items-center gap-2 transition-all right-0 z-50 fixed top-0 w-full",
 					open && "md:w-[calc(100%-260px)]",
 				)}
 			>
