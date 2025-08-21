@@ -19,26 +19,30 @@ export const aiRouter = createTRPCRouter({
 				content: z.string(),
 				typeOfModel: z.string(),
 				chatId: z.string().optional(),
+				lastResponse: z.string().optional().default(""),
 			}),
 		)
 		.mutation(async ({ input, ctx }) => {
+			const memories = `
+		 <Memory>
+		  <User>
+		   <Avatar>${ctx.auth.user.image}</Avatar>
+		   <Name>${ctx.auth.user.name}</Name>
+		   <Email>${ctx.auth.user.email}</Email>
+		   <EmailVerified>${ctx.auth.user.emailVerified}</EmailVerified>
+		   <Id>${ctx.auth.user.id}</Id>
+		  </User>
+				<YourLastResponse>${input.lastResponse}</YourLastResponse>
+				<Waring>Always use memory if necessary</Waring>
+				<Waring>Only use your last response if it is relevant to the current conversation</Waring>
+		 </Memory>
+			`;
 			const res = await generateText({
-				model: googleai("models/gemini-2.0-flash") as any,
+				model: googleai("models/gemini-2.5-flash") as any,
 				prompt: `
           ${input.content}
           `,
-				system: `
-			 <Memory>
-			  <User>
-			   <Avatar>${ctx.auth.user.image}</Avatar>
-			   <Name>${ctx.auth.user.name}</Name>
-			   <Email>${ctx.auth.user.email}</Email>
-			   <EmailVerified>${ctx.auth.user.emailVerified}</EmailVerified>
-			   <Id>${ctx.auth.user.id}</Id>
-			  </User>
-			 </Memory>
-				${SYSTEM_PROMPT},
-				`,
+				system: `${SYSTEM_PROMPT}\n\n${memories}`,
 			});
 			if (!res) {
 				throw new TRPCError({
@@ -182,7 +186,7 @@ export const aiRouter = createTRPCRouter({
     `.trim();
 
 			const res = await generateText({
-				model: googleai("models/gemini-2.0-flash") as any,
+				model: googleai("models/gemini-2.5-flash") as any,
 				system: `${DOC_AI_SYSTEM_PROMPT}\n\n${memoryContext}`,
 				prompt: input.content,
 			});

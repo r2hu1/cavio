@@ -54,6 +54,10 @@ export default function NewChatPageView({ params }: { params?: string }) {
 				content: stateValue,
 				typeOfModel: stateMode,
 				chatId: params,
+				lastResponse:
+					(history[history.length - 1]?.role == "ai" &&
+						history[history.length - 1]?.content.slice(-300)) ||
+					"N/A",
 			},
 			{
 				onError: (error) => {
