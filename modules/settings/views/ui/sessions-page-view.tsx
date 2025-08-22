@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { Session } from "better-auth";
 import { useEffect, useState } from "react";
 import SessionCard from "./session-card";
-import SessionPageNav from "./session-page-nav";
+import SessionPageNav from "./settings-page-nav";
 import PageLoader from "@/modules/preloader/views/ui/page-loader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";

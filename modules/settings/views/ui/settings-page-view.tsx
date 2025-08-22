@@ -3,7 +3,7 @@
 import { useAuthState } from "@/modules/auth/providers/auth-context";
 import { User } from "better-auth";
 import { useEffect, useState } from "react";
-import SessionPageNav from "./session-page-nav";
+import SessionPageNav from "./settings-page-nav";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SignOut from "@/modules/auth/views/ui/sign-out";
