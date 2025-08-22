@@ -54,9 +54,9 @@ export default function SessionsPageView() {
 			</div>
 			<div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
 				{!loading &&
-					sessions?.map((session) => (
+					sessions?.map((session, index) => (
 						<SessionCard
-							key={session.id}
+							key={index}
 							session={session}
 							onRevokeCallback={fetchSessions}
 						/>

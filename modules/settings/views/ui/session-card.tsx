@@ -68,19 +68,19 @@ export default function SessionCard({
 	};
 
 	return (
-		<Card className="p-0 !h-fit shadow-none hover:shadow-md transition">
+		<Card className="p-0 bg-sidebar !h-fit shadow-none hover:shadow-md transition">
 			<CardHeader className="py-3 px-4 !pb-1.5 border-b">
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-lg font-semibold">
 						{parseUserAgent(session.userAgent)}
 					</CardTitle>
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-1.5">
 						<Badge variant={isExpired ? "destructive" : "default"}>
 							{isExpired ? "Expired" : "Active"}
 						</Badge>
 						<Button
 							size="sm"
-							className="h-6 text-xs"
+							className="h-[22.5px] text-xs"
 							variant="outline"
 							onClick={revokeSession}
 							disabled={revoking}
