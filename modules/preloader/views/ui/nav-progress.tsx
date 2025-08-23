@@ -14,7 +14,7 @@ export default function NavProgress() {
 		<div
 			className={cn(
 				"py-2 px-3.5 flex cursor-progress items-center transition duration-200 justify-center rounded-t-md fixed bottom-0 left-1/2 -translate-x-1/2 z-[999] bg-primary text-primary-foreground translate-y-0",
-				status != "loading" && "translate-y-full",
+				status === "idle" && "translate-y-full",
 			)}
 		>
 			<div className="flex items-center gap-2">
