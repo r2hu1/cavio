@@ -6,13 +6,12 @@ It's a **Notion-like note-taking app**, but not just for notes—Slate is design
 
 ## Preview
 
-| Preview | Description |
-|---------|-------------|
-| <img src="/public/dashboard.png" alt="Dashboard Preview" width="300"/> | **Dashboard** |
-| <img src="/public/folder-page.png" alt="Folder Page Preview" width="300"/> | **Folder Page** |
-| <img src="/public/document-page.png" alt="Document Page Preview" width="300"/> | **Document Page** |
-| <img src="/public/ai-chat.png" alt="AI Chat Preview" width="300"/> | **AI Chat** |
-
+<p align="center">
+  <img src="/public/dash.png" alt="Dashboard Preview" width="200"/>
+  <img src="/public/folder.png" alt="Folder Page Preview" width="200"/>
+  <img src="/public/doc.png" alt="Document Page Preview" width="200"/>
+  <img src="/public/doc-ai.png" alt="AI Chat Preview" width="200"/>
+</p>
 
 ## 🛠️ Setup and Deploy
 
