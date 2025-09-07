@@ -4,6 +4,13 @@
 
 It's a **Notion-like note-taking app**, but not just for notes—Slate is designed for **content writing, script drafting, blogging, journaling**, and more.
 
+## Preview
+
+![Preview1](/public/dashboard.png)
+![Preview2](/public/folder-page.png)
+![Preview3](/public/document-page.png)
+![Preview4](/public/ai-chat.png)
+
 ## 🛠️ Setup and Deploy
 
 To run the project locally, you'll need to have api/secret keys of the following:
