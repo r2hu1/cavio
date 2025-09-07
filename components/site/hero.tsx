@@ -23,7 +23,7 @@ export default function Hero() {
         <Button size="lg">Get Started</Button>
       </div>
       <div className="mx-auto w-full max-w-7xl border p-1 rounded-lg shadow-xl !mt-14 md:!mt-28">
-        <img src="/site/dash.png" className="w-full rounded-lg" />
+        <img src="/dash.png" className="w-full rounded-lg" />
       </div>
     </section>
   );
