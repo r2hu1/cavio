@@ -6,19 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Save } from "lucide-react";
 import { getApiKey, setApiKey } from "@/modules/ai/views/creds/lib";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function PreferencesPageView() {
-  const [apiKey, setApiKey] = useState<string | null>("");
+  const [apiKey, setApiKeyValue] = useState<string>("");
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!apiKey) return;
-    setApiKey(apiKey);
+    await setApiKey(apiKey);
+    toast.success("API key updated successfully");
   };
 
   const getKey = async () => {
     const key = await getApiKey();
-    setApiKey(key);
+    setApiKeyValue(key || "");
   };
   useEffect(() => {
     getKey();
@@ -41,8 +43,9 @@ export default function PreferencesPageView() {
             <Label htmlFor="gemini-api-key">Gemini API Key</Label>
             <div className="flex w-full gap-2">
               <Input
+                type="text"
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                onChange={(e) => setApiKeyValue(e.target.value)}
                 id="gemini-api-key"
                 name="gemini-api-key"
                 placeholder="AIza................"

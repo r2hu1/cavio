@@ -1,9 +1,7 @@
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-import { appRouter } from "@/trpc/routers/_app";
-import { createTRPCContext } from "@/trpc/init";
-import { googleai } from "@/lib/google-ai";
 import { getApiKey } from "@/modules/ai/views/creds/lib";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
   const { prompt: messages } = await req.json();
@@ -19,6 +17,11 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   }
+  console.log(key);
+
+  const googleai = createGoogleGenerativeAI({
+    apiKey: key || "",
+  });
 
   const completion = await generateText({
     model: googleai("models/gemini-2.0-flash") as any,

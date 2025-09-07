@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 import { generateText, streamText } from "ai";
 import { NextResponse } from "next/server";
-import { googleai } from "@/lib/google-ai";
 import { getApiKey } from "@/modules/ai/views/creds/lib";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: NextRequest) {
   const { messages, system } = await req.json();
@@ -15,6 +15,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const googleai = createGoogleGenerativeAI({
+      apiKey: key || "",
+    });
     const result = await streamText({
       model: googleai("models/gemini-2.0-flash") as any,
       prompt: messages[0].content,

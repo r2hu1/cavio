@@ -2,7 +2,6 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 import { generateText } from "ai";
-import { googleai } from "@/lib/google-ai";
 import { db } from "@/db/client";
 import { aiChatHistory } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -12,6 +11,7 @@ import {
   SYSTEM_PROMPT,
 } from "../constants";
 import { getApiKey } from "../views/creds/lib";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export const aiRouter = createTRPCRouter({
   create: protectedProcedure
@@ -45,6 +45,9 @@ export const aiRouter = createTRPCRouter({
 				<Waring>Only use your last response if it is relevant to the current conversation</Waring>
 		 </Memory>
 			`;
+      const googleai = createGoogleGenerativeAI({
+        apiKey: key || "",
+      });
       const res = await generateText({
         model: googleai("models/gemini-2.5-flash") as any,
         prompt: `
@@ -175,6 +178,12 @@ export const aiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      const key = await getApiKey();
+      if (!key) {
+        return {
+          text: "No API key found, please set it in the settings.",
+        };
+      }
       const memoryContext = `
 		<Memory>
 		<Warning>Always use memory if necessary</Warning>
@@ -193,6 +202,9 @@ export const aiRouter = createTRPCRouter({
 		</Memory>
     `.trim();
 
+      const googleai = createGoogleGenerativeAI({
+        apiKey: key || "",
+      });
       const res = await generateText({
         model: googleai("models/gemini-2.5-flash") as any,
         system: `${DOC_AI_SYSTEM_PROMPT}\n\n${memoryContext}`,
