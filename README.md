@@ -41,3 +41,7 @@ Now you are ready to deploy the project on cloud platforms like Vercel.
 ## 📝 Deploy on Vercel
 
 [![Deploy on Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/r2hu1/slate/tree/without-payments-for-selfhost)
+
+# Contributions
+
+Fix, add or enhance something and make a pull request, i will review and merge it :)
