@@ -54,6 +54,9 @@ export default function PreferencesPageView() {
                 <Save className="!h-4 !w-4" />
               </Button>
             </div>
+            <p className="text-xs text-foreground/60 -mt-2">
+              Its safe, never sync with server, stored locally!
+            </p>
           </form>
         </div>
       </div>
