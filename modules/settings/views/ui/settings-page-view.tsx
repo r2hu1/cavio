@@ -10,9 +10,30 @@ import SignOut from "@/modules/auth/views/ui/sign-out";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { Loader } from "@/components/ai-elements/loader";
 
 export default function SettingsPageView() {
   const { data, isPending } = useAuthState();
+  const [sending, setSending] = useState(false);
+
+  const sendVerificationEmail = async () => {
+    if (data?.user?.emailVerified) return;
+    setSending(true);
+    try {
+      const res = await authClient.sendVerificationEmail({
+        email: data.user.email,
+        callbackURL: "/",
+      });
+      toast.success("Verification email sent");
+    } catch (error: any) {
+      toast.error("Error", error.message);
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <div>
@@ -24,9 +45,14 @@ export default function SettingsPageView() {
             Manage your personal information
           </p>
         </div>
-        <SignOut variant="default" size="sm">
-          Logout <LogOut className="!h-3.5 !w-3.5" />
-        </SignOut>
+        <Button
+          size="sm"
+          onClick={sendVerificationEmail}
+          disabled={data?.user?.emailVerified || sending}
+        >
+          {sending && <Loader className="h-4 w-4" />}{" "}
+          {data?.user?.emailVerified ? "Verified" : "Verify Email"}
+        </Button>
       </div>
       <div className="grid gap-6">
         <div className="flex items-center justify-between">
@@ -40,6 +66,7 @@ export default function SettingsPageView() {
               <Badge>
                 {data?.user?.emailVerified ? "Verified" : "Unverified"}
               </Badge>
+              {}
             </div>
           </div>
           <div>
