@@ -1,8 +1,8 @@
-# Slate (In Development)
+# Cavio (In Development)
 
-**Slate** was initially intended to be a closed-source project, but I figured—why not open-source it? That way, others can learn, contribute, or build on top of it.
+**Cavio** was initially intended to be a closed-source project, but I figured—why not open-source it? That way, others can learn, contribute, or build on top of it.
 
-It's a **Notion-like note-taking app**, but not just for notes—Slate is designed for **content writing, script drafting, blogging, journaling**, and more.
+It's a **Notion-like note-taking app**, but not just for notes — cavio is designed for **content writing, script drafting, blogging, journaling**, and more.
 
 ## Preview
 
@@ -40,7 +40,7 @@ Now you are ready to deploy the project on cloud platforms like Vercel.
 
 ## 📝 Deploy on Vercel
 
-[![Deploy on Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/r2hu1/slate/tree/without-payments-for-selfhost)
+[![Deploy on Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/r2hu1/cavio/tree/without-payments-for-selfhost)
 
 # Contributions
 

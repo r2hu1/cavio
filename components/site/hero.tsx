@@ -19,7 +19,7 @@ export default function Hero() {
       </div>
       <div className="flex flex-wrap items-center gap-3 justify-center mt-8">
         <Button variant="outline" asChild className="h-9 sm:h-10">
-          <Link href="https://github.com/r2hu1/slate">Git Repository</Link>
+          <Link href="https://github.com/r2hu1/cavio">Git Repository</Link>
         </Button>
         <Button asChild className="h-9 sm:h-10">
           <Link href="/auth/sign-in">Get Started</Link>
