@@ -33,7 +33,7 @@ export default function Header() {
           variant="ghost"
           className="rounded-full hover:!bg-sidebar-accent"
         >
-          <Link className="text-sm" href="https://github.com/r2hu1/slate">
+          <Link className="text-sm" href="https://github.com/r2hu1/cavio">
             Use Case
           </Link>
         </Button>
