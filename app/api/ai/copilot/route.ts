@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   if (!key) {
     return NextResponse.json(
       {
-        text: "No API key found, please set it in the settings.",
+        text: "No API key found, please set it in the [settings](/settings/preferences).",
       },
       { status: 200 },
     );

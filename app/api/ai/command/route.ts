@@ -9,7 +9,10 @@ export async function POST(req: NextRequest) {
   const key = await getApiKey();
   if (!key) {
     return NextResponse.json(
-      { error: "Please provide a valid API key in the settings!" },
+      {
+        error:
+          "No API key found, please set it in the [settings](/settings/preferences).",
+      },
       { status: 500 },
     );
   }

@@ -27,7 +27,7 @@ export const aiRouter = createTRPCRouter({
       const key = await getApiKey();
       if (!key) {
         return {
-          text: "No API key found, please set it in the settings.",
+          text: "No API key found, please set it in the [settings](/settings/preferences).",
           id: null,
         };
       }
