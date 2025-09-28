@@ -46,14 +46,9 @@ export default function FolderActionContextMenu({
             <ExternalLink className="!h-3.5 !w-3.5" /> Open in new tab
           </Link>
         </ContextMenuItem>
-        <CreateFolderPopup>
-          <ContextMenuItem onSelect={(e) => e.preventDefault()}>
-            <FolderPlus className="!h-3.5 !w-3.5" /> New folder
-          </ContextMenuItem>
-        </CreateFolderPopup>
         <CreateDocumentPopup folderId={id}>
           <ContextMenuItem onSelect={(e) => e.preventDefault()}>
-            <FilePlus className="!h-3.5 !w-3.5" /> New doc
+            <FilePlus className="!h-3.5 !w-3.5" /> New Document
           </ContextMenuItem>
         </CreateDocumentPopup>
         <ContextMenuSeparator />

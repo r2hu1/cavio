@@ -29,7 +29,7 @@ export default function DocumentActionContextMenu({
         </p>
         <CreateDocumentPopup folderId={folderId}>
           <ContextMenuItem onSelect={(e) => e.preventDefault()}>
-            <FilePlus className="!h-3.5 !w-3.5" /> New doc
+            <FilePlus className="!h-3.5 !w-3.5" /> New Document
           </ContextMenuItem>
         </CreateDocumentPopup>
         <RenameDocumentPopup documentId={id} folderId={folderId}>
