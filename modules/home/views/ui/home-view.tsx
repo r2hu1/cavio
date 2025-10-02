@@ -10,9 +10,10 @@ import {
   Folder,
   FolderOpen,
   FolderPlus,
+  View,
 } from "lucide-react";
 import RecentlyViewed from "./recently-viewed";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import RecentFolders from "@/modules/folders/views/ui/recent-folders";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import RecentDocuments from "@/modules/documents/views/ui/recent-documents";
@@ -32,6 +33,7 @@ export const getGreetings = () => {
 };
 export default function HomeView() {
   const { data: user, error, isPending } = useAuthState();
+  const [viewAsGrid, setViewAsGrid] = useState(false);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -71,8 +73,16 @@ export default function HomeView() {
           <h1 className="text-sm text-foreground/80 flex items-center gap-2">
             <FileText className="!h-3.5 !w-3.5" /> Recent Documents
           </h1>
+          <Button
+            onClick={() => setViewAsGrid(!viewAsGrid)}
+            size="sm"
+            className="h-6 w-6"
+            variant="ghost"
+          >
+            <View className="!h-3.5 !w-3.5" />
+          </Button>
         </div>
-        <RecentDocuments />
+        <RecentDocuments viewAs={viewAsGrid ? "grid" : "flex"} />
       </div>
     </div>
   );

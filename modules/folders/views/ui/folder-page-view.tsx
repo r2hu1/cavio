@@ -12,6 +12,7 @@ import {
   Loader2,
   PencilLine,
   Sparkles,
+  View,
 } from "lucide-react";
 import Header from "./header";
 import DocumentCard from "@/modules/documents/views/ui/document-card";
@@ -21,7 +22,7 @@ import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
 import { cn } from "@/lib/utils";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import FolderSettingsPopup from "./folder-settings-popup";
 import FolderAiInput from "@/modules/ai/views/ui/folder-ai-input";
 import CreateDocumentInline from "@/modules/documents/views/ui/create-document-inline";
@@ -34,11 +35,30 @@ export default function FolderPageView() {
     trpc.document.getAllByFolderId.queryOptions({ folderId: id as string }),
   );
 
+  const [viewAsGrid, setViewAsGrid] = useState(false);
+
+  const views = {
+    flex: `grid sm:grid-cols-3 md:grid-cols-4 grid-cols-2 gap-3 lg:grid-cols-5`,
+    grid: `grid gap-3 sm:grid-cols-2`,
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <FolderAiInput />
-      <Header />
-      <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="flex items-center justify-between mt-10 !-mb-2">
+        <div>
+          <h1 className="text-sm text-foreground/80">Documents —</h1>
+        </div>
+        <Button
+          onClick={() => setViewAsGrid(!viewAsGrid)}
+          size="sm"
+          className="h-6 w-6"
+          variant="ghost"
+        >
+          <View className="!h-3.5 !w-3.5" />
+        </Button>
+      </div>
+      <div className={`mt-8 ${viewAsGrid ? views.grid : views.flex}`}>
         <Suspense>
           {!isLoading &&
             data?.map((document, index) => (

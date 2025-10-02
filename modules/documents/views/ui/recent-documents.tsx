@@ -6,11 +6,20 @@ import { FolderPlus } from "lucide-react";
 import DocumentCard from "./document-card";
 import CreateDocumentInline from "./create-document-inline";
 
-export default function RecentDocuments() {
+export default function RecentDocuments({
+  viewAs = "flex",
+}: {
+  viewAs: "grid" | "flex";
+}) {
   const trpc = useTRPC();
   const { data, isPending, error } = useQuery(
     trpc.document.getRecent.queryOptions(),
   );
+
+  const views = {
+    flex: `grid sm:grid-cols-3 md:grid-cols-4 grid-cols-2 lg:grid-cols-5 gap-3`,
+    grid: `grid gap-3 sm:grid-cols-2`,
+  };
   return (
     <div>
       {isPending && (
@@ -20,7 +29,7 @@ export default function RecentDocuments() {
       )}
 
       {!isPending && (
-        <div className="sm:grid-cols-3 grid md:flex items-center flex-wrap gap-3">
+        <div className={views[viewAs]}>
           {data?.map((document) => (
             <DocumentCard
               folderId={document.folderId}

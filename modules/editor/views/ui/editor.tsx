@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback, useEffect, Suspense } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { Plate, useEffectOnce, usePlateEditor } from "platejs/react";
 import { EditorKit } from "@/components/editor/editor-kit";
 import { CopilotKit } from "@/components/editor/plugins/copilot-kit";

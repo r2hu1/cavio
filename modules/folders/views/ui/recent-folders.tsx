@@ -12,6 +12,9 @@ export default function RecentFolders() {
   const { data, isPending, error } = useQuery(
     trpc.folder.getRecent.queryOptions(),
   );
+
+  const flexView = `flex flex-wrap gap-3`;
+  const gridView = `grid gap-3`;
   return (
     <div>
       {isPending && (
@@ -21,7 +24,7 @@ export default function RecentFolders() {
       )}
 
       {!isPending && (
-        <div className="sm:grid-cols-3 grid md:flex items-center flex-wrap gap-3">
+        <div className={flexView}>
           {data?.map((folder) => (
             <FolderCard
               key={folder.id}
