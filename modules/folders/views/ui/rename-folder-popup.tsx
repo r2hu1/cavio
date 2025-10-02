@@ -40,10 +40,10 @@ export default function RenameFolderPopup({
   const handleRenameFolder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const name = currFolderName;
-    if (name.length < 5) {
-      toast.error("Folder name must be at least 5 characters long");
-      return;
-    }
+    // if (name.length < 5) {
+    //   toast.error("Folder name must be at least 5 characters long");
+    //   return;
+    // }
     setLoading(true);
     mutate(
       {
