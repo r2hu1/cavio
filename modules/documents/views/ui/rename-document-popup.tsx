@@ -42,10 +42,10 @@ export default function RenameDocumentPopup({
   const handleRenameDocument = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const name = currDocName;
-    if (name.length < 5) {
-      toast.error("Name must be at least 5 characters long");
-      return;
-    }
+    // if (name.length < 5) {
+    //   toast.error("Name must be at least 5 characters long");
+    //   return;
+    // }
     setLoading(true);
     mutate(
       {
