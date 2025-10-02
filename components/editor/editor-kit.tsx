@@ -84,8 +84,8 @@ export const EditorKit = [
 
   // UI
   ...BlockPlaceholderKit,
-  ...FixedToolbarKit,
-  // ...FloatingToolbarKit,
+  // ...FixedToolbarKit,
+  ...FloatingToolbarKit,
 ];
 
 export type MyEditor = TPlateEditor<Value, (typeof EditorKit)[number]>;
