@@ -61,6 +61,9 @@ export default function CreateDocumentPopup({
           await queryClient.invalidateQueries(
             trpc.document.getRecent.queryOptions(),
           );
+          await queryClient.invalidateQueries(
+            trpc.document.getAll.queryOptions(),
+          );
         },
         onError: (error) => {
           toast.error(error.message);
