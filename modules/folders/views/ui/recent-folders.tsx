@@ -13,8 +13,7 @@ export default function RecentFolders() {
     trpc.folder.getRecent.queryOptions(),
   );
 
-  const flexView = `flex flex-wrap gap-3`;
-  const gridView = `grid gap-3`;
+  const flexView = `sm:flex sm:flex-wrap grid grid-cols-2 gap-3`;
   return (
     <div>
       {isPending && (
