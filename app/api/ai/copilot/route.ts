@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     });
 
     const completion = await generateText({
-      model: googleai.languageModel("models/gemini-5.0-flash") as any,
+      model: googleai.languageModel("models/gemini-2.5-flash") as any,
       prompt: messages,
       system: `You are an advanced AI writing assistant, similar to VSCode Copilot but for general text. Your task is to predict and generate the next part of the text based on the given context.
 
