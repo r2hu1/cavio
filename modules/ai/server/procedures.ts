@@ -10,7 +10,7 @@ import {
   FORMAT_PROMPT,
   SYSTEM_PROMPT,
 } from "../constants";
-import { getApiKey } from "../views/creds/lib";
+import { getApiKey, getModel } from "../views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export const aiRouter = createTRPCRouter({
@@ -25,6 +25,7 @@ export const aiRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const key = await getApiKey();
+      const model = await getModel();
       if (!key) {
         return {
           text: "No API key found, please set it in the [settings](/settings/preferences).",
@@ -49,7 +50,7 @@ export const aiRouter = createTRPCRouter({
         apiKey: key || "",
       });
       const res = await generateText({
-        model: googleai("models/gemini-2.5-flash") as any,
+        model: googleai(`models/${model}`) as any,
         prompt: `
           ${input.content}
           `,
@@ -179,6 +180,7 @@ export const aiRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const key = await getApiKey();
+      const model = await getModel();
       if (!key) {
         return {
           text: "No API key found, please set it in the settings.",
@@ -206,7 +208,7 @@ export const aiRouter = createTRPCRouter({
         apiKey: key || "",
       });
       const res = await generateText({
-        model: googleai("models/gemini-2.5-flash") as any,
+        model: googleai(`models/${model}`) as any,
         system: `${DOC_AI_SYSTEM_PROMPT}\n\n${memoryContext}`,
         prompt: input.content,
       });

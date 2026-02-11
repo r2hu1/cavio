@@ -25,13 +25,13 @@ import {
   getEditPrompt,
   getGeneratePrompt,
 } from "./prompt";
-import { getApiKey } from "@/modules/ai/views/creds/lib";
+import { getApiKey, getModel } from "@/modules/ai/views/creds/lib";
 import { BaseEditorKit } from "@/components/editor/editor-base-kit";
 import { googleai } from "@/lib/google-ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: NextRequest) {
-  const { apiKey: key, ctx, messages: messagesRaw, model } = await req.json();
+  const { apiKey: key, ctx, messages: messagesRaw, model: modelParam } = await req.json();
 
   const { children, selection, toolName: toolNameParam } = ctx;
 
@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
   });
 
   const apiKey = await getApiKey();
+  const selectedModel = await getModel();
 
   if (!apiKey) {
     return NextResponse.json(
@@ -55,6 +56,8 @@ export async function POST(req: NextRequest) {
   const gatewayProvider = createGoogleGenerativeAI({
     apiKey: apiKey,
   });
+
+  const modelName = modelParam || selectedModel;
 
   try {
     const stream = createUIMessageStream<ChatMessage>({
@@ -72,7 +75,7 @@ export async function POST(req: NextRequest) {
             : ["generate", "comment"];
 
           const { output: AIToolName } = await generateText({
-            model: gatewayProvider.languageModel("gemini-2.5-flash"),
+            model: gatewayProvider.languageModel(modelName),
             output: Output.choice({ options: enumOptions }),
             prompt,
           });
@@ -87,18 +90,18 @@ export async function POST(req: NextRequest) {
 
         const stream = streamText({
           experimental_transform: markdownJoinerTransform(),
-          model: gatewayProvider.languageModel("gemini-2.5-flash"),
+          model: gatewayProvider.languageModel(modelName),
           // Not used
           prompt: "",
           tools: {
             comment: getCommentTool(editor, {
               messagesRaw,
-              model: gatewayProvider.languageModel("gemini-2.5-flash"),
+              model: gatewayProvider.languageModel(modelName),
               writer,
             }),
             table: getTableTool(editor, {
               messagesRaw,
-              model: gatewayProvider.languageModel("gemini-2.5-flash"),
+              model: gatewayProvider.languageModel(modelName),
               writer,
             }),
           },
@@ -127,11 +130,7 @@ export async function POST(req: NextRequest) {
               return {
                 ...step,
                 activeTools: [],
-                model:
-                  editType === "selection"
-                    ? //The selection task is more challenging, so we chose to use Gemini 2.5 Flash.
-                      gatewayProvider.languageModel("gemini-2.5-flash")
-                    : gatewayProvider.languageModel("gemini-2.5-flash"),
+                model: gatewayProvider.languageModel(modelName),
                 messages: [
                   {
                     content: editPrompt,
@@ -156,7 +155,7 @@ export async function POST(req: NextRequest) {
                     role: "user",
                   },
                 ],
-                model: gatewayProvider.languageModel("gemini-2.5-flash"),
+                model: gatewayProvider.languageModel(modelName),
               };
             }
           },

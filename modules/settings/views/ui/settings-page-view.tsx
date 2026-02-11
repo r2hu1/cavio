@@ -45,14 +45,15 @@ export default function SettingsPageView() {
             Manage your personal information
           </p>
         </div>
-        <Button
-          size="sm"
-          onClick={sendVerificationEmail}
-          disabled={data?.user?.emailVerified || sending}
-        >
-          {sending && <Loader className="h-4 w-4" />}{" "}
-          {data?.user?.emailVerified ? "Verified" : "Verify Email"}
-        </Button>
+        {!data?.user?.emailVerified && (
+          <Button
+            size="sm"
+            onClick={sendVerificationEmail}
+            disabled={data?.user?.emailVerified || sending}
+          >
+            {sending && <Loader className="h-4 w-4" />} Verify Email
+          </Button>
+        )}
       </div>
       <div className="grid gap-6">
         <div className="flex items-center justify-between">

@@ -1,7 +1,7 @@
 import { streamText } from "ai";
 import { NextResponse } from "next/server";
 import { SYSTEM_PROMPT } from "@/modules/ai/constants";
-import { getApiKey } from "@/modules/ai/views/creds/lib";
+import { getApiKey, getModel } from "@/modules/ai/views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
@@ -10,6 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 200 });
   }
   const key = await getApiKey();
+  const model = await getModel();
   if (!key) {
     return NextResponse.json(
       {
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
   });
 
   const completion = streamText({
-    model: googleai("models/gemini-2.5-flash") as any,
+    model: googleai(`models/${model}`) as any,
     prompt: messages,
     system: SYSTEM_PROMPT,
   });

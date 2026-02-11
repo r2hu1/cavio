@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-import { getApiKey } from "@/modules/ai/views/creds/lib";
+import { getApiKey, getModel } from "@/modules/ai/views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
@@ -9,6 +9,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 200 });
   }
   const key = await getApiKey();
+  const model = await getModel();
   if (!key) {
     return NextResponse.json(
       {
@@ -25,12 +26,12 @@ export async function POST(req: Request) {
     });
 
     const completion = await generateText({
-      model: googleai.languageModel("models/gemini-2.5-flash") as any,
+      model: googleai.languageModel(`models/${model}`) as any,
       prompt: messages,
       system: `You are an advanced AI writing assistant, similar to VSCode Copilot but for general text. Your task is to predict and generate the next part of the text based on the given context.
 
       Rules:
-        - Continue the text naturally up to the next punctuation mark (., ,, ;, :, ?," " or !).
+        - Continue the text naturally up to the next punctuation mark (., ,, ;, :, ?, " " or !).
         - Maintain style and tone. Don't repeat given text.
         - For unclear context, provide the most likely continuation.
         - Handle code snippets, lists, or structured text if needed.
