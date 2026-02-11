@@ -70,7 +70,7 @@ export default function StaticInput() {
           }}
           onKeyDown={handleKeyDown}
           placeholder={"Type something here..."}
-          className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
+          className="w-full px-4 py-3 resize-none bg-transparent! border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
         />
         <div className="px-3 pb-2.5">
           <div className="flex items-center justify-between w-full gap-2">

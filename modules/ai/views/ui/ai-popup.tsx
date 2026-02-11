@@ -156,7 +156,7 @@ export default function AiPopup({
               ref={textareaRef}
               onKeyDown={handleKeyDown}
               placeholder="Start typing here... & press enter!"
-              className="w-full px-4 py-3 resize-none bg-transparent border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
+              className="w-full px-4 py-3 resize-none bg-transparent! border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
             ></Textarea>
             <div className="px-2 justify-end flex">
               <Button

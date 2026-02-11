@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   });
 
   const completion = streamText({
-    model: googleai("models/gemini-2.0-flash") as any,
+    model: googleai("models/gemini-2.5-flash") as any,
     prompt: messages,
     system: SYSTEM_PROMPT,
   });

@@ -27,6 +27,8 @@ import {
 } from "./prompt";
 import { getApiKey } from "@/modules/ai/views/creds/lib";
 import { BaseEditorKit } from "@/components/editor/editor-base-kit";
+import { googleai } from "@/lib/google-ai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: NextRequest) {
   const { apiKey: key, ctx, messages: messagesRaw, model } = await req.json();
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
   const { children, selection, toolName: toolNameParam } = ctx;
 
   const editor = createSlateEditor({
-    plugins: BaseEditorKit,
+    // plugins: BaseEditorKit,
     selection,
     value: children,
   });
@@ -50,8 +52,8 @@ export async function POST(req: NextRequest) {
 
   const isSelecting = editor.api.isExpanded();
 
-  const gatewayProvider = createGateway({
-    apiKey,
+  const gatewayProvider = createGoogleGenerativeAI({
+    apiKey: apiKey,
   });
 
   try {
@@ -68,10 +70,9 @@ export async function POST(req: NextRequest) {
           const enumOptions = isSelecting
             ? ["generate", "edit", "comment"]
             : ["generate", "comment"];
-          const modelId = model || "google/gemini-2.5-flash";
 
           const { output: AIToolName } = await generateText({
-            model: gatewayProvider(modelId),
+            model: gatewayProvider.languageModel("gemini-2.5-flash"),
             output: Output.choice({ options: enumOptions }),
             prompt,
           });
@@ -86,18 +87,18 @@ export async function POST(req: NextRequest) {
 
         const stream = streamText({
           experimental_transform: markdownJoinerTransform(),
-          model: gatewayProvider(model || "openai/gpt-4o-mini"),
+          model: gatewayProvider.languageModel("gemini-2.5-flash"),
           // Not used
           prompt: "",
           tools: {
             comment: getCommentTool(editor, {
               messagesRaw,
-              model: gatewayProvider(model || "google/gemini-2.5-flash"),
+              model: gatewayProvider.languageModel("gemini-2.5-flash"),
               writer,
             }),
             table: getTableTool(editor, {
               messagesRaw,
-              model: gatewayProvider(model || "google/gemini-2.5-flash"),
+              model: gatewayProvider.languageModel("gemini-2.5-flash"),
               writer,
             }),
           },
@@ -129,8 +130,8 @@ export async function POST(req: NextRequest) {
                 model:
                   editType === "selection"
                     ? //The selection task is more challenging, so we chose to use Gemini 2.5 Flash.
-                      gatewayProvider(model || "google/gemini-2.5-flash")
-                    : gatewayProvider(model || "openai/gpt-4o-mini"),
+                      gatewayProvider.languageModel("gemini-2.5-flash")
+                    : gatewayProvider.languageModel("gemini-2.5-flash"),
                 messages: [
                   {
                     content: editPrompt,
@@ -155,7 +156,7 @@ export async function POST(req: NextRequest) {
                     role: "user",
                   },
                 ],
-                model: gatewayProvider(model || "openai/gpt-4o-mini"),
+                model: gatewayProvider.languageModel("gemini-2.5-flash"),
               };
             }
           },
