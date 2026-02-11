@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
-import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
+import type { DropdownMenuProps } from "@radix-ui/react-dropdown-menu";
 
 import {
   CalendarIcon,
@@ -27,22 +27,22 @@ import {
   SquareIcon,
   TableIcon,
   TableOfContentsIcon,
-} from 'lucide-react';
-import { KEYS } from 'platejs';
-import { type PlateEditor, useEditorRef } from 'platejs/react';
+} from "lucide-react";
+import { KEYS } from "platejs";
+import { type PlateEditor, useEditorRef } from "platejs/react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   insertBlock,
   insertInlineElement,
-} from '@/components/editor/transforms';
+} from "@/components/editor/transforms";
 
-import { ToolbarButton, ToolbarMenuGroup } from './toolbar';
+import { ToolbarButton, ToolbarMenuGroup } from "./toolbar";
 
 type Group = {
   group: string;
@@ -59,46 +59,46 @@ type Item = {
 
 const groups: Group[] = [
   {
-    group: 'Basic blocks',
+    group: "Basic blocks",
     items: [
       {
         icon: <PilcrowIcon />,
-        label: 'Paragraph',
+        label: "Paragraph",
         value: KEYS.p,
       },
       {
         icon: <Heading1Icon />,
-        label: 'Heading 1',
-        value: 'h1',
+        label: "Heading 1",
+        value: "h1",
       },
       {
         icon: <Heading2Icon />,
-        label: 'Heading 2',
-        value: 'h2',
+        label: "Heading 2",
+        value: "h2",
       },
       {
         icon: <Heading3Icon />,
-        label: 'Heading 3',
-        value: 'h3',
+        label: "Heading 3",
+        value: "h3",
       },
       {
         icon: <TableIcon />,
-        label: 'Table',
+        label: "Table",
         value: KEYS.table,
       },
       {
         icon: <FileCodeIcon />,
-        label: 'Code',
+        label: "Code",
         value: KEYS.codeBlock,
       },
       {
         icon: <QuoteIcon />,
-        label: 'Quote',
+        label: "Quote",
         value: KEYS.blockquote,
       },
       {
         icon: <MinusIcon />,
-        label: 'Divider',
+        label: "Divider",
         value: KEYS.hr,
       },
     ].map((item) => ({
@@ -109,26 +109,26 @@ const groups: Group[] = [
     })),
   },
   {
-    group: 'Lists',
+    group: "Lists",
     items: [
       {
         icon: <ListIcon />,
-        label: 'Bulleted list',
+        label: "Bulleted list",
         value: KEYS.ul,
       },
       {
         icon: <ListOrderedIcon />,
-        label: 'Numbered list',
+        label: "Numbered list",
         value: KEYS.ol,
       },
       {
         icon: <SquareIcon />,
-        label: 'To-do list',
+        label: "To-do list",
         value: KEYS.listTodo,
       },
       {
         icon: <ChevronRightIcon />,
-        label: 'Toggle list',
+        label: "Toggle list",
         value: KEYS.toggle,
       },
     ].map((item) => ({
@@ -139,16 +139,16 @@ const groups: Group[] = [
     })),
   },
   {
-    group: 'Media',
+    group: "Media",
     items: [
       {
         icon: <ImageIcon />,
-        label: 'Image',
+        label: "Image",
         value: KEYS.img,
       },
       {
         icon: <FilmIcon />,
-        label: 'Embed',
+        label: "Embed",
         value: KEYS.mediaEmbed,
       },
     ].map((item) => ({
@@ -159,34 +159,34 @@ const groups: Group[] = [
     })),
   },
   {
-    group: 'Advanced blocks',
+    group: "Advanced blocks",
     items: [
       {
         icon: <TableOfContentsIcon />,
-        label: 'Table of contents',
+        label: "Table of contents",
         value: KEYS.toc,
       },
       {
         icon: <Columns3Icon />,
-        label: '3 columns',
-        value: 'action_three_columns',
+        label: "3 columns",
+        value: "action_three_columns",
       },
       {
         focusEditor: false,
         icon: <RadicalIcon />,
-        label: 'Equation',
+        label: "Equation",
         value: KEYS.equation,
       },
       {
         icon: <PenToolIcon />,
-        label: 'Excalidraw',
+        label: "Excalidraw",
         value: KEYS.excalidraw,
       },
-      {
-        icon: <Code2 />,
-        label: 'Code Drawing',
-        value: KEYS.codeDrawing,
-      },
+      // {
+      //   icon: <Code2 />,
+      //   label: 'Code Drawing',
+      //   value: KEYS.codeDrawing,
+      // },
     ].map((item) => ({
       ...item,
       onSelect: (editor, value) => {
@@ -195,23 +195,23 @@ const groups: Group[] = [
     })),
   },
   {
-    group: 'Inline',
+    group: "Inline",
     items: [
       {
         icon: <Link2Icon />,
-        label: 'Link',
+        label: "Link",
         value: KEYS.link,
       },
       {
         focusEditor: true,
         icon: <CalendarIcon />,
-        label: 'Date',
+        label: "Date",
         value: KEYS.date,
       },
       {
         focusEditor: false,
         icon: <RadicalIcon />,
-        label: 'Inline Equation',
+        label: "Inline Equation",
         value: KEYS.inlineEquation,
       },
     ].map((item) => ({
