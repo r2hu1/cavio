@@ -1,63 +1,57 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
-  Credenza,
-  CredenzaBody,
-  CredenzaClose,
-  CredenzaContent,
-  CredenzaDescription,
-  CredenzaFooter,
-  CredenzaHeader,
-  CredenzaTitle,
-  CredenzaTrigger,
-} from "@/components/ui/credenza";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { toast } from "sonner";
+import RenameFolderPopup from "./rename-folder-popup";
+import { ExternalLink, FilePlus, Link2, PencilLine, Trash } from "lucide-react";
+import Link from "next/link";
+import CreateDocumentPopup from "@/modules/documents/views/ui/create-document-popup";
+import DeleteFolderPopup from "./delete-folder-popup";
 
 export default function FolderSettingsPopup({
+  id,
   children,
   triggerClassName,
 }: {
+  id: string;
   children: React.ReactNode;
   triggerClassName?: string;
 }) {
-  // const trpc = useTRPC();
-  // const queryClient = useQueryClient();
-  // const { mutate } = useMutation(trpc.folder.create.mutationOptions());
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
-  // const router = useRouter();
 
   return (
-    <Credenza open={popupOpen} onOpenChange={setPopupOpen}>
-      <CredenzaTrigger className={triggerClassName} asChild>
-        {children}
-      </CredenzaTrigger>
-      <CredenzaContent>
-        <CredenzaHeader>
-          <CredenzaTitle>Folder Settings</CredenzaTitle>
-        </CredenzaHeader>
-        <CredenzaDescription>
-          Manage your folder settings here.
-        </CredenzaDescription>
-        <CredenzaBody>
-          <div>
-            <div className="flex gap-2">
-              <Input id="name" placeholder="Folder Name" />
-              <Button size="icon">
-                <Save className="!h-4 !w-4" />
-              </Button>
-            </div>
-            <div></div>
-          </div>
-        </CredenzaBody>
-      </CredenzaContent>
-    </Credenza>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <p className="text-xs px-2 py-1.5 text-foreground/70">Folder Actions</p>
+        <RenameFolderPopup folderId={id}>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <PencilLine className="!h-3.5 !w-3.5" /> Rename
+          </DropdownMenuItem>
+        </RenameFolderPopup>
+        <CreateDocumentPopup folderId={id}>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <FilePlus className="!h-3.5 !w-3.5" /> New Document
+          </DropdownMenuItem>
+        </CreateDocumentPopup>
+        <DropdownMenuSeparator />
+        <DeleteFolderPopup folderId={id}>
+          <DropdownMenuItem
+            onSelect={(e) => e.preventDefault()}
+            variant="destructive"
+          >
+            <Trash className="!h-3.5 !w-3.5" /> Delete
+          </DropdownMenuItem>
+        </DeleteFolderPopup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

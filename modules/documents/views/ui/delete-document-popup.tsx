@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/credenza";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Loader2 } from "lucide-react";
@@ -106,7 +107,8 @@ export default function DeleteDocumentPopup({
             disabled={loading}
             type="submit"
           >
-            {loading ? <Loader2 className="animate-spin" /> : null} Continue
+            Continue
+            {loading ? <Loader className="size-4" /> : null}
           </Button>
         </CredenzaFooter>
       </CredenzaContent>

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ArrowUpIcon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAiChatInputState } from "../providers/input-provider";
+import { Loader } from "@/components/ui/loader";
 
 export default function StaticInput() {
   const { adjustHeight, textareaRef } = useAutoResizeTextarea({
@@ -117,7 +118,7 @@ export default function StaticInput() {
               {!pending ? (
                 <ArrowUpIcon className="!h-4 !w-4" />
               ) : (
-                <Loader2 className="!h-4 !w-4 animate-spin" />
+                <Loader className="!h-4 !w-4" />
               )}
             </Button>
           </div>

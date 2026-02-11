@@ -4,6 +4,7 @@ import { signIn } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
 
 interface SocialSignInButtonProps {
   type: "google" | "github";
@@ -71,7 +72,7 @@ export default function SocialSignInButton({
     >
       {type.charAt(0).toUpperCase()}
       {type.slice(1)}
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}
+      {loading ? <Loader className="h-4 w-4" /> : icon}
     </Button>
   );
 }

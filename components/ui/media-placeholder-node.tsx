@@ -17,6 +17,7 @@ import { useFilePicker } from "use-file-picker";
 
 import { cn } from "@/lib/utils";
 import { useUploadFile } from "@/hooks/use-upload-file";
+import { Loader } from "./loader";
 
 const CONTENT: Record<
   string,
@@ -159,7 +160,7 @@ export const PlaceholderElement = withHOC(
                   <div>{formatBytes(uploadingFile?.size ?? 0)}</div>
                   <div>–</div>
                   <div className="flex items-center">
-                    <Loader2Icon className="mr-1 size-3.5 animate-spin text-muted-foreground" />
+                    <Loader className="size-4 mr-1" />
                     {progress ?? 0}%
                   </div>
                 </div>
@@ -218,7 +219,7 @@ export function ImageProgress({
       />
       {progress < 100 && (
         <div className="absolute right-1 bottom-1 flex items-center space-x-2 rounded-full bg-black/50 px-1 py-0.5">
-          <Loader2Icon className="size-3.5 animate-spin text-muted-foreground" />
+          <Loader className="size-3.5 animate-spin text-muted-foreground" />
           <span className="font-medium text-white text-xs">
             {Math.round(progress)}%
           </span>

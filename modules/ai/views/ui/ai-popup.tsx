@@ -166,7 +166,7 @@ export default function AiPopup({
                 className="h-8 w-8"
               >
                 {isPending ? (
-                  <Loader2 className="!h-3.5 !w-3.5 animate-spin" />
+                  <Loader className="size-4" />
                 ) : (
                   <ArrowUp className="!h-3.5 !w-3.5" />
                 )}

@@ -14,7 +14,7 @@ export const FolderNav = ({ folderId }: { folderId: string }) => {
         folderId={folderId}
       />
       <div className="items-center gap-2.5 flex">
-        <FolderSettingsPopup>
+        <FolderSettingsPopup id={folderId}>
           <Button className="h-8 w-8" variant="secondary">
             <Bolt className="!h-3.5 !w-3.5" />
           </Button>

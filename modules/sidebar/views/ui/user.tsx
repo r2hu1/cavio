@@ -14,6 +14,7 @@ import { useAuthState } from "@/modules/auth/providers/auth-context";
 import TextSkeleton from "@/components/text-skeleton";
 import Link from "next/link";
 import CreateFolderInline from "@/modules/folders/views/ui/create-folder-inline";
+import { Loader } from "@/components/ui/loader";
 
 export function NavUser() {
   // const { isMobile } = useSidebar();
@@ -33,7 +34,7 @@ export function NavUser() {
                 data.user.name.charAt(0).toUpperCase() +
                 data.user.name.split(" ")[1].charAt(0).toUpperCase()
               ) : (
-                <Loader2 className="h-2 w-2 animate-spin text-white" />
+                <Loader className="h-2 w-2  text-white" />
               )}
             </AvatarFallback>
           </Avatar>

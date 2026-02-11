@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/credenza";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -42,8 +43,8 @@ export default function CreateDocumentPopup({
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get("document-name") as string;
-    if (name.length < 5) {
-      toast.error("Name must be at least 5 characters long");
+    if (name.length < 3) {
+      toast.error("Name must be at least 3 characters long");
       return;
     }
     setLoading(true);
@@ -105,7 +106,8 @@ export default function CreateDocumentPopup({
           </CredenzaBody>
           <CredenzaFooter>
             <Button disabled={loading} type="submit">
-              {loading ? <Loader2 className="animate-spin" /> : null} Continue
+              Continue
+              {loading ? <Loader className="size-4" /> : null}
             </Button>
           </CredenzaFooter>
         </form>

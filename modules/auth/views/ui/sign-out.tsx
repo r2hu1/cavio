@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
@@ -40,7 +41,7 @@ export default function SignOut({
       disabled={loading}
       size={size}
     >
-      {loading ? <Loader2 className="!h-3.5 !w-3.5 animate-spin" /> : children}
+      {loading ? <Loader className="!h-3.5 !w-3.5" /> : children}
     </Button>
   );
 }

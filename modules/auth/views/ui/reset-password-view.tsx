@@ -6,7 +6,7 @@ import { resetPassword } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { AlertCircle, AlertTriangleIcon, Loader2 } from "lucide-react";
+import { AlertCircle, AlertTriangleIcon } from "lucide-react";
 import SharedLogo from "@/components/shared-logo";
 import {
   Card,
@@ -15,6 +15,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader } from "@/components/ui/loader";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -99,11 +100,7 @@ export default function ResetPassword() {
           </CardContent>
           <CardFooter className="grid sm:grid-cols-2 gap-2">
             <Button type="submit" disabled={loading} className="w-full">
-              {!loading ? (
-                "Change Password"
-              ) : (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              )}
+              {!loading ? "Change Password" : <Loader className="h-4 w-4" />}
             </Button>
             <Button type="button" asChild variant="secondary">
               <Link href="/">Cancel</Link>

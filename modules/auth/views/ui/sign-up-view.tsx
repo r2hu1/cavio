@@ -31,6 +31,7 @@ import Link from "next/link";
 import { signUp } from "@/lib/auth-client";
 import SocialSignInButton from "./social-signin-view";
 import SharedLogo from "@/components/shared-logo";
+import { Loader } from "@/components/ui/loader";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -187,11 +188,7 @@ export default function SignUpForm({
                       className="w-full"
                       disabled={isLoading}
                     >
-                      {isLoading ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        "Continue"
-                      )}
+                      {isLoading ? <Loader className="size-4" /> : "Continue"}
                     </Button>
                   </div>
                   <div className="text-center text-sm">

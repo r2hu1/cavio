@@ -10,6 +10,7 @@ import SharedLogo from "@/components/shared-logo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { Loader } from "@/components/ui/loader";
 
 export default function ForgotPassword() {
   const params = useSearchParams();
@@ -63,11 +64,7 @@ export default function ForgotPassword() {
             )}
             <div className="grid w-full items-center sm:grid-cols-2 gap-2">
               <Button disabled={loading} type="submit">
-                {!loading ? (
-                  "Send"
-                ) : (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                )}
+                {!loading ? "Send" : <Loader className="h-4 w-4 " />}
               </Button>
               <Button type="button" variant="secondary" asChild>
                 <Link
