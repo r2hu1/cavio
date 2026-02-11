@@ -70,7 +70,7 @@ export default function Editor({ id }: { id: string }) {
   return (
     <Suspense fallback={<PageLoader />}>
       <Plate editor={editor} onValueChange={handleValueChange}>
-        <EditorContainer variant="default">
+        <EditorContainer variant="default" className="-mt-10">
           <EditorPlate
             spellCheck={false}
             defaultValue={defaultValue}
