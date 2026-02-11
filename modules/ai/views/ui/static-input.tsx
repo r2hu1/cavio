@@ -69,7 +69,7 @@ export default function StaticInput() {
             adjustHeight();
           }}
           onKeyDown={handleKeyDown}
-          placeholder={"Type something here..."}
+          placeholder={"/ for commands and space for ai"}
           className="w-full px-4 py-3 resize-none bg-transparent! border-none dark:text-white text-sm focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-neutral-500 placeholder:text-sm min-h-[70px]"
         />
         <div className="px-3 pb-2.5">
