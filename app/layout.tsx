@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <TRPCReactProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={`${geistSans.className} antialiased`}>
           <ThemeProvider
             attribute="class"
