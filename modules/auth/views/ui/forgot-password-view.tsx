@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { forgetPassword } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
@@ -10,6 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import SharedLogo from "@/components/shared-logo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export default function ForgotPassword() {
   const params = useSearchParams();
@@ -21,7 +21,7 @@ export default function ForgotPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await forgetPassword({
+    const { error } = await authClient.requestPasswordReset({
       email: email,
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
