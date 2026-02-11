@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
-import type { PlateEditor } from 'platejs/react';
+import type { PlateEditor } from "platejs/react";
 
-import { insertCallout } from '@platejs/callout';
-import { insertCodeBlock, toggleCodeBlock } from '@platejs/code-block';
-import { insertCodeDrawing } from '@platejs/code-drawing';
-import { insertDate } from '@platejs/date';
-import { insertExcalidraw } from '@platejs/excalidraw';
-import { insertColumnGroup, toggleColumnGroup } from '@platejs/layout';
-import { triggerFloatingLink } from '@platejs/link/react';
-import { insertEquation, insertInlineEquation } from '@platejs/math';
+import { insertCallout } from "@platejs/callout";
+import { insertCodeBlock, toggleCodeBlock } from "@platejs/code-block";
+import { insertCodeDrawing } from "@platejs/code-drawing";
+import { insertDate } from "@platejs/date";
+import { insertExcalidraw } from "@platejs/excalidraw";
+import { insertColumnGroup, toggleColumnGroup } from "@platejs/layout";
+import { triggerFloatingLink } from "@platejs/link/react";
+import { insertEquation, insertInlineEquation } from "@platejs/math";
 import {
   insertAudioPlaceholder,
   insertFilePlaceholder,
   insertMedia,
   insertVideoPlaceholder,
-} from '@platejs/media';
-import { SuggestionPlugin } from '@platejs/suggestion/react';
-import { TablePlugin } from '@platejs/table/react';
-import { insertToc } from '@platejs/toc';
+} from "@platejs/media";
+import { SuggestionPlugin } from "@platejs/suggestion/react";
+import { TablePlugin } from "@platejs/table/react";
+import { insertToc } from "@platejs/toc";
 import {
   type NodeEntry,
   type Path,
   type TElement,
   KEYS,
   PathApi,
-} from 'platejs';
+} from "platejs";
 
-const ACTION_THREE_COLUMNS = 'action_three_columns';
+const ACTION_THREE_COLUMNS = "action_three_columns";
 
 const insertList = (editor: PlateEditor, type: string) => {
   editor.tf.insertNodes(
@@ -35,7 +35,7 @@ const insertList = (editor: PlateEditor, type: string) => {
       indent: 1,
       listStyleType: type,
     }),
-    { select: true }
+    { select: true },
   );
 };
 
@@ -51,8 +51,8 @@ const insertBlockMap: Record<
   [KEYS.audio]: (editor) => insertAudioPlaceholder(editor, { select: true }),
   [KEYS.callout]: (editor) => insertCallout(editor, { select: true }),
   [KEYS.codeBlock]: (editor) => insertCodeBlock(editor, { select: true }),
-  [KEYS.codeDrawing]: (editor) =>
-    insertCodeDrawing(editor, {}, { select: true }),
+  // [KEYS.codeDrawing]: (editor) =>
+  //   insertCodeDrawing(editor, {}, { select: true }),
   [KEYS.equation]: (editor) => insertEquation(editor, { select: true }),
   [KEYS.excalidraw]: (editor) => insertExcalidraw(editor, {}, { select: true }),
   [KEYS.file]: (editor) => insertFilePlaceholder(editor, { select: true }),
@@ -78,7 +78,7 @@ const insertInlineMap: Record<
 > = {
   [KEYS.date]: (editor) => insertDate(editor, { select: true }),
   [KEYS.inlineEquation]: (editor) =>
-    insertInlineEquation(editor, '', { select: true }),
+    insertInlineEquation(editor, "", { select: true }),
   [KEYS.link]: (editor) => triggerFloatingLink(editor, { focused: true }),
 };
 
@@ -89,7 +89,7 @@ type InsertBlockOptions = {
 export const insertBlock = (
   editor: PlateEditor,
   type: string,
-  options: InsertBlockOptions = {}
+  options: InsertBlockOptions = {},
 ) => {
   const { upsert = false } = options;
 
@@ -134,7 +134,7 @@ export const insertInlineElement = (editor: PlateEditor, type: string) => {
 const setList = (
   editor: PlateEditor,
   type: string,
-  entry: NodeEntry<TElement>
+  entry: NodeEntry<TElement>,
 ) => {
   editor.tf.setNodes(
     editor.api.create.block({
@@ -143,7 +143,7 @@ const setList = (
     }),
     {
       at: entry[1],
-    }
+    },
   );
 };
 
@@ -161,14 +161,14 @@ const setBlockMap: Record<
 export const setBlockType = (
   editor: PlateEditor,
   type: string,
-  { at }: { at?: Path } = {}
+  { at }: { at?: Path } = {},
 ) => {
   editor.tf.withoutNormalizing(() => {
     const setEntry = (entry: NodeEntry<TElement>) => {
       const [node, path] = entry;
 
       if (node[KEYS.listType]) {
-        editor.tf.unsetNodes([KEYS.listType, 'indent'], { at: path });
+        editor.tf.unsetNodes([KEYS.listType, "indent"], { at: path });
       }
       if (type in setBlockMap) {
         return setBlockMap[type](editor, type, entry);
@@ -188,7 +188,7 @@ export const setBlockType = (
       }
     }
 
-    const entries = editor.api.blocks({ mode: 'lowest' });
+    const entries = editor.api.blocks({ mode: "lowest" });
 
     entries.forEach((entry) => {
       setEntry(entry);
