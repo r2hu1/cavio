@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-import { getApiKey, getModel } from "@/modules/ai/views/creds/lib";
+import { getApiKey, getCommandModel } from "@/modules/ai/views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 200 });
   }
   const key = await getApiKey();
-  const model = await getModel();
+  const model = await getCommandModel();
   if (!key) {
     return NextResponse.json(
       {

@@ -25,7 +25,7 @@ import {
   getEditPrompt,
   getGeneratePrompt,
 } from "./prompt";
-import { getApiKey, getModel } from "@/modules/ai/views/creds/lib";
+import { getApiKey, getCommandModel } from "@/modules/ai/views/creds/lib";
 import { BaseEditorKit } from "@/components/editor/editor-base-kit";
 import { googleai } from "@/lib/google-ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   });
 
   const apiKey = await getApiKey();
-  const selectedModel = await getModel();
+  const selectedModel = await getCommandModel();
 
   if (!apiKey) {
     return NextResponse.json(

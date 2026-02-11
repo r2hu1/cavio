@@ -1,7 +1,7 @@
 import { streamText } from "ai";
 import { NextResponse } from "next/server";
 import { SYSTEM_PROMPT } from "@/modules/ai/constants";
-import { getApiKey, getModel } from "@/modules/ai/views/creds/lib";
+import { getApiKey, getChatModel } from "@/modules/ai/views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 200 });
   }
   const key = await getApiKey();
-  const model = await getModel();
+  const model = await getChatModel();
   if (!key) {
     return NextResponse.json(
       {

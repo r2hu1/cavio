@@ -4,11 +4,13 @@ import SessionPageNav from "./settings-page-nav";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Save, Loader2 } from "lucide-react";
-import {
-  getApiKey,
-  setApiKey,
-  getModel,
-  setModel,
+import { 
+  getApiKey, 
+  setApiKey, 
+  getChatModel, 
+  setChatModel,
+  getCommandModel,
+  setCommandModel
 } from "@/modules/ai/views/creds/lib";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -29,8 +31,8 @@ interface Model {
 
 export default function PreferencesPageView() {
   const [apiKey, setApiKeyValue] = useState<string>("");
-  const [selectedModel, setSelectedModel] =
-    useState<string>("gemini-2.5-flash");
+  const [chatModel, setChatModelValue] = useState<string>("gemini-2.5-flash");
+  const [commandModel, setCommandModelValue] = useState<string>("gemini-2.5-flash");
   const [models, setModels] = useState<Model[]>([]);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
 
@@ -39,14 +41,19 @@ export default function PreferencesPageView() {
     if (!apiKey) return;
     await setApiKey(apiKey);
     toast.success("API key updated successfully");
-    // Refetch models after saving API key
     fetchModels(apiKey);
   };
 
-  const handleModelChange = async (value: string) => {
-    setSelectedModel(value);
-    await setModel(value as any);
-    toast.success("Model updated successfully");
+  const handleChatModelChange = async (value: string) => {
+    setChatModelValue(value);
+    await setChatModel(value);
+    toast.success("Chat model updated successfully");
+  };
+
+  const handleCommandModelChange = async (value: string) => {
+    setCommandModelValue(value);
+    await setCommandModel(value);
+    toast.success("Command/Copilot model updated successfully");
   };
 
   const fetchModels = async (key: string) => {
@@ -54,7 +61,7 @@ export default function PreferencesPageView() {
       setModels([]);
       return;
     }
-
+    
     setIsLoadingModels(true);
     try {
       const response = await fetch("/api/ai/models");
@@ -81,15 +88,57 @@ export default function PreferencesPageView() {
     }
   };
 
-  const getCurrentModel = async () => {
-    const model = await getModel();
-    setSelectedModel(model);
+  const getCurrentModels = async () => {
+    const chat = await getChatModel();
+    const command = await getCommandModel();
+    setChatModelValue(chat);
+    setCommandModelValue(command);
   };
 
   useEffect(() => {
     getKey();
-    getCurrentModel();
+    getCurrentModels();
   }, []);
+
+  const renderModelSelect = (
+    value: string,
+    onChange: (value: string) => void,
+    label: string,
+    description: string
+  ) => (
+    <div className="space-y-3">
+      <Label>{label}</Label>
+      <Select 
+        value={value} 
+        onValueChange={onChange}
+        disabled={isLoadingModels || models.length === 0}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={isLoadingModels ? "Loading models..." : "Select a model"} />
+        </SelectTrigger>
+        <SelectContent className="max-w-100" align="center">
+          {isLoadingModels ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+          ) : models.length === 0 ? (
+            <div className="px-2 py-4 text-sm text-muted-foreground text-center">
+              {apiKey ? "No models available" : "Add an API key to see available models"}
+            </div>
+          ) : (
+            models.map((model) => (
+              <SelectItem key={model.value} value={model.value}>
+                {model.label}
+              </SelectItem>
+            ))
+          )}
+        </SelectContent>
+      </Select>
+      <p className="text-xs text-foreground/60 -mt-2">
+        {apiKey ? description : "Add an API key to see available models."}
+      </p>
+    </div>
+  );
 
   return (
     <div>
@@ -103,7 +152,7 @@ export default function PreferencesPageView() {
         </div>
       </div>
       <div>
-        <div className="grid gap-3">
+        <div className="grid gap-6">
           <form className="space-y-3" onSubmit={handleSave}>
             <Label htmlFor="gemini-api-key">Gemini API Key</Label>
             <div className="flex w-full gap-2">
@@ -124,45 +173,23 @@ export default function PreferencesPageView() {
             </p>
           </form>
 
-          <div className="space-y-3 pt-4">
-            <Label htmlFor="model-select">AI Model</Label>
-            <Select
-              value={selectedModel}
-              onValueChange={handleModelChange}
-              disabled={isLoadingModels || models.length === 0}
-            >
-              <SelectTrigger className="w-full" id="model-select">
-                <SelectValue
-                  placeholder={
-                    isLoadingModels ? "Loading models..." : "Select a model"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent className="max-w-100" align="center">
-                {isLoadingModels ? (
-                  <div className="flex items-center justify-center py-4">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  </div>
-                ) : models.length === 0 ? (
-                  <div className="px-2 py-4 text-sm text-muted-foreground text-center">
-                    {apiKey
-                      ? "No models available"
-                      : "Add an API key to see available models"}
-                  </div>
-                ) : (
-                  models.map((model) => (
-                    <SelectItem key={model.value} value={model.value}>
-                      {model.label}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-foreground/60 -mt-2">
-              {apiKey
-                ? "Choose the AI model to use for generating content."
-                : "Add an API key to see available models."}
-            </p>
+          <div className="border-t pt-4">
+            <h2 className="font-medium mb-4">AI Models</h2>
+            <div className="grid gap-6">
+              {renderModelSelect(
+                chatModel,
+                handleChatModelChange,
+                "Chat Model",
+                "Model used for AI chat conversations."
+              )}
+              
+              {renderModelSelect(
+                commandModel,
+                handleCommandModelChange,
+                "Command & Copilot Model",
+                "Model used for editor commands and copilot suggestions."
+              )}
+            </div>
           </div>
         </div>
       </div>

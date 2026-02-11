@@ -10,7 +10,7 @@ import {
   FORMAT_PROMPT,
   SYSTEM_PROMPT,
 } from "../constants";
-import { getApiKey, getModel } from "../views/creds/lib";
+import { getApiKey, getChatModel } from "../views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export const aiRouter = createTRPCRouter({
@@ -25,7 +25,7 @@ export const aiRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const key = await getApiKey();
-      const model = await getModel();
+      const model = await getChatModel();
       if (!key) {
         return {
           text: "No API key found, please set it in the [settings](/settings/preferences).",
@@ -180,7 +180,7 @@ export const aiRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const key = await getApiKey();
-      const model = await getModel();
+      const model = await getChatModel();
       if (!key) {
         return {
           text: "No API key found, please set it in the settings.",
