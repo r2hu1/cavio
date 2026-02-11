@@ -172,12 +172,12 @@ const groups: Group[] = [
         label: "Equation",
         value: KEYS.equation,
       },
-      {
-        icon: <PenToolIcon />,
-        keywords: ["excalidraw"],
-        label: "Excalidraw",
-        value: KEYS.excalidraw,
-      },
+      // {
+      //   icon: <PenToolIcon />,
+      //   keywords: ["excalidraw"],
+      //   label: "Excalidraw",
+      //   value: KEYS.excalidraw,
+      // },
       // {
       //   icon: <Code2 />,
       //   keywords: [

@@ -1,130 +1,108 @@
+"use client";
+
 import * as React from "react";
 
-import type { OurFileRouter } from "../lib/uploadthing";
-import type {
-  ClientUploadedFileData,
-  UploadFilesOptions,
-} from "uploadthing/types";
+export interface Base64File {
+  name: string;
+  size: number;
+  type: string;
+  base64: string;
+}
 
-import { generateReactHelpers } from "@uploadthing/react";
-import { toast } from "sonner";
-import { z } from "zod";
-
-export type UploadedFile<T = unknown> = ClientUploadedFileData<T>;
-
-interface UseUploadFileProps
-  extends Pick<
-    UploadFilesOptions<OurFileRouter["editorUploader"]>,
-    "headers" | "onUploadBegin" | "onUploadProgress" | "skipPolling"
-  > {
-  onUploadComplete?: (file: UploadedFile) => void;
+interface UseUploadFileProps {
+  onUploadComplete?: (file: Base64File) => void;
   onUploadError?: (error: unknown) => void;
 }
 
 export function useUploadFile({
   onUploadComplete,
   onUploadError,
-  ...props
 }: UseUploadFileProps = {}) {
-  const [uploadedFile, setUploadedFile] = React.useState<UploadedFile>();
+  const [uploadedFile, setUploadedFile] = React.useState<Base64File>();
   const [uploadingFile, setUploadingFile] = React.useState<File>();
-  const [progress, setProgress] = React.useState<number>(0);
   const [isUploading, setIsUploading] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
 
-  async function uploadThing(file: File) {
-    setIsUploading(true);
-    setUploadingFile(file);
+  function compressImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
 
+      reader.onload = () => {
+        img.src = reader.result as string;
+      };
+
+      reader.onerror = reject;
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        const maxWidth = 1600;
+        const scale = Math.min(1, maxWidth / img.width);
+
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const base64 = canvas.toDataURL("image/webp", 0.8);
+        resolve(base64);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
+  }
+
+  async function uploadFile(file: File) {
     try {
-      const res = await uploadFiles("editorUploader", {
-        ...props,
-        files: [file],
-        onUploadProgress: ({ progress }) => {
-          setProgress(Math.min(progress, 100));
-        },
-      });
+      setIsUploading(true);
+      setUploadingFile(file);
+      setProgress(20);
 
-      setUploadedFile(res[0]);
+      const isImage = file.type.startsWith("image/");
 
-      onUploadComplete?.(res[0]);
+      const base64 = isImage
+        ? await compressImage(file)
+        : await fileToBase64(file);
 
-      return uploadedFile;
-    } catch (error) {
-      const errorMessage = getErrorMessage(error);
+      setProgress(100);
 
-      const message =
-        errorMessage.length > 0
-          ? errorMessage
-          : "Something went wrong, please try again later.";
-
-      toast.error(message);
-
-      onUploadError?.(error);
-
-      // Mock upload for unauthenticated users
-      // toast.info('User not logged in. Mocking upload process.');
-      const mockUploadedFile = {
-        key: "mock-key-0",
-        appUrl: `https://mock-app-url.com/${file.name}`,
+      const result: Base64File = {
         name: file.name,
         size: file.size,
         type: file.type,
-        url: URL.createObjectURL(file),
-      } as UploadedFile;
-
-      // Simulate upload progress
-      let progress = 0;
-
-      const simulateProgress = async () => {
-        while (progress < 100) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          progress += 2;
-          setProgress(Math.min(progress, 100));
-        }
+        base64,
       };
 
-      await simulateProgress();
+      setUploadedFile(result);
+      onUploadComplete?.(result);
 
-      setUploadedFile(mockUploadedFile);
-
-      return mockUploadedFile;
+      return result;
+    } catch (error) {
+      onUploadError?.(error);
+      throw error;
     } finally {
-      setProgress(0);
       setIsUploading(false);
       setUploadingFile(undefined);
+      setProgress(0);
     }
   }
 
   return {
+    uploadFile,
+    uploadedFile,
+    uploadingFile,
     isUploading,
     progress,
-    uploadedFile,
-    uploadFile: uploadThing,
-    uploadingFile,
   };
-}
-
-export const { uploadFiles, useUploadThing } =
-  generateReactHelpers<OurFileRouter>();
-
-export function getErrorMessage(err: unknown) {
-  const unknownError = "Something went wrong, please try again later.";
-
-  if (err instanceof z.ZodError) {
-    const errors = err.issues.map((issue) => {
-      return issue.message;
-    });
-
-    return errors.join("\n");
-  } else if (err instanceof Error) {
-    return err.message;
-  } else {
-    return unknownError;
-  }
-}
-
-export function showErrorToast(err: unknown) {
-  const errorMessage = getErrorMessage(err);
-
-  return toast.error(errorMessage);
 }
