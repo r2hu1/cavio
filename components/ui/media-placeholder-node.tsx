@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
-import type { TPlaceholderElement } from 'platejs';
-import type { PlateElementProps } from 'platejs/react';
+import type { TPlaceholderElement } from "platejs";
+import type { PlateElementProps } from "platejs/react";
 
 import {
   PlaceholderPlugin,
   PlaceholderProvider,
   updateUploadHistory,
-} from '@platejs/media/react';
-import { AudioLines, FileUp, Film, ImageIcon, Loader2Icon } from 'lucide-react';
-import { KEYS } from 'platejs';
-import { PlateElement, useEditorPlugin, withHOC } from 'platejs/react';
-import { useFilePicker } from 'use-file-picker';
+} from "@platejs/media/react";
+import { AudioLines, FileUp, Film, ImageIcon, Loader2Icon } from "lucide-react";
+import { KEYS } from "platejs";
+import { PlateElement, useEditorPlugin, withHOC } from "platejs/react";
+import { useFilePicker } from "use-file-picker";
 
-import { cn } from '@/lib/utils';
-import { useUploadFile } from '@/hooks/use-upload-file';
+import { cn } from "@/lib/utils";
+import { useUploadFile } from "@/hooks/use-upload-file";
 
 const CONTENT: Record<
   string,
@@ -27,23 +27,23 @@ const CONTENT: Record<
   }
 > = {
   [KEYS.audio]: {
-    accept: ['audio/*'],
-    content: 'Add an audio file',
+    accept: ["audio/*"],
+    content: "Add an audio file",
     icon: <AudioLines />,
   },
   [KEYS.file]: {
-    accept: ['*'],
-    content: 'Add a file',
+    accept: ["*"],
+    content: "Add a file",
     icon: <FileUp />,
   },
   [KEYS.img]: {
-    accept: ['image/*'],
-    content: 'Add an image',
+    accept: ["image/*"],
+    content: "Add an image",
     icon: <ImageIcon />,
   },
   [KEYS.video]: {
-    accept: ['video/*'],
-    content: 'Add a video',
+    accept: ["video/*"],
+    content: "Add a video",
     icon: <Film />,
   },
 };
@@ -69,16 +69,16 @@ export const PlaceholderElement = withHOC(
     const { openFilePicker } = useFilePicker({
       accept: currentContent.accept,
       multiple: true,
-      onFilesSelected: ({ plainFiles: updatedFiles }) => {
-        const firstFile = updatedFiles[0];
-        const restFiles = updatedFiles.slice(1);
+      // onFilesSelected: ({ plainFiles: updatedFiles }) => {
+      //   const firstFile = updatedFiles[0];
+      //   const restFiles = updatedFiles.slice(1);
 
-        replaceCurrentPlaceholder(firstFile);
+      //   replaceCurrentPlaceholder(firstFile);
 
-        if (restFiles.length > 0) {
-          editor.getTransforms(PlaceholderPlugin).insert.media(restFiles);
-        }
-      },
+      //   if (restFiles.length > 0) {
+      //     editor.getTransforms(PlaceholderPlugin).insert.media(restFiles);
+      //   }
+      // },
     });
 
     const replaceCurrentPlaceholder = React.useCallback(
@@ -86,7 +86,7 @@ export const PlaceholderElement = withHOC(
         void uploadFile(file);
         api.placeholder.addUploadingFile(element.id as string, file);
       },
-      [api.placeholder, element.id, uploadFile]
+      [api.placeholder, element.id, uploadFile],
     );
 
     React.useEffect(() => {
@@ -98,11 +98,11 @@ export const PlaceholderElement = withHOC(
         editor.tf.removeNodes({ at: path });
 
         const node = {
-          children: [{ text: '' }],
+          children: [{ text: "" }],
           initialHeight: imageRef.current?.height,
           initialWidth: imageRef.current?.width,
           isUpload: true,
-          name: element.mediaType === KEYS.file ? uploadedFile.name : '',
+          name: element.mediaType === KEYS.file ? uploadedFile.name : "",
           placeholderId: element.id as string,
           type: element.mediaType!,
           url: uploadedFile.url,
@@ -126,7 +126,7 @@ export const PlaceholderElement = withHOC(
 
       isReplaced.current = true;
       const currentFiles = api.placeholder.getUploadingFile(
-        element.id as string
+        element.id as string,
       );
 
       if (!currentFiles) return;
@@ -141,7 +141,7 @@ export const PlaceholderElement = withHOC(
         {(!loading || !isImage) && (
           <div
             className={cn(
-              'flex cursor-pointer select-none items-center rounded-sm bg-muted p-3 pr-9 hover:bg-primary/10'
+              "flex cursor-pointer select-none items-center rounded-sm bg-muted p-3 pr-9 hover:bg-primary/10",
             )}
             onClick={() => !loading && openFilePicker()}
             contentEditable={false}
@@ -179,7 +179,7 @@ export const PlaceholderElement = withHOC(
         {props.children}
       </PlateElement>
     );
-  }
+  },
 );
 
 export function ImageProgress({
@@ -209,7 +209,7 @@ export function ImageProgress({
   }
 
   return (
-    <div className={cn('relative', className)} contentEditable={false}>
+    <div className={cn("relative", className)} contentEditable={false}>
       <img
         ref={imageRef}
         className="h-auto w-full rounded-sm object-cover"
@@ -232,21 +232,21 @@ function formatBytes(
   bytes: number,
   opts: {
     decimals?: number;
-    sizeType?: 'accurate' | 'normal';
-  } = {}
+    sizeType?: "accurate" | "normal";
+  } = {},
 ) {
-  const { decimals = 0, sizeType = 'normal' } = opts;
+  const { decimals = 0, sizeType = "normal" } = opts;
 
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const accurateSizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const accurateSizes = ["Bytes", "KiB", "MiB", "GiB", "TiB"];
 
-  if (bytes === 0) return '0 Byte';
+  if (bytes === 0) return "0 Byte";
 
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
 
   return `${(bytes / 1024 ** i).toFixed(decimals)} ${
-    sizeType === 'accurate'
-      ? (accurateSizes[i] ?? 'Bytest')
-      : (sizes[i] ?? 'Bytes')
+    sizeType === "accurate"
+      ? (accurateSizes[i] ?? "Bytest")
+      : (sizes[i] ?? "Bytes")
   }`;
 }
