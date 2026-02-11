@@ -66,7 +66,7 @@ export default function DocumentNav({
       <div className="flex items-center gap-2">
         {state && (
           <Tooltip text="Saving to cloud">
-            <Cloud className="animate-pulse" />
+            <Cloud className="animate-pulse size-4 text-muted-foreground mr-2" />
           </Tooltip>
         )}
         <Popover>
