@@ -50,19 +50,39 @@ export default function Editor({ id }: { id: string }) {
     }
   }, [isPending, data]);
 
-  useEffect(() => {
-    if (defaultValue != debouncedValue && defaultValue !== value) {
-      setState(true);
-      mutate(
-        { id, content: debouncedValue },
-        {
-          onSettled: () => {
-            setState(false);
-          },
+  const handleSave = useCallback(() => {
+    if (!debouncedValue || debouncedValue === defaultValue) return false;
+
+    setState(true);
+
+    mutate(
+      { id, content: debouncedValue },
+      {
+        onSettled: () => {
+          setDefaultValue(debouncedValue);
+          setState(false);
         },
-      );
-    }
-  }, [debouncedValue]);
+      },
+    );
+
+    return true;
+  }, [debouncedValue, defaultValue, id, mutate, setState]);
+
+  useEffect(() => {
+    handleSave();
+  }, [debouncedValue, handleSave]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleSave]);
 
   if (isPending) {
     return <PageLoader />;
