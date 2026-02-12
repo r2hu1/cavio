@@ -110,19 +110,19 @@ export const turnIntoItems = [
     label: "Code",
     value: KEYS.codeBlock,
   },
-  {
-    icon: <Code2 />,
-    keywords: [
-      "code-drawing",
-      "diagram",
-      "plantuml",
-      "graphviz",
-      "flowchart",
-      "mermaid",
-    ],
-    label: "Code Drawing",
-    value: "</>",
-  },
+  // {
+  //   icon: <Code2 />,
+  //   keywords: [
+  //     "code-drawing",
+  //     "diagram",
+  //     "plantuml",
+  //     "graphviz",
+  //     "flowchart",
+  //     "mermaid",
+  //   ],
+  //   label: "Code Drawing",
+  //   value: "</>",
+  // },
   {
     icon: <QuoteIcon />,
     keywords: ["citation", "blockquote", ">"],
