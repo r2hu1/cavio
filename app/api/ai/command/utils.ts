@@ -1,10 +1,119 @@
 import type { ChatMessage } from "@/components/editor/use-chat";
 import type { UIMessage } from "ai";
 
-import { getMarkdown } from "@platejs/ai";
+import { getMarkdown as getMarkdownBase, MarkdownType } from "@platejs/ai";
 import { serializeMd } from "@platejs/markdown";
 import dedent from "dedent";
 import { type SlateEditor, KEYS, RangeApi } from "platejs";
+
+/**
+ * Safely serialize editor nodes to markdown, handling MDX JSX elements
+ * that can't be serialized by falling back to plain text
+ */
+const safeSerializeNodes = (nodes: any[]): string => {
+  if (!Array.isArray(nodes)) return "";
+
+  return nodes
+    .map((node) => {
+      // Handle text nodes
+      if (typeof node.text === "string") {
+        let text = node.text;
+        // Apply basic markdown formatting for marks
+        if (node.bold) text = `**${text}**`;
+        if (node.italic) text = `_${text}_`;
+        if (node.code) text = `\`${text}\``;
+        if (node.strikethrough) text = `~~${text}~~`;
+        return text;
+      }
+
+      // Handle element nodes
+      if (node.children) {
+        const children = safeSerializeNodes(node.children);
+
+        // Handle different element types
+        switch (node.type) {
+          case "h1":
+          case "heading":
+            return node.depth === 1 || node.type === "h1"
+              ? `# ${children}`
+              : children;
+          case "h2":
+            return `## ${children}`;
+          case "h3":
+            return `### ${children}`;
+          case "h4":
+            return `#### ${children}`;
+          case "h5":
+            return `##### ${children}`;
+          case "h6":
+            return `###### ${children}`;
+          case "blockquote":
+            return children
+              .split("\n")
+              .map((line: string) => `> ${line}`)
+              .join("\n");
+          case "code_block":
+            return `\`\`\`\n${children}\n\`\`\``;
+          case "li":
+          case "listItem":
+            return `- ${children}`;
+          case "p":
+          case "paragraph":
+          default:
+            return children;
+        }
+      }
+
+      return "";
+    })
+    .join("");
+};
+
+/**
+ * Wrapper around getMarkdown that handles MDX JSX serialization errors
+ * by falling back to manual markdown serialization
+ */
+export const getMarkdown = (editor: SlateEditor, options: { type: MarkdownType }): string => {
+  try {
+    return getMarkdownBase(editor, options);
+  } catch (error: any) {
+    // Handle mdxJsxTextElement and other MDX serialization errors
+    if (
+      error?.message?.includes("mdxJsxTextElement") ||
+      error?.message?.includes("mdxJsxFlowElement") ||
+      error?.message?.includes("Cannot handle unknown node")
+    ) {
+      console.warn("MDX serialization failed, falling back to plain text:", error.message);
+
+      // Get the appropriate blocks based on the type
+      let blocks: any[] = [];
+      switch (options.type) {
+        case "tableCellWithId":
+          // For table cells, get the selected cells
+          const cellEntries = editor.api.blocks({ mode: "lowest" });
+          blocks = cellEntries.map(([node]) => node);
+          break;
+        case "blockWithBlockId":
+        case "block":
+        case "blockSelection":
+        case "blockSelectionWithBlockId":
+        default:
+          blocks = editor.api
+            .blocks({ mode: "lowest" })
+            .map(([node]) => node);
+          break;
+      }
+
+      const markdown = blocks
+        .map((node: any) => safeSerializeNodes([node]))
+        .filter(Boolean)
+        .join("\n\n");
+
+      return markdown || "";
+    }
+    throw error;
+  }
+};
 
 /**
  * Tag content split by newlines
@@ -262,8 +371,9 @@ export const isMultiBlocks = (editor: SlateEditor) => {
 };
 
 /** Get markdown with selection markers */
-export const getMarkdownWithSelection = (editor: SlateEditor) =>
-  removeEscapeSelection(editor, getMarkdown(editor, { type: "block" }));
+export const getMarkdownWithSelection = (editor: SlateEditor) => {
+  return removeEscapeSelection(editor, getMarkdown(editor, { type: "block" }));
+};
 
 /** Check if the current selection is inside a table cell */
 export const isSelectionInTable = (editor: SlateEditor): boolean => {
