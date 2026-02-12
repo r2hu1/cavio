@@ -473,7 +473,7 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
       void editor.getApi(AIChatPlugin).aiChat.submit(input, {
         mode: "insert",
         prompt: {
-          default: "Summarize {editor}",
+          default: `Summarize: ${editor.api.string([])}`,
           selecting: "Summarize",
         },
         toolName: "generate",
