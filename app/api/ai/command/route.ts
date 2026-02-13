@@ -1,7 +1,6 @@
 import type { ChatMessage, ToolName } from "@/components/editor/use-chat";
 import type { NextRequest } from "next/server";
 
-import { createGateway } from "@ai-sdk/gateway";
 import {
   type LanguageModel,
   type UIMessageStreamWriter,
@@ -25,10 +24,39 @@ import {
   getEditPrompt,
   getGeneratePrompt,
 } from "./prompt";
-import { getApiKey, getCommandModel } from "@/modules/ai/views/creds/lib";
-import { BaseEditorKit } from "@/components/editor/editor-base-kit";
-import { googleai } from "@/lib/google-ai";
+import { getApiKey, getCommandModel, getProvider } from "@/modules/ai/views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { AIProvider } from "@/modules/ai/types";
+
+function createProvider(provider: AIProvider, apiKey: string) {
+  switch (provider) {
+    case "gemini":
+      return createGoogleGenerativeAI({ apiKey });
+    case "openrouter":
+      return createOpenRouter({ apiKey });
+    case "groq":
+      return createOpenAI({
+        apiKey,
+        baseURL: "https://api.groq.com/openai/v1",
+      });
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
+function getModelId(provider: AIProvider, model: string) {
+  switch (provider) {
+    case "gemini":
+      return `models/${model}`;
+    case "openrouter":
+    case "groq":
+      return model;
+    default:
+      return model;
+  }
+}
 
 export async function POST(req: NextRequest) {
   const {
@@ -41,12 +69,12 @@ export async function POST(req: NextRequest) {
   const { children, selection, toolName: toolNameParam } = ctx;
 
   const editor = createSlateEditor({
-    // plugins: BaseEditorKit,
     selection,
     value: children,
   });
 
-  const apiKey = await getApiKey();
+  const provider = await getProvider();
+  const apiKey = await getApiKey(provider);
   const selectedModel = await getCommandModel();
 
   if (!apiKey) {
@@ -61,11 +89,9 @@ export async function POST(req: NextRequest) {
 
   const isSelecting = editor.api.isExpanded();
 
-  const gatewayProvider = createGoogleGenerativeAI({
-    apiKey: apiKey,
-  });
-
+  const aiProvider = createProvider(provider, apiKey);
   const modelName = modelParam || selectedModel;
+  const modelId = getModelId(provider, modelName);
 
   try {
     const stream = createUIMessageStream<ChatMessage>({
@@ -83,7 +109,7 @@ export async function POST(req: NextRequest) {
             : ["generate", "comment"];
 
           const { output: AIToolName } = await generateText({
-            model: gatewayProvider.languageModel(modelName),
+            model: aiProvider.languageModel(modelId),
             output: Output.choice({ options: enumOptions }),
             prompt,
           });
@@ -98,18 +124,18 @@ export async function POST(req: NextRequest) {
 
         const stream = streamText({
           experimental_transform: markdownJoinerTransform(),
-          model: gatewayProvider.languageModel(modelName),
+          model: aiProvider.languageModel(modelId),
           // Not used
           prompt: "",
           tools: {
             comment: getCommentTool(editor, {
               messagesRaw,
-              model: gatewayProvider.languageModel(modelName),
+              model: aiProvider.languageModel(modelId),
               writer,
             }),
             table: getTableTool(editor, {
               messagesRaw,
-              model: gatewayProvider.languageModel(modelName),
+              model: aiProvider.languageModel(modelId),
               writer,
             }),
           },
@@ -138,7 +164,7 @@ export async function POST(req: NextRequest) {
               return {
                 ...step,
                 activeTools: [],
-                model: gatewayProvider.languageModel(modelName),
+                model: aiProvider.languageModel(modelId),
                 messages: [
                   {
                     content: editPrompt,
@@ -163,7 +189,7 @@ export async function POST(req: NextRequest) {
                     role: "user",
                   },
                 ],
-                model: gatewayProvider.languageModel(modelName),
+                model: aiProvider.languageModel(modelId),
               };
             }
           },

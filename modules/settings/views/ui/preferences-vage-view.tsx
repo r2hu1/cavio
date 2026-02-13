@@ -10,8 +10,12 @@ import {
   getChatModel, 
   setChatModel,
   getCommandModel,
-  setCommandModel
+  setCommandModel,
+  getProvider,
+  setProvider,
 } from "@/modules/ai/views/creds/lib";
+import { AIProvider } from "@/modules/ai/types";
+import { PROVIDER_CONFIG } from "@/modules/ai/constants/providers";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -30,7 +34,12 @@ interface Model {
 }
 
 export default function PreferencesPageView() {
-  const [apiKey, setApiKeyValue] = useState<string>("");
+  const [provider, setProviderValue] = useState<AIProvider>("gemini");
+  const [apiKeys, setApiKeys] = useState<Record<AIProvider, string>>({
+    gemini: "",
+    openrouter: "",
+    groq: "",
+  });
   const [chatModel, setChatModelValue] = useState<string>("gemini-2.5-flash");
   const [commandModel, setCommandModelValue] = useState<string>("gemini-2.5-flash");
   const [models, setModels] = useState<Model[]>([]);
@@ -38,10 +47,11 @@ export default function PreferencesPageView() {
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!apiKey) return;
-    await setApiKey(apiKey);
-    toast.success("API key updated successfully");
-    fetchModels(apiKey);
+    const currentKey = apiKeys[provider];
+    if (!currentKey) return;
+    await setApiKey(provider, currentKey);
+    toast.success(`${PROVIDER_CONFIG[provider].name} API key updated successfully`);
+    fetchModels(currentKey);
   };
 
   const handleChatModelChange = async (value: string) => {
@@ -56,6 +66,23 @@ export default function PreferencesPageView() {
     toast.success("Command/Copilot model updated successfully");
   };
 
+  const handleProviderChange = async (value: AIProvider) => {
+    setProviderValue(value);
+    await setProvider(value);
+    toast.success(`Provider changed to ${PROVIDER_CONFIG[value].name}`);
+    // Fetch models for the new provider if API key exists
+    const key = apiKeys[value];
+    if (key) {
+      fetchModels(key);
+    } else {
+      setModels([]);
+    }
+  };
+
+  const handleApiKeyChange = (provider: AIProvider, value: string) => {
+    setApiKeys(prev => ({ ...prev, [provider]: value }));
+  };
+
   const fetchModels = async (key: string) => {
     if (!key) {
       setModels([]);
@@ -64,7 +91,7 @@ export default function PreferencesPageView() {
     
     setIsLoadingModels(true);
     try {
-      const response = await fetch("/api/ai/models");
+      const response = await fetch(`/api/ai/models?provider=${provider}`);
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Failed to fetch models");
@@ -80,15 +107,30 @@ export default function PreferencesPageView() {
     }
   };
 
-  const getKey = async () => {
-    const key = await getApiKey();
-    setApiKeyValue(key || "");
-    if (key) {
-      fetchModels(key);
-    }
-  };
+  const loadSettings = async () => {
+    const currentProvider = await getProvider();
+    setProviderValue(currentProvider);
 
-  const getCurrentModels = async () => {
+    // Load API keys for all providers
+    const keys: Record<AIProvider, string> = {
+      gemini: "",
+      openrouter: "",
+      groq: "",
+    };
+    
+    for (const p of Object.keys(PROVIDER_CONFIG) as AIProvider[]) {
+      const key = await getApiKey(p);
+      if (key) keys[p] = key;
+    }
+    setApiKeys(keys);
+
+    // Load models if current provider has a key
+    const currentKey = keys[currentProvider];
+    if (currentKey) {
+      fetchModels(currentKey);
+    }
+
+    // Load model preferences
     const chat = await getChatModel();
     const command = await getCommandModel();
     setChatModelValue(chat);
@@ -96,8 +138,7 @@ export default function PreferencesPageView() {
   };
 
   useEffect(() => {
-    getKey();
-    getCurrentModels();
+    loadSettings();
   }, []);
 
   const renderModelSelect = (
@@ -123,7 +164,7 @@ export default function PreferencesPageView() {
             </div>
           ) : models.length === 0 ? (
             <div className="px-2 py-4 text-sm text-muted-foreground text-center">
-              {apiKey ? "No models available" : "Add an API key to see available models"}
+              {apiKeys[provider] ? "No models available" : "Add an API key to see available models"}
             </div>
           ) : (
             models.map((model) => (
@@ -135,7 +176,7 @@ export default function PreferencesPageView() {
         </SelectContent>
       </Select>
       <p className="text-xs text-foreground/60 -mt-2">
-        {apiKey ? description : "Add an API key to see available models."}
+        {apiKeys[provider] ? description : "Add an API key to see available models."}
       </p>
     </div>
   );
@@ -147,32 +188,64 @@ export default function PreferencesPageView() {
         <div>
           <h1 className="font-medium text-lg">Preferences</h1>
           <p className="text-sm text-foreground/80">
-            Manage your preferences here.
+            Manage your AI preferences here.
           </p>
         </div>
       </div>
       <div>
         <div className="grid gap-6">
-          <form className="space-y-3" onSubmit={handleSave}>
-            <Label htmlFor="gemini-api-key">Gemini API Key</Label>
-            <div className="flex w-full gap-2">
-              <Input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKeyValue(e.target.value)}
-                id="gemini-api-key"
-                name="gemini-api-key"
-                placeholder="AIza................"
-              />
-              <Button size="icon" type="submit">
-                <Save className="!h-4 !w-4" />
-              </Button>
-            </div>
+          {/* Provider Selection */}
+          <div className="space-y-3">
+            <Label>AI Provider</Label>
+            <Select 
+              value={provider} 
+              onValueChange={(value) => handleProviderChange(value as AIProvider)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a provider" />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(PROVIDER_CONFIG) as AIProvider[]).map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {PROVIDER_CONFIG[p].name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-xs text-foreground/60 -mt-2">
-              Its safe, never sync with server, stored locally!
+              {PROVIDER_CONFIG[provider].description}
             </p>
-          </form>
+          </div>
 
+          {/* API Keys for all providers */}
+          <div className="border-t pt-4">
+            <h2 className="font-medium mb-4">API Keys</h2>
+            <div className="space-y-4">
+              {(Object.keys(PROVIDER_CONFIG) as AIProvider[]).map((p) => (
+                <form key={p} className="space-y-2" onSubmit={handleSave}>
+                  <Label htmlFor={`${p}-api-key`}>{PROVIDER_CONFIG[p].name} API Key</Label>
+                  <div className="flex w-full gap-2">
+                    <Input
+                      type="password"
+                      value={apiKeys[p]}
+                      onChange={(e) => handleApiKeyChange(p, e.target.value)}
+                      id={`${p}-api-key`}
+                      name={`${p}-api-key`}
+                      placeholder={PROVIDER_CONFIG[p].placeholder}
+                    />
+                    <Button size="icon" type="submit" disabled={provider !== p}>
+                      <Save className="!h-4 !w-4" />
+                    </Button>
+                  </div>
+                </form>
+              ))}
+            </div>
+            <p className="text-xs text-foreground/60 mt-2">
+              Your API keys are stored locally and never sent to our servers.
+            </p>
+          </div>
+
+          {/* Model Selection */}
           <div className="border-t pt-4">
             <h2 className="font-medium mb-4">AI Models</h2>
             <div className="grid gap-6">

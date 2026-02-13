@@ -1,15 +1,49 @@
 import { generateText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
-import { getApiKey, getCommandModel } from "@/modules/ai/views/creds/lib";
+import { getApiKey, getCommandModel, getProvider } from "@/modules/ai/views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { AIProvider } from "@/modules/ai/types";
+
+function createProvider(provider: AIProvider, apiKey: string) {
+  switch (provider) {
+    case "gemini":
+      return createGoogleGenerativeAI({ apiKey });
+    case "openrouter":
+      return createOpenRouter({ apiKey });
+    case "groq":
+      return createOpenAI({
+        apiKey,
+        baseURL: "https://api.groq.com/openai/v1",
+      });
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
+function getModelId(provider: AIProvider, model: string) {
+  switch (provider) {
+    case "gemini":
+      return `models/${model}`;
+    case "openrouter":
+    case "groq":
+      return model;
+    default:
+      return model;
+  }
+}
 
 export async function POST(req: Request) {
   const { prompt: messages } = await req.json();
   if (!messages || messages.length === 0) {
     return NextResponse.json({ status: 200 });
   }
-  const key = await getApiKey();
+  
+  const provider = await getProvider();
+  const key = await getApiKey(provider);
   const model = await getCommandModel();
+  
   if (!key) {
     return NextResponse.json(
       {
@@ -18,15 +52,13 @@ export async function POST(req: Request) {
       { status: 200 },
     );
   }
-  console.log(key);
 
   try {
-    const googleai = createGoogleGenerativeAI({
-      apiKey: key || "",
-    });
+    const aiProvider = createProvider(provider, key);
+    const modelId = getModelId(provider, model);
 
     const completion = await generateText({
-      model: googleai.languageModel(`models/${model}`) as any,
+      model: aiProvider.languageModel(modelId) as any,
       prompt: messages,
       system: `You are an advanced AI writing assistant, similar to VSCode Copilot but for general text. Your task is to predict and generate the next part of the text based on the given context.
 
