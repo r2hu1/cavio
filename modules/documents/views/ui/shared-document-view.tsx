@@ -14,13 +14,14 @@ import Link from "next/link";
 import { ArrowLeft, Lock, Copy, Check, FolderPlus, LogIn } from "lucide-react";
 import { useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Credenza,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+  CredenzaBody,
+} from "@/components/ui/credenza";
 import { useSession } from "@/lib/auth-client";
 import SharedLogo from "@/components/shared-logo";
 import { Badge } from "@/components/ui/badge";
@@ -128,43 +129,48 @@ export default function SharedDocumentView() {
             </Button>
 
             {isAuthenticated ? (
-              <Dialog open={cloneDialogOpen} onOpenChange={setCloneDialogOpen}>
-                <DialogTrigger asChild>
+              <Credenza
+                open={cloneDialogOpen}
+                onOpenChange={setCloneDialogOpen}
+              >
+                <CredenzaTrigger asChild>
                   <Button size="sm">
                     Clone
                     <FolderPlus className="size-4!" />
                   </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Clone Document</DialogTitle>
-                    <DialogDescription>
+                </CredenzaTrigger>
+                <CredenzaContent>
+                  <CredenzaHeader>
+                    <CredenzaTitle>Clone Document</CredenzaTitle>
+                    <CredenzaDescription>
                       Choose a folder to clone &quot;{data?.title}&quot; into
                       your workspace.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-2 mt-4 max-h-64 overflow-y-auto">
-                    {folders && folders.length > 0 ? (
-                      folders.map((folder) => (
-                        <Button
-                          key={folder.id}
-                          variant="outline"
-                          className="w-full justify-start"
-                          onClick={() => handleClone(folder.id)}
-                          disabled={isCloning}
-                        >
-                          <FolderPlus className="mr-2 h-4 w-4" />
-                          {folder.title}
-                        </Button>
-                      ))
-                    ) : (
-                      <div className="text-center py-4 text-muted-foreground">
-                        No folders found. Create a folder first.
-                      </div>
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
+                    </CredenzaDescription>
+                  </CredenzaHeader>
+                  <CredenzaBody>
+                    <div className="space-y-2 mt-4 max-h-64 mb-10 sm:mb-0 overflow-y-auto">
+                      {folders && folders.length > 0 ? (
+                        folders.map((folder) => (
+                          <Button
+                            key={folder.id}
+                            variant="outline"
+                            className="w-full justify-start"
+                            onClick={() => handleClone(folder.id)}
+                            disabled={isCloning}
+                          >
+                            <FolderPlus className="mr-2 h-4 w-4" />
+                            {folder.title}
+                          </Button>
+                        ))
+                      ) : (
+                        <div className="text-center py-4 text-muted-foreground">
+                          No folders found. Create a folder first.
+                        </div>
+                      )}
+                    </div>
+                  </CredenzaBody>
+                </CredenzaContent>
+              </Credenza>
             ) : (
               <Link href={`/sign-in?redirect=/share/${documentId}`}>
                 <Button size="sm">
