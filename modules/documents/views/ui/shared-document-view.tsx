@@ -83,7 +83,7 @@ export default function SharedDocumentView() {
     cloneDocument({ documentId, folderId });
   };
 
-  if (!isPending) {
+  if (isPending) {
     return (
       <div className="px-6 py-5 md:px-10">
         <div className="flex items-center justify-between pb-6">
