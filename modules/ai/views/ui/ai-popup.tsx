@@ -164,7 +164,7 @@ export default function AiPopup({
               }}
               onKeyDown={handleKeyDown}
               placeholder="Start typing here... & press enter!"
-              className="w-full px-4 py-3 resize-none bg-transparent! border-none text-sm focus:outline-none focus-visible:ring-0"
+              className="w-full px-4 py-3 resize-none bg-transparent! border-0! shadow-none! text-sm focus:outline-none focus-visible:ring-0"
             />
 
             <div className="px-2 flex justify-end gap-2">
