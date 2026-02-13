@@ -130,10 +130,9 @@ export default function AiPopup({
       <SheetContent className="sm:!min-w-[500px] !min-w-full">
         <SheetHeader>
           <SheetTitle>Cavio AI</SheetTitle>
-          <SheetDescription>Ask me anything you want!</SheetDescription>
         </SheetHeader>
 
-        <Conversation className="max-h-[calc(100%-220px)] -mt-4">
+        <Conversation className="max-h-[calc(100%-180px)] -mt-4">
           <ConversationContent>
             {renderedMessages}
 
