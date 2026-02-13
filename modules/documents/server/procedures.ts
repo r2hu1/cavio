@@ -1,6 +1,10 @@
 import { db } from "@/db/client";
 import { documents, folders } from "@/db/schema";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/trpc/init";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/trpc/init";
 import { desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
 import { documentSchema } from "../schema";
@@ -243,7 +247,7 @@ export const documentsRouter = createTRPCRouter({
       }
 
       const shareUrl = input.isPublished
-        ? `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/share/${input.id}`
+        ? `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/share/${input.id}`
         : "";
 
       const [updatedDocument] = await db
@@ -369,7 +373,7 @@ export const documentsRouter = createTRPCRouter({
               updatedAt: doc.updatedAt,
             },
             null,
-            2
+            2,
           );
           filename = `${doc.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.json`;
           mimeType = "application/json";
