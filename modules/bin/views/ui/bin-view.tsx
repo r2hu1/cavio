@@ -262,16 +262,10 @@ export default function BinView() {
   // Bulk operations
   const restoreAllFolders = useMutation(
     trpc.folder.restoreAll.mutationOptions({
-      onMutate: () => {
-        toast.loading("Restoring all folders...");
-      },
       onSuccess: (data) => {
-        toast.dismiss();
-        toast.success(`Restored ${data.restoredCount} folders`);
         invalidateBinData();
       },
       onError: (error) => {
-        toast.dismiss();
         handleError(error, "restore all folders");
       },
     }),
@@ -279,16 +273,10 @@ export default function BinView() {
 
   const restoreAllDocuments = useMutation(
     trpc.document.restoreAll.mutationOptions({
-      onMutate: () => {
-        toast.loading("Restoring all documents...");
-      },
       onSuccess: (data) => {
-        toast.dismiss();
-        toast.success(`Restored ${data.restoredCount} documents`);
         invalidateBinData();
       },
       onError: (error) => {
-        toast.dismiss();
         handleError(error, "restore all documents");
       },
     }),
@@ -296,17 +284,11 @@ export default function BinView() {
 
   const permanentDeleteAllFolders = useMutation(
     trpc.folder.permanentDeleteAll.mutationOptions({
-      onMutate: () => {
-        toast.loading("Deleting all folders...");
-      },
       onSuccess: (data) => {
-        toast.dismiss();
-        toast.success(`Permanently deleted ${data.deletedCount} folders`);
         queryClient.setQueryData(trpc.folder.getDeleted.queryKey(), []);
         queryClient.setQueryData(trpc.document.getDeleted.queryKey(), []);
       },
       onError: (error) => {
-        toast.dismiss();
         handleError(error, "delete all folders");
       },
     }),
@@ -314,16 +296,10 @@ export default function BinView() {
 
   const permanentDeleteAllDocuments = useMutation(
     trpc.document.permanentDeleteAll.mutationOptions({
-      onMutate: () => {
-        toast.loading("Deleting all documents...");
-      },
       onSuccess: (data) => {
-        toast.dismiss();
-        toast.success(`Permanently deleted ${data.deletedCount} documents`);
         queryClient.setQueryData(trpc.document.getDeleted.queryKey(), []);
       },
       onError: (error) => {
-        toast.dismiss();
         handleError(error, "delete all documents");
       },
     }),
@@ -350,6 +326,13 @@ export default function BinView() {
   const hasFolders = deletedFolders && deletedFolders.length > 0;
   const isEmpty = !hasDocuments && !hasFolders;
 
+  // Track bulk operation states
+  const isRestoring =
+    restoreAllFolders.isPending || restoreAllDocuments.isPending;
+  const isEmptying =
+    permanentDeleteAllFolders.isPending ||
+    permanentDeleteAllDocuments.isPending;
+
   // Expose bulk operations to parent via window
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -363,10 +346,14 @@ export default function BinView() {
           permanentDeleteAllDocuments.mutate();
         },
         hasItems: !isEmpty,
+        isRestoring,
+        isEmptying,
       };
     }
   }, [
     isEmpty,
+    isRestoring,
+    isEmptying,
     restoreAllFolders,
     restoreAllDocuments,
     permanentDeleteAllFolders,

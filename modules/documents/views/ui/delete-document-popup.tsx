@@ -51,6 +51,7 @@ export default function DeleteDocumentPopup({
       },
       {
         onSuccess: async () => {
+          toast.success("Document moved to bin");
           await queryClient.invalidateQueries(
             trpc.document.getAllByFolderId.queryOptions({ folderId }),
           );

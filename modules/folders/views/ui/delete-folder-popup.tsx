@@ -63,7 +63,7 @@ export default function DeleteFolderPopup({
           await queryClient.invalidateQueries({
             queryKey: trpc.document.getDeleted.queryKey(),
           });
-          toast.success("Folder deleted successfully");
+          toast.success("Folder moved to bin");
           if (pathname.includes(folderId)) {
             router.push("/");
           }

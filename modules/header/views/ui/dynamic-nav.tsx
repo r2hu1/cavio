@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
 import SettingsNav from "@/modules/settings/views/ui/settings-nav";
 import HistoryPopup from "@/modules/ai/views/ui/history-popup";
 import DocumentNav from "@/modules/documents/views/ui/document-nav";
@@ -37,17 +38,21 @@ export default function DynamicNav() {
   const documentId = pathname[2];
   const isBin = pathname.includes("bin");
   const [hasBinItems, setHasBinItems] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [isEmptying, setIsEmptying] = useState(false);
 
-  // Check if bin has items
+  // Check if bin has items and operation states
   useEffect(() => {
     if (isBin) {
-      const checkBinItems = () => {
+      const checkBinState = () => {
         const binOps = (window as any).binOperations;
         setHasBinItems(binOps?.hasItems ?? false);
+        setIsRestoring(binOps?.isRestoring ?? false);
+        setIsEmptying(binOps?.isEmptying ?? false);
       };
 
-      checkBinItems();
-      const interval = setInterval(checkBinItems, 1000);
+      checkBinState();
+      const interval = setInterval(checkBinState, 500);
       return () => clearInterval(interval);
     }
   }, [isBin]);
@@ -59,10 +64,13 @@ export default function DynamicNav() {
     }
   };
 
+  const [open, setOpen] = useState(false);
+
   const handleEmptyTrash = () => {
     const binOps = (window as any).binOperations;
     if (binOps?.emptyTrash) {
       binOps.emptyTrash();
+      setOpen(false);
     }
   };
 
@@ -103,12 +111,12 @@ export default function DynamicNav() {
               size="sm"
               variant="secondary"
               onClick={handleRestoreAll}
-              disabled={!hasBinItems}
+              disabled={!hasBinItems || isRestoring}
             >
               <span className="hidden sm:inline">Restore All</span>
-              <ArchiveRestore className="size-4" />
+              {isRestoring ? <Loader /> : <ArchiveRestore className="size-4" />}
             </Button>
-            <Credenza>
+            <Credenza open={open} onOpenChange={setOpen}>
               <CredenzaTrigger asChild>
                 <Button size="sm" disabled={!hasBinItems}>
                   Empty Trash <Trash className="size-4" />
@@ -126,8 +134,12 @@ export default function DynamicNav() {
                   <CredenzaClose asChild>
                     <Button variant="secondary">Cancel</Button>
                   </CredenzaClose>
-                  <Button variant="destructive" onClick={handleEmptyTrash}>
-                    Empty Trash
+                  <Button
+                    variant="destructive"
+                    onClick={handleEmptyTrash}
+                    disabled={isEmptying}
+                  >
+                    Continue {isEmptying && <Loader />}
                   </Button>
                 </CredenzaFooter>
               </CredenzaContent>
