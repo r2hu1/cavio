@@ -10,8 +10,39 @@ import {
   FORMAT_PROMPT,
   SYSTEM_PROMPT,
 } from "../constants";
-import { getApiKey, getChatModel } from "../views/creds/lib";
+import { getApiKey, getChatModel, getCommandModel, getProvider } from "../views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { AIProvider } from "../types";
+
+function createProvider(provider: AIProvider, apiKey: string) {
+  switch (provider) {
+    case "gemini":
+      return createGoogleGenerativeAI({ apiKey });
+    case "openrouter":
+      return createOpenRouter({ apiKey });
+    case "groq":
+      return createOpenAI({
+        apiKey,
+        baseURL: "https://api.groq.com/openai/v1",
+      });
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
+function getModelId(provider: AIProvider, model: string) {
+  switch (provider) {
+    case "gemini":
+      return `models/${model}`;
+    case "openrouter":
+    case "groq":
+      return model;
+    default:
+      return model;
+  }
+}
 
 export const aiRouter = createTRPCRouter({
   create: protectedProcedure
@@ -24,14 +55,17 @@ export const aiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const key = await getApiKey();
+      const provider = await getProvider();
+      const key = await getApiKey(provider);
       const model = await getChatModel();
+      
       if (!key) {
         return {
           text: "No API key found, please set it in the [settings](/settings/preferences).",
           id: null,
         };
       }
+      
       const memories = `
 		 <Memory>
 		  <User>
@@ -46,76 +80,86 @@ export const aiRouter = createTRPCRouter({
 				<Waring>Only use your last response if it is relevant to the current conversation</Waring>
 		 </Memory>
 			`;
-      const googleai = createGoogleGenerativeAI({
-        apiKey: key || "",
-      });
-      const res = await generateText({
-        model: googleai(`models/${model}`) as any,
-        prompt: `
-          ${input.content}
-          `,
-        system: `${SYSTEM_PROMPT}\n\n${memories}`,
-      });
-      if (!res) {
+      
+      try {
+        const aiProvider = createProvider(provider, key);
+        const modelId = getModelId(provider, model);
+        
+        const res = await generateText({
+          model: aiProvider(modelId) as any,
+          prompt: input.content,
+          system: `${SYSTEM_PROMPT}\n\n${memories}`,
+        });
+        
+        if (!res) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Error something went wrong, please try again!",
+          });
+        }
+        
+        if (input.chatId) {
+          const [currRec] = await db
+            .select()
+            .from(aiChatHistory)
+            .where(eq(aiChatHistory.id, input.chatId));
+          if (currRec) {
+            await db
+              .update(aiChatHistory)
+              .set({
+                title: currRec.title,
+                content: [
+                  ...((currRec.content as any) || []),
+                  {
+                    role: "user",
+                    content: input.content,
+                  },
+                  {
+                    role: "ai",
+                    content: res.text,
+                  },
+                ],
+              })
+              .where(eq(aiChatHistory.id, input.chatId));
+            return {
+              text: res.text,
+              id: null,
+            };
+          }
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Error the requested is invalid",
+          });
+        }
+        
+        const [createdRecord] = await db
+          .insert(aiChatHistory)
+          .values({
+            title: input.content.slice(0, 200),
+            content: [
+              {
+                role: "user",
+                content: input.content,
+              },
+              {
+                role: "ai",
+                content: res.text,
+              },
+            ],
+            userId: ctx.auth.session.userId,
+          })
+          .returning();
+        return {
+          text: res.text,
+          id: createdRecord.id,
+        };
+      } catch (error: any) {
+        console.error("AI chat error:", error);
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Error something went wrong, please try again!",
+          message: error.message || "Error something went wrong, please try again!",
         });
       }
-      if (input.chatId) {
-        const [currRec] = await db
-          .select()
-          .from(aiChatHistory)
-          .where(eq(aiChatHistory.id, input.chatId));
-        if (currRec) {
-          await db
-            .update(aiChatHistory)
-            .set({
-              title: currRec.title,
-              content: [
-                ...((currRec.content as any) || []),
-                {
-                  role: "user",
-                  content: input.content,
-                },
-                {
-                  role: "ai",
-                  content: res.text,
-                },
-              ],
-            })
-            .where(eq(aiChatHistory.id, input.chatId));
-          return {
-            text: res.text,
-            id: null,
-          };
-        }
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Error the requested is invalid",
-        });
-      }
-      const [createdRecord] = await db
-        .insert(aiChatHistory)
-        .values({
-          title: input.content.slice(0, 200),
-          content: [
-            {
-              role: "user",
-              content: input.content,
-            },
-            {
-              role: "ai",
-              content: res.text,
-            },
-          ],
-          userId: ctx.auth.session.userId,
-        })
-        .returning();
-      return {
-        text: res.text,
-        id: createdRecord.id,
-      };
     }),
   getExisting: protectedProcedure
     .input(
@@ -179,13 +223,16 @@ export const aiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const key = await getApiKey();
-      const model = await getChatModel();
+      const provider = await getProvider();
+      const key = await getApiKey(provider);
+      const model = await getCommandModel();
+      
       if (!key) {
         return {
           text: "No API key found, please set it in the settings.",
         };
       }
+      
       const memoryContext = `
 		<Memory>
 		<Warning>Always use memory if necessary</Warning>
@@ -204,24 +251,32 @@ export const aiRouter = createTRPCRouter({
 		</Memory>
     `.trim();
 
-      const googleai = createGoogleGenerativeAI({
-        apiKey: key || "",
-      });
-      const res = await generateText({
-        model: googleai(`models/${model}`) as any,
-        system: `${DOC_AI_SYSTEM_PROMPT}\n\n${memoryContext}`,
-        prompt: input.content,
-      });
+      try {
+        const aiProvider = createProvider(provider, key);
+        const modelId = getModelId(provider, model);
+        
+        const res = await generateText({
+          model: aiProvider(modelId) as any,
+          system: `${DOC_AI_SYSTEM_PROMPT}\n\n${memoryContext}`,
+          prompt: input.content,
+        });
 
-      if (!res) {
+        if (!res) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Error something went wrong, please try again!",
+          });
+        }
+
+        return {
+          text: res.text,
+        };
+      } catch (error: any) {
+        console.error("Document AI error:", error);
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Error something went wrong, please try again!",
+          message: error.message || "Error something went wrong, please try again!",
         });
       }
-
-      return {
-        text: res.text,
-      };
     }),
 });
