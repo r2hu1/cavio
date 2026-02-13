@@ -48,7 +48,6 @@ export default function PreferencesPageView() {
   const [isSaving, setIsSaving] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Use ref to track the provider at the time of fetch to prevent race conditions
   const fetchingProviderRef = useRef<AIProvider | null>(null);
 
   const handleSaveAllKeys = async () => {
@@ -72,8 +71,6 @@ export default function PreferencesPageView() {
 
       await Promise.all(promises);
       toast.success(`API keys saved for: ${savedProviders.join(", ")}`);
-
-      // Fetch models for the current provider if key exists
       const currentKey = apiKeys[provider];
       if (currentKey) {
         fetchModels(currentKey, provider);
@@ -102,7 +99,6 @@ export default function PreferencesPageView() {
     setProviderValue(value);
     await setProvider(value);
     toast.success(`Provider changed to ${PROVIDER_CONFIG[value].name}`);
-    // Fetch models for the new provider if API key exists
     const key = apiKeys[value];
     if (key) {
       fetchModels(key, value);
@@ -116,7 +112,6 @@ export default function PreferencesPageView() {
   };
 
   const getCheapestModel = (availableModels: Model[]): string => {
-    // Priority: flash models, then lite models, then first available
     const flashModel = availableModels.find((m) =>
       m.value.toLowerCase().includes("flash"),
     );
@@ -136,7 +131,6 @@ export default function PreferencesPageView() {
       return;
     }
 
-    // Track which provider we're fetching for
     fetchingProviderRef.current = targetProvider;
     setIsLoadingModels(true);
 
@@ -149,7 +143,6 @@ export default function PreferencesPageView() {
       const data = await response.json();
       const availableModels = data.models || [];
 
-      // Only update state if we're still on the same provider
       if (fetchingProviderRef.current !== targetProvider) {
         console.log("Provider changed during fetch, discarding results");
         return;
@@ -159,13 +152,10 @@ export default function PreferencesPageView() {
 
       const modelValues = availableModels.map((m: Model) => m.value);
 
-      // Only apply fallback logic after initial load and if we have models
       if (isInitialized && availableModels.length > 0) {
-        // Use state values for comparison, not cookies
         const currentChatValue = chatModel;
         const currentCommandValue = commandModel;
 
-        // Fallback chat model if current is not in available list
         if (currentChatValue && !modelValues.includes(currentChatValue)) {
           const fallbackModel = getCheapestModel(availableModels);
           if (fallbackModel) {
@@ -175,7 +165,6 @@ export default function PreferencesPageView() {
           }
         }
 
-        // Fallback command model if current is not in available list
         if (currentCommandValue && !modelValues.includes(currentCommandValue)) {
           const fallbackModel = getCheapestModel(availableModels);
           if (fallbackModel) {
@@ -190,7 +179,6 @@ export default function PreferencesPageView() {
       toast.error(error.message || "Failed to fetch models");
       setModels([]);
     } finally {
-      // Only clear loading if we're still on the same provider
       if (fetchingProviderRef.current === targetProvider) {
         setIsLoadingModels(false);
       }
@@ -201,7 +189,6 @@ export default function PreferencesPageView() {
     const currentProvider = await getProvider();
     setProviderValue(currentProvider);
 
-    // Load API keys for all providers
     const keys: Record<AIProvider, string> = {
       gemini: "",
       openrouter: "",
@@ -214,16 +201,13 @@ export default function PreferencesPageView() {
     }
     setApiKeys(keys);
 
-    // Load model preferences
     const chat = await getChatModel();
     const command = await getCommandModel();
     setChatModelValue(chat);
     setCommandModelValue(command);
 
-    // Mark as initialized after loading saved values
     setIsInitialized(true);
 
-    // Load models if current provider has a key
     const currentKey = keys[currentProvider];
     if (currentKey) {
       fetchModels(currentKey, currentProvider);
@@ -295,7 +279,6 @@ export default function PreferencesPageView() {
       </div>
       <div>
         <div className="grid gap-6">
-          {/* Provider Selection */}
           <div className="space-y-3">
             <Label className="text-base font-medium">AI Provider</Label>
             <p className="text-xs text-foreground/60 mb-4! -mt-2!">
@@ -320,7 +303,6 @@ export default function PreferencesPageView() {
             </Select>
           </div>
 
-          {/* API Keys for all providers */}
           <div className="border-t pt-4">
             <h2 className="font-medium mb-4">API Keys</h2>
             <div className="space-y-4">
@@ -356,7 +338,6 @@ export default function PreferencesPageView() {
             </div>
           </div>
 
-          {/* Model Selection */}
           <div className="border-t pt-4">
             <h2 className="font-medium mb-5">AI Models</h2>
             <div className="grid gap-4">
