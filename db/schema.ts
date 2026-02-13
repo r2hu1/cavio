@@ -86,6 +86,8 @@ export const documents = pgTable("documents", {
   url: text("url").default(""),
   privacy: text("privacy").default("private"),
   collaborators: text("collaborators").array().default([]),
+  deleted: boolean("deleted").default(false),
+  deletedAt: timestamp("deleted_at"),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
@@ -107,6 +109,8 @@ export const folders = pgTable("folders", {
   isPublished: boolean("is_published").notNull().default(false),
   url: text("url").notNull().default(""),
   collaborators: text("collaborators").array().default([]),
+  deleted: boolean("deleted").default(false),
+  deletedAt: timestamp("deleted_at"),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),

@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/trpc/init";
-import { desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, lt } from "drizzle-orm";
 import z from "zod";
 import { documentSchema } from "../schema";
 import { TRPCError } from "@trpc/server";
@@ -22,7 +22,12 @@ export const documentsRouter = createTRPCRouter({
         updatedAt: documents.updatedAt,
       })
       .from(documents)
-      .where(eq(documents.userId, ctx.auth.session.userId));
+      .where(
+        and(
+          eq(documents.userId, ctx.auth.session.userId),
+          eq(documents.deleted, false)
+        )
+      );
     return document;
   }),
   create: protectedProcedure
@@ -61,7 +66,12 @@ export const documentsRouter = createTRPCRouter({
       const [folder] = await db
         .select()
         .from(folders)
-        .where(eq(folders.id, input.folderId));
+        .where(
+          and(
+            eq(folders.id, input.folderId),
+            eq(folders.deleted, false)
+          )
+        );
       if (!folder) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -69,6 +79,9 @@ export const documentsRouter = createTRPCRouter({
         });
       }
       const documentIds = folder.documents ?? [];
+      if (documentIds.length === 0) {
+        return [];
+      }
       const fullDocuments = await db
         .select({
           id: documents.id,
@@ -79,7 +92,12 @@ export const documentsRouter = createTRPCRouter({
           createdAt: documents.createdAt,
         })
         .from(documents)
-        .where(inArray(documents.id, documentIds));
+        .where(
+          and(
+            inArray(documents.id, documentIds),
+            eq(documents.deleted, false)
+          )
+        );
       return fullDocuments;
     }),
   delete: protectedProcedure
@@ -113,17 +131,13 @@ export const documentsRouter = createTRPCRouter({
           message: "Folder not found",
         });
 
-      const updatedDocuments = (folder.documents ?? []).filter(
-        (docId) => docId !== input.id,
-      );
-
-      await db
-        .update(folders)
-        .set({ documents: updatedDocuments })
-        .where(eq(folders.id, input.folderId));
-
+      // Soft delete - mark as deleted instead of removing
       const [deletedDocument] = await db
-        .delete(documents)
+        .update(documents)
+        .set({ 
+          deleted: true,
+          deletedAt: new Date(),
+        })
         .where(eq(documents.id, input.id))
         .returning();
 
@@ -171,7 +185,7 @@ export const documentsRouter = createTRPCRouter({
         .select()
         .from(documents)
         .where(eq(documents.id, input.id));
-      if (document.length < 0) {
+      if (document.length === 0) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "NOT_FOUND",
@@ -188,7 +202,12 @@ export const documentsRouter = createTRPCRouter({
     const document = await db
       .select()
       .from(documents)
-      .where(eq(documents.userId, ctx.auth.session.userId))
+      .where(
+        and(
+          eq(documents.userId, ctx.auth.session.userId),
+          eq(documents.deleted, false)
+        )
+      )
       .orderBy(desc(documents.updatedAt))
       .limit(6);
 
@@ -396,6 +415,158 @@ export const documentsRouter = createTRPCRouter({
         content,
         filename,
         mimeType,
+      };
+    }),
+  getDeleted: protectedProcedure.query(async ({ ctx }) => {
+    const deletedDocuments = await db
+      .select()
+      .from(documents)
+      .where(
+        and(
+          eq(documents.userId, ctx.auth.session.userId),
+          eq(documents.deleted, true)
+        )
+      )
+      .orderBy(desc(documents.deletedAt));
+
+    return deletedDocuments;
+  }),
+  restore: protectedProcedure
+    .input(z.object({ id: z.string(), folderId: z.string().optional() }))
+    .mutation(async ({ input, ctx }) => {
+      const document = await db
+        .select()
+        .from(documents)
+        .where(eq(documents.id, input.id));
+
+      if (document.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Document not found",
+        });
+      }
+
+      if (document[0].userId !== ctx.auth.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You do not have permission to restore this document",
+        });
+      }
+
+      const updateData: any = {
+        deleted: false,
+        deletedAt: null,
+      };
+
+      // If a new folder ID is provided, move the document there
+      if (input.folderId) {
+        updateData.folderId = input.folderId;
+        
+        // Add document to new folder's documents array
+        const [newFolder] = await db
+          .select()
+          .from(folders)
+          .where(eq(folders.id, input.folderId));
+          
+        if (newFolder) {
+          await db
+            .update(folders)
+            .set({
+              documents: [...(newFolder.documents ?? []), input.id],
+            })
+            .where(eq(folders.id, input.folderId));
+        }
+      }
+
+      const [restoredDocument] = await db
+        .update(documents)
+        .set(updateData)
+        .where(eq(documents.id, input.id))
+        .returning();
+
+      return restoredDocument;
+    }),
+  permanentDelete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const document = await db
+        .select()
+        .from(documents)
+        .where(eq(documents.id, input.id));
+
+      if (document.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Document not found",
+        });
+      }
+
+      if (document[0].userId !== ctx.auth.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You do not have permission to delete this document",
+        });
+      }
+
+      const [deletedDocument] = await db
+        .delete(documents)
+        .where(eq(documents.id, input.id))
+        .returning();
+
+      return deletedDocument;
+    }),
+  getParentFolderStatus: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const document = await db
+        .select()
+        .from(documents)
+        .where(eq(documents.id, input.id));
+
+      if (document.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Document not found",
+        });
+      }
+
+      if (document[0].userId !== ctx.auth.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+        });
+      }
+
+      const folderId = document[0].folderId;
+      const [parentFolder] = await db
+        .select()
+        .from(folders)
+        .where(eq(folders.id, folderId));
+
+      // Get available folders for moving the document
+      const availableFolders = await db
+        .select({
+          id: folders.id,
+          title: folders.title,
+        })
+        .from(folders)
+        .where(
+          and(
+            eq(folders.userId, ctx.auth.session.userId),
+            eq(folders.deleted, false)
+          )
+        )
+        .orderBy(folders.title);
+
+      return {
+        parentFolder: parentFolder
+          ? {
+              id: parentFolder.id,
+              title: parentFolder.title,
+              deleted: parentFolder.deleted,
+            }
+          : null,
+        availableFolders,
       };
     }),
 });

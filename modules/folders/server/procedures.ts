@@ -1,9 +1,9 @@
 import { db } from "@/db/client";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
 import { TRPCError } from "@trpc/server";
-import { folders } from "@/db/schema";
+import { folders, documents } from "@/db/schema";
 import {
 	foldersSchema,
 	getFoldersByIdSchema,
@@ -15,7 +15,12 @@ export const foldersRouter = createTRPCRouter({
 		const currentFolders = await db
 			.select()
 			.from(folders)
-			.where(eq(folders.userId, ctx.auth.session.userId))
+			.where(
+				and(
+					eq(folders.userId, ctx.auth.session.userId),
+					eq(folders.deleted, false)
+				)
+			)
 			.orderBy(desc(folders.updatedAt));
 		return currentFolders;
 	}),
@@ -37,7 +42,12 @@ export const foldersRouter = createTRPCRouter({
 			const [folder] = await db
 				.select()
 				.from(folders)
-				.where(eq(folders.id, input.id));
+				.where(
+					and(
+						eq(folders.id, input.id),
+						eq(folders.deleted, false)
+					)
+				);
 			if (!folder)
 				throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
 			if (folder.userId != ctx.auth.session.userId)
@@ -47,14 +57,40 @@ export const foldersRouter = createTRPCRouter({
 	delete: protectedProcedure
 		.input(getFoldersByIdSchema)
 		.mutation(async ({ input, ctx }) => {
+			const [folder] = await db
+				.select()
+				.from(folders)
+				.where(eq(folders.id, input.id));
+			
+			if (!folder)
+				throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
+			if (folder.userId != ctx.auth.session.userId)
+				throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+			
+			const now = new Date();
+			
+			// Soft delete all documents inside the folder
+			const documentIds = folder.documents ?? [];
+			if (documentIds.length > 0) {
+				await db
+					.update(documents)
+					.set({
+						deleted: true,
+						deletedAt: now,
+					})
+					.where(inArray(documents.id, documentIds));
+			}
+			
+			// Soft delete the folder
 			const [deletedFolder] = await db
-				.delete(folders)
+				.update(folders)
+				.set({
+					deleted: true,
+					deletedAt: now,
+				})
 				.where(eq(folders.id, input.id))
 				.returning();
-			if (!deletedFolder)
-				throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
-			if (deletedFolder.userId != ctx.auth.session.userId)
-				throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+			
 			return deletedFolder;
 		}),
 	update: protectedProcedure
@@ -93,9 +129,88 @@ export const foldersRouter = createTRPCRouter({
 		const recentFolders = await db
 			.select()
 			.from(folders)
-			.where(eq(folders.userId, ctx.auth.session.userId))
+			.where(
+				and(
+					eq(folders.userId, ctx.auth.session.userId),
+					eq(folders.deleted, false)
+				)
+			)
 			.orderBy(desc(folders.updatedAt))
 			.limit(6);
 		return recentFolders;
 	}),
+	getDeleted: protectedProcedure.query(async ({ ctx }) => {
+		const deletedFolders = await db
+			.select()
+			.from(folders)
+			.where(
+				and(
+					eq(folders.userId, ctx.auth.session.userId),
+					eq(folders.deleted, true)
+				)
+			)
+			.orderBy(desc(folders.deletedAt));
+		return deletedFolders;
+	}),
+	restore: protectedProcedure
+		.input(getFoldersByIdSchema)
+		.mutation(async ({ input, ctx }) => {
+			const [folder] = await db
+				.select()
+				.from(folders)
+				.where(eq(folders.id, input.id));
+			
+			if (!folder) {
+				throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
+			}
+			if (folder.userId != ctx.auth.session.userId) {
+				throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+			}
+			
+			// Restore all documents inside the folder
+			const documentIds = folder.documents ?? [];
+			if (documentIds.length > 0) {
+				await db
+					.update(documents)
+					.set({
+						deleted: false,
+						deletedAt: null,
+					})
+					.where(inArray(documents.id, documentIds));
+			}
+			
+			// Restore the folder
+			const [restoredFolder] = await db
+				.update(folders)
+				.set({
+					deleted: false,
+					deletedAt: null,
+				})
+				.where(eq(folders.id, input.id))
+				.returning();
+			
+			return restoredFolder;
+		}),
+	permanentDelete: protectedProcedure
+		.input(getFoldersByIdSchema)
+		.mutation(async ({ input, ctx }) => {
+			const [folder] = await db
+				.select()
+				.from(folders)
+				.where(eq(folders.id, input.id));
+			
+			if (!folder) {
+				throw new TRPCError({ code: "NOT_FOUND", message: "Folder not found" });
+			}
+			if (folder.userId != ctx.auth.session.userId) {
+				throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+			}
+			
+			const [deletedFolder] = await db
+				.delete(folders)
+				.where(eq(folders.id, input.id))
+				.returning();
+			
+			return deletedFolder;
+		}),
 });

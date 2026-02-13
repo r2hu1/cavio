@@ -63,6 +63,9 @@ export default function DeleteDocumentPopup({
           await queryClient.invalidateQueries(
             trpc.document.getAll.queryOptions(),
           );
+          await queryClient.invalidateQueries({
+            queryKey: trpc.document.getDeleted.queryKey(),
+          });
           if (pathname.includes(documentId)) {
             router.push(`/folder/${folderId}`);
           }

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/client";
 import { ThemeProvider } from "@/components/theme-provider";
 import NavProgress from "@/modules/preloader/views/ui/nav-progress";
+import { SchedulerInitializer } from "@/components/scheduler-initializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,6 +26,7 @@ export default function RootLayout({
     <TRPCReactProvider>
       <html lang="en" suppressHydrationWarning>
         <body className={`${geistSans.className} antialiased`}>
+          <SchedulerInitializer />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
