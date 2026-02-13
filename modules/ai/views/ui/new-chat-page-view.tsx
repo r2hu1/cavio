@@ -12,7 +12,12 @@ import { Button } from "@/components/ui/button";
 import Tooltip from "@/components/ui/tooltip-v2";
 import { MarkdownContent } from "@/components/ui/markdown-content";
 
-const thinkingTexts = ["Thinking", "Researching", "Organizing", "Summarizing"];
+export const thinkingTexts = [
+  "Thinking",
+  "Researching",
+  "Organizing",
+  "Summarizing",
+];
 
 export default function NewChatPageView({ params }: { params?: string }) {
   const router = useRouter();

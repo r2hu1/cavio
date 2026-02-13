@@ -11,11 +11,10 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import useAutoResizeTextarea from "@/hooks/use-auto-resize-textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { toast } from "sonner";
-import { StreamedMessage } from "./streamed-message";
 import {
   Conversation,
   ConversationContent,
@@ -23,6 +22,10 @@ import {
 } from "@/components/ai-elements/conversation";
 import { Message, MessageContent } from "@/components/ai-elements/message";
 import { Loader } from "@/components/ai-elements/loader";
+import { DefaultChatTransport } from "ai";
+import { useChat } from "@ai-sdk/react";
+import { MarkdownContent } from "@/components/ui/markdown-content";
+import { thinkingTexts } from "./new-chat-page-view";
 
 export default function AiPopup({
   insert,
@@ -39,10 +42,11 @@ export default function AiPopup({
   });
 
   const [value, setValue] = useState("");
-  const trpc = useTRPC();
-  const { mutate, isPending } = useMutation(
-    trpc.ai.documentAiChatCreate.mutationOptions(),
-  );
+  const { sendMessage, messages, status, error } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/ai/chat",
+    }),
+  });
 
   const [history, setHistory] = useState<{ role: string; content: string }[]>(
     [],
@@ -53,27 +57,10 @@ export default function AiPopup({
       history[history.length - 1]?.role == "ai" &&
         history[history.length - 1]?.content.slice(-300),
     );
-    mutate(
-      {
-        content: value,
-        title: title || "",
-        lastEditedDocContent: lastEdited.toString(),
-        previous:
-          (history[history.length - 1]?.role == "ai" &&
-            history[history.length - 1]?.content.slice(-300)) ||
-          "N/A",
-      },
-      {
-        onSuccess: (data) => {
-          setValue("");
-          setHistory((prev) => [...prev, { role: "ai", content: data.text }]);
-          // insert(data);
-        },
-        onError: (data) => {
-          toast.error(data.message);
-        },
-      },
-    );
+    sendMessage({
+      text: value,
+    });
+    setValue("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -95,6 +82,19 @@ export default function AiPopup({
     }
   };
 
+  const [aiThinkingIndex, setAiThinkingIndex] = useState(0);
+
+  useEffect(() => {
+    if (status !== "streaming" && status !== "submitted") return;
+    const interval = setInterval(() => {
+      setAiThinkingIndex((prev) => (prev + 1) % thinkingTexts.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [status]);
+
+  useEffect(() => {
+    toast.error(error?.message);
+  }, [error]);
   return (
     <Sheet>
       <SheetTrigger className="fixed bottom-7 right-7" asChild>
@@ -109,36 +109,69 @@ export default function AiPopup({
         </SheetHeader>
         <Conversation className="max-h-[calc(100%-220px)] -mt-4">
           <ConversationContent>
-            {history.map((item, index) => {
-              if (!item.content) return null;
-              if (item.role === "ai") {
+            {messages.map((message) => {
+              const text = message.parts
+                ?.filter((part) => part.type === "text")
+                .map((part) => part.text)
+                .join("");
+
+              if (!text) return null;
+
+              if (message.role === "assistant") {
                 return (
-                  <Message from="assistant">
+                  <Message
+                    className="prose prose-sm max-w-none dark:prose-invert
+                  prose-headings:text-foreground
+                  prose-headings:text-lg
+                  prose-p:text-foreground/90
+                  prose-p:sm:text-base
+                  prose-blockquote:text-muted-foreground prose-blockquote:border-l-muted
+                  prose-code:text-foreground prose-code:bg-muted prose-code:before:hidden prose-code:after:hidden
+                  prose-a:text-primary hover:prose-a:text-primary/80
+                  prose-hr:border-border
+                  prose-img:rounded-md
+                  prose-pre:bg-muted prose-pre:text-foreground prose-pre:rounded-md prose-pre:p-4 prose-pre:overflow-x-auto
+                  prose-table:text-foreground prose-th:border-border prose-td:border-border
+                "
+                    key={message.id}
+                    from="assistant"
+                  >
                     <MessageContent className="!bg-sidebar !text-sidebar-foreground">
-                      <StreamedMessage
-                        key={index}
-                        index={index}
-                        content={item.content}
+                      <MarkdownContent
+                        id={message.id}
+                        content={text
+                          .replace(/^```mdx\s*\r?\n/, "")
+                          .replace(/```$/, "")}
                       />
                     </MessageContent>
                   </Message>
                 );
               }
+
               return (
-                <Message from="user">
+                <Message key={message.id} from="user">
                   <MessageContent className="p-2.5 px-3.5">
-                    {item.content}
+                    <MarkdownContent
+                      id={message.id}
+                      content={text
+                        .replace(/^```mdx\s*\r?\n/, "")
+                        .replace(/```$/, "")}
+                    />
                   </MessageContent>
                 </Message>
               );
             })}
-            {isPending && (
-              <Message from="assistant">
-                <MessageContent className="!bg-transparent">
-                  <Loader className="h-3.5 w-3.5 animate-spin" />
-                </MessageContent>
-              </Message>
-            )}
+
+            {status == "streaming" ||
+              (status == "submitted" && (
+                <Message from="assistant">
+                  <MessageContent className="!bg-transparent">
+                    <p className="text-sm animate-pulse text-foreground/80">
+                      {thinkingTexts[aiThinkingIndex]}...
+                    </p>
+                  </MessageContent>
+                </Message>
+              ))}
             <ConversationScrollButton />
           </ConversationContent>
         </Conversation>
@@ -161,15 +194,11 @@ export default function AiPopup({
             <div className="px-2 justify-end flex">
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={status == "streaming" || status == "submitted"}
                 size="icon"
                 className="h-8 w-8"
               >
-                {isPending ? (
-                  <Loader className="size-4" />
-                ) : (
-                  <ArrowUp className="!h-3.5 !w-3.5" />
-                )}
+                <ArrowUp className="!h-3.5 !w-3.5" />
               </Button>
             </div>
           </div>

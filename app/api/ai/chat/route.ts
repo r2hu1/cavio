@@ -1,11 +1,11 @@
-import { streamText } from "ai";
+import { convertToModelMessages, streamText } from "ai";
 import { NextResponse } from "next/server";
 import { SYSTEM_PROMPT } from "@/modules/ai/constants";
 import { getApiKey, getChatModel } from "@/modules/ai/views/creds/lib";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
-  const { prompt: messages } = await req.json();
+  const { messages, id, trigger } = await req.json();
   if (!messages || messages.length === 0) {
     return NextResponse.json({ status: 200 });
   }
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 
   const completion = streamText({
     model: googleai(`models/${model}`) as any,
-    prompt: messages,
+    prompt: await convertToModelMessages(messages),
     system: SYSTEM_PROMPT,
   });
 
