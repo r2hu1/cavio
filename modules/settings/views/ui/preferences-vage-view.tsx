@@ -4,10 +4,10 @@ import SessionPageNav from "./settings-page-nav";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Save, Loader2 } from "lucide-react";
-import { 
-  getApiKey, 
-  setApiKey, 
-  getChatModel, 
+import {
+  getApiKey,
+  setApiKey,
+  getChatModel,
   setChatModel,
   getCommandModel,
   setCommandModel,
@@ -16,7 +16,7 @@ import {
 } from "@/modules/ai/views/creds/lib";
 import { AIProvider } from "@/modules/ai/types";
 import { PROVIDER_CONFIG } from "@/modules/ai/constants/providers";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import {
   Select,
@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader } from "@/components/ui/loader";
 
 interface Model {
   value: string;
@@ -40,18 +41,49 @@ export default function PreferencesPageView() {
     openrouter: "",
     groq: "",
   });
-  const [chatModel, setChatModelValue] = useState<string>("gemini-2.5-flash");
-  const [commandModel, setCommandModelValue] = useState<string>("gemini-2.5-flash");
+  const [chatModel, setChatModelValue] = useState<string>("");
+  const [commandModel, setCommandModelValue] = useState<string>("");
   const [models, setModels] = useState<Model[]>([]);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const currentKey = apiKeys[provider];
-    if (!currentKey) return;
-    await setApiKey(provider, currentKey);
-    toast.success(`${PROVIDER_CONFIG[provider].name} API key updated successfully`);
-    fetchModels(currentKey);
+  // Use ref to track the provider at the time of fetch to prevent race conditions
+  const fetchingProviderRef = useRef<AIProvider | null>(null);
+
+  const handleSaveAllKeys = async () => {
+    setIsSaving(true);
+    try {
+      const promises: Promise<void>[] = [];
+      const savedProviders: string[] = [];
+
+      for (const p of Object.keys(PROVIDER_CONFIG) as AIProvider[]) {
+        const key = apiKeys[p].trim();
+        if (key) {
+          promises.push(setApiKey(p, key));
+          savedProviders.push(PROVIDER_CONFIG[p].name);
+        }
+      }
+
+      if (promises.length === 0) {
+        toast.warning("No API keys to save");
+        return;
+      }
+
+      await Promise.all(promises);
+      toast.success(`API keys saved for: ${savedProviders.join(", ")}`);
+
+      // Fetch models for the current provider if key exists
+      const currentKey = apiKeys[provider];
+      if (currentKey) {
+        fetchModels(currentKey, provider);
+      }
+    } catch (error) {
+      toast.error("Failed to save API keys");
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleChatModelChange = async (value: string) => {
@@ -73,37 +105,95 @@ export default function PreferencesPageView() {
     // Fetch models for the new provider if API key exists
     const key = apiKeys[value];
     if (key) {
-      fetchModels(key);
+      fetchModels(key, value);
     } else {
       setModels([]);
     }
   };
 
   const handleApiKeyChange = (provider: AIProvider, value: string) => {
-    setApiKeys(prev => ({ ...prev, [provider]: value }));
+    setApiKeys((prev) => ({ ...prev, [provider]: value }));
   };
 
-  const fetchModels = async (key: string) => {
+  const getCheapestModel = (availableModels: Model[]): string => {
+    // Priority: flash models, then lite models, then first available
+    const flashModel = availableModels.find((m) =>
+      m.value.toLowerCase().includes("flash"),
+    );
+    if (flashModel) return flashModel.value;
+
+    const liteModel = availableModels.find((m) =>
+      m.value.toLowerCase().includes("lite"),
+    );
+    if (liteModel) return liteModel.value;
+
+    return availableModels[0]?.value || "";
+  };
+
+  const fetchModels = async (key: string, targetProvider: AIProvider) => {
     if (!key) {
       setModels([]);
       return;
     }
-    
+
+    // Track which provider we're fetching for
+    fetchingProviderRef.current = targetProvider;
     setIsLoadingModels(true);
+
     try {
-      const response = await fetch(`/api/ai/models?provider=${provider}`);
+      const response = await fetch(`/api/ai/models?provider=${targetProvider}`);
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Failed to fetch models");
       }
       const data = await response.json();
-      setModels(data.models || []);
+      const availableModels = data.models || [];
+
+      // Only update state if we're still on the same provider
+      if (fetchingProviderRef.current !== targetProvider) {
+        console.log("Provider changed during fetch, discarding results");
+        return;
+      }
+
+      setModels(availableModels);
+
+      const modelValues = availableModels.map((m: Model) => m.value);
+
+      // Only apply fallback logic after initial load and if we have models
+      if (isInitialized && availableModels.length > 0) {
+        // Use state values for comparison, not cookies
+        const currentChatValue = chatModel;
+        const currentCommandValue = commandModel;
+
+        // Fallback chat model if current is not in available list
+        if (currentChatValue && !modelValues.includes(currentChatValue)) {
+          const fallbackModel = getCheapestModel(availableModels);
+          if (fallbackModel) {
+            setChatModelValue(fallbackModel);
+            await setChatModel(fallbackModel);
+            toast.info(`Chat model updated to ${fallbackModel}`);
+          }
+        }
+
+        // Fallback command model if current is not in available list
+        if (currentCommandValue && !modelValues.includes(currentCommandValue)) {
+          const fallbackModel = getCheapestModel(availableModels);
+          if (fallbackModel) {
+            setCommandModelValue(fallbackModel);
+            await setCommandModel(fallbackModel);
+            toast.info(`Command model updated to ${fallbackModel}`);
+          }
+        }
+      }
     } catch (error: any) {
       console.error("Error fetching models:", error);
       toast.error(error.message || "Failed to fetch models");
       setModels([]);
     } finally {
-      setIsLoadingModels(false);
+      // Only clear loading if we're still on the same provider
+      if (fetchingProviderRef.current === targetProvider) {
+        setIsLoadingModels(false);
+      }
     }
   };
 
@@ -117,24 +207,27 @@ export default function PreferencesPageView() {
       openrouter: "",
       groq: "",
     };
-    
+
     for (const p of Object.keys(PROVIDER_CONFIG) as AIProvider[]) {
       const key = await getApiKey(p);
       if (key) keys[p] = key;
     }
     setApiKeys(keys);
 
-    // Load models if current provider has a key
-    const currentKey = keys[currentProvider];
-    if (currentKey) {
-      fetchModels(currentKey);
-    }
-
     // Load model preferences
     const chat = await getChatModel();
     const command = await getCommandModel();
     setChatModelValue(chat);
     setCommandModelValue(command);
+
+    // Mark as initialized after loading saved values
+    setIsInitialized(true);
+
+    // Load models if current provider has a key
+    const currentKey = keys[currentProvider];
+    if (currentKey) {
+      fetchModels(currentKey, currentProvider);
+    }
   };
 
   useEffect(() => {
@@ -145,17 +238,21 @@ export default function PreferencesPageView() {
     value: string,
     onChange: (value: string) => void,
     label: string,
-    description: string
+    description: string,
   ) => (
     <div className="space-y-3">
       <Label>{label}</Label>
-      <Select 
-        value={value} 
+      <Select
+        value={value}
         onValueChange={onChange}
         disabled={isLoadingModels || models.length === 0}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder={isLoadingModels ? "Loading models..." : "Select a model"} />
+          <SelectValue
+            placeholder={
+              isLoadingModels ? "Loading models..." : "Select a model"
+            }
+          />
         </SelectTrigger>
         <SelectContent className="max-w-100" align="center">
           {isLoadingModels ? (
@@ -164,7 +261,9 @@ export default function PreferencesPageView() {
             </div>
           ) : models.length === 0 ? (
             <div className="px-2 py-4 text-sm text-muted-foreground text-center">
-              {apiKeys[provider] ? "No models available" : "Add an API key to see available models"}
+              {apiKeys[provider]
+                ? "No models available"
+                : "Add an API key to see available models"}
             </div>
           ) : (
             models.map((model) => (
@@ -176,7 +275,9 @@ export default function PreferencesPageView() {
         </SelectContent>
       </Select>
       <p className="text-xs text-foreground/60 -mt-2">
-        {apiKeys[provider] ? description : "Add an API key to see available models."}
+        {apiKeys[provider]
+          ? description
+          : "Add an API key to see available models."}
       </p>
     </div>
   );
@@ -196,10 +297,15 @@ export default function PreferencesPageView() {
         <div className="grid gap-6">
           {/* Provider Selection */}
           <div className="space-y-3">
-            <Label>AI Provider</Label>
-            <Select 
-              value={provider} 
-              onValueChange={(value) => handleProviderChange(value as AIProvider)}
+            <Label className="text-base font-medium">AI Provider</Label>
+            <p className="text-xs text-foreground/60 mb-4! -mt-2!">
+              Your API keys are stored locally and never sent to our servers.
+            </p>
+            <Select
+              value={provider}
+              onValueChange={(value) =>
+                handleProviderChange(value as AIProvider)
+              }
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a provider" />
@@ -212,9 +318,6 @@ export default function PreferencesPageView() {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-foreground/60 -mt-2">
-              {PROVIDER_CONFIG[provider].description}
-            </p>
           </div>
 
           {/* API Keys for all providers */}
@@ -222,45 +325,53 @@ export default function PreferencesPageView() {
             <h2 className="font-medium mb-4">API Keys</h2>
             <div className="space-y-4">
               {(Object.keys(PROVIDER_CONFIG) as AIProvider[]).map((p) => (
-                <form key={p} className="space-y-2" onSubmit={handleSave}>
-                  <Label htmlFor={`${p}-api-key`}>{PROVIDER_CONFIG[p].name} API Key</Label>
-                  <div className="flex w-full gap-2">
-                    <Input
-                      type="password"
-                      value={apiKeys[p]}
-                      onChange={(e) => handleApiKeyChange(p, e.target.value)}
-                      id={`${p}-api-key`}
-                      name={`${p}-api-key`}
-                      placeholder={PROVIDER_CONFIG[p].placeholder}
-                    />
-                    <Button size="icon" type="submit" disabled={provider !== p}>
-                      <Save className="!h-4 !w-4" />
-                    </Button>
-                  </div>
-                </form>
+                <div key={p} className="space-y-2">
+                  <Label htmlFor={`${p}-api-key`}>
+                    {PROVIDER_CONFIG[p].name} API Key
+                  </Label>
+                  <Input
+                    type="password"
+                    value={apiKeys[p]}
+                    onChange={(e) => handleApiKeyChange(p, e.target.value)}
+                    id={`${p}-api-key`}
+                    name={`${p}-api-key`}
+                    placeholder={PROVIDER_CONFIG[p].placeholder}
+                  />
+                </div>
               ))}
+              <div className="flex justify-end">
+                <Button
+                  size="sm"
+                  onClick={handleSaveAllKeys}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <Loader className="h-4 w-4 mr-2" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  Save
+                </Button>
+              </div>
             </div>
-            <p className="text-xs text-foreground/60 mt-2">
-              Your API keys are stored locally and never sent to our servers.
-            </p>
           </div>
 
           {/* Model Selection */}
           <div className="border-t pt-4">
-            <h2 className="font-medium mb-4">AI Models</h2>
-            <div className="grid gap-6">
+            <h2 className="font-medium mb-5">AI Models</h2>
+            <div className="grid gap-4">
               {renderModelSelect(
                 chatModel,
                 handleChatModelChange,
                 "Chat Model",
-                "Model used for AI chat conversations."
+                "",
               )}
-              
+
               {renderModelSelect(
                 commandModel,
                 handleCommandModelChange,
                 "Command & Copilot Model",
-                "Model used for editor commands and copilot suggestions."
+                "",
               )}
             </div>
           </div>
