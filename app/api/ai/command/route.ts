@@ -31,7 +31,12 @@ import { googleai } from "@/lib/google-ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 export async function POST(req: NextRequest) {
-  const { apiKey: key, ctx, messages: messagesRaw, model: modelParam } = await req.json();
+  const {
+    apiKey: key,
+    ctx,
+    messages: messagesRaw,
+    model: modelParam,
+  } = await req.json();
 
   const { children, selection, toolName: toolNameParam } = ctx;
 
@@ -46,7 +51,10 @@ export async function POST(req: NextRequest) {
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Missing AI Gateway API key." },
+      {
+        error:
+          "No API key found, please set it in the [settings](/settings/preferences).",
+      },
       { status: 401 },
     );
   }
