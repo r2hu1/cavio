@@ -320,7 +320,7 @@ const aiChatItems = {
         mode: "insert",
         prompt: isEmpty
           ? `<Document>
-{editor}
+ ${editor.api.string([])}
 </Document>
 Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
           : "Continue writing AFTER <Block> ONLY ONE SENTENCE. DONT REPEAT THE TEXT.",
@@ -357,7 +357,7 @@ Start writing a new paragraph AFTER <Document> ONLY ONE SENTENCE`
     onSelect: ({ editor, input }) => {
       void editor.getApi(AIChatPlugin).aiChat.submit(input, {
         prompt: {
-          default: "Explain {editor}",
+          default: `Explain: ${editor.api.string([])}`,
           selecting: "Explain",
         },
         toolName: "generate",
