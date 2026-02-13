@@ -116,10 +116,12 @@ export default function SessionCard({
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm truncate">
             <Globe className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">IP Address:</span>
-            <span className="font-mono">{session.ipAddress || "N/A"}</span>
+            <span className="font-mono truncate">
+              {session.ipAddress || "N/A"}
+            </span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
