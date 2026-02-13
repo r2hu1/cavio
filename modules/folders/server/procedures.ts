@@ -213,4 +213,91 @@ export const foldersRouter = createTRPCRouter({
 			
 			return deletedFolder;
 		}),
+	restoreAll: protectedProcedure.mutation(async ({ ctx }) => {
+		const userId = ctx.auth.session.userId;
+
+		// Restore all deleted folders and their documents for this user
+		const deletedFoldersList = await db
+			.select()
+			.from(folders)
+			.where(
+				and(
+					eq(folders.userId, userId),
+					eq(folders.deleted, true)
+				)
+			);
+
+		// Restore documents in all deleted folders
+		for (const folder of deletedFoldersList) {
+			const documentIds = folder.documents ?? [];
+			if (documentIds.length > 0) {
+				await db
+					.update(documents)
+					.set({
+						deleted: false,
+						deletedAt: null,
+					})
+					.where(inArray(documents.id, documentIds));
+			}
+		}
+
+		// Restore all folders
+		const restoredFolders = await db
+			.update(folders)
+			.set({
+				deleted: false,
+				deletedAt: null,
+			})
+			.where(
+				and(
+					eq(folders.userId, userId),
+					eq(folders.deleted, true)
+				)
+			)
+			.returning();
+
+		return {
+			restoredCount: restoredFolders.length,
+			restoredFolders,
+		};
+	}),
+	permanentDeleteAll: protectedProcedure.mutation(async ({ ctx }) => {
+		const userId = ctx.auth.session.userId;
+
+		// Get all deleted folders with their documents
+		const deletedFoldersList = await db
+			.select()
+			.from(folders)
+			.where(
+				and(
+					eq(folders.userId, userId),
+					eq(folders.deleted, true)
+				)
+			);
+
+		// Delete all documents in deleted folders
+		for (const folder of deletedFoldersList) {
+			const documentIds = folder.documents ?? [];
+			if (documentIds.length > 0) {
+				await db
+					.delete(documents)
+					.where(inArray(documents.id, documentIds));
+			}
+		}
+
+		// Permanently delete all deleted folders for this user
+		const deletedFoldersResult = await db
+			.delete(folders)
+			.where(
+				and(
+					eq(folders.userId, userId),
+					eq(folders.deleted, true)
+				)
+			)
+			.returning();
+
+		return {
+			deletedCount: deletedFoldersResult.length,
+		};
+	}),
 });

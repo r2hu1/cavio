@@ -6,6 +6,16 @@ import HistoryPopup from "@/modules/ai/views/ui/history-popup";
 import DocumentNav from "@/modules/documents/views/ui/document-nav";
 import FolderNav from "@/modules/folders/views/ui/folder-nav";
 import {
+  Credenza,
+  CredenzaClose,
+  CredenzaContent,
+  CredenzaDescription,
+  CredenzaFooter,
+  CredenzaHeader,
+  CredenzaTitle,
+  CredenzaTrigger,
+} from "@/components/ui/credenza";
+import {
   ArchiveRestore,
   Bolt,
   ClockFading,
@@ -14,6 +24,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function DynamicNav() {
   const pathname = usePathname().split("/").filter(Boolean);
@@ -25,6 +36,35 @@ export default function DynamicNav() {
   const folderId = pathname[1];
   const documentId = pathname[2];
   const isBin = pathname.includes("bin");
+  const [hasBinItems, setHasBinItems] = useState(false);
+
+  // Check if bin has items
+  useEffect(() => {
+    if (isBin) {
+      const checkBinItems = () => {
+        const binOps = (window as any).binOperations;
+        setHasBinItems(binOps?.hasItems ?? false);
+      };
+
+      checkBinItems();
+      const interval = setInterval(checkBinItems, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isBin]);
+
+  const handleRestoreAll = () => {
+    const binOps = (window as any).binOperations;
+    if (binOps?.restoreAll) {
+      binOps.restoreAll();
+    }
+  };
+
+  const handleEmptyTrash = () => {
+    const binOps = (window as any).binOperations;
+    if (binOps?.emptyTrash) {
+      binOps.emptyTrash();
+    }
+  };
 
   return (
     <div className="w-full">
@@ -59,12 +99,39 @@ export default function DynamicNav() {
             <h1>Trash Bin</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="secondary">
-              Restore All <ArchiveRestore className="size-4" />
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleRestoreAll}
+              disabled={!hasBinItems}
+            >
+              <span className="hidden sm:inline">Restore All</span>
+              <ArchiveRestore className="size-4" />
             </Button>
-            <Button size="sm">
-              Empty Trash <Trash className="size-4" />
-            </Button>
+            <Credenza>
+              <CredenzaTrigger asChild>
+                <Button size="sm" disabled={!hasBinItems}>
+                  Empty Trash <Trash className="size-4" />
+                </Button>
+              </CredenzaTrigger>
+              <CredenzaContent>
+                <CredenzaHeader>
+                  <CredenzaTitle>Empty Trash?</CredenzaTitle>
+                  <CredenzaDescription>
+                    This will permanently delete all items in the trash. This
+                    action cannot be undone.
+                  </CredenzaDescription>
+                </CredenzaHeader>
+                <CredenzaFooter>
+                  <CredenzaClose asChild>
+                    <Button variant="secondary">Cancel</Button>
+                  </CredenzaClose>
+                  <Button variant="destructive" onClick={handleEmptyTrash}>
+                    Empty Trash
+                  </Button>
+                </CredenzaFooter>
+              </CredenzaContent>
+            </Credenza>
           </div>
         </div>
       )}

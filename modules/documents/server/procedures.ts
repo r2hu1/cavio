@@ -569,4 +569,45 @@ export const documentsRouter = createTRPCRouter({
         availableFolders,
       };
     }),
+  restoreAll: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.auth.session.userId;
+
+    // Restore all deleted documents for this user
+    const restoredDocuments = await db
+      .update(documents)
+      .set({
+        deleted: false,
+        deletedAt: null,
+      })
+      .where(
+        and(
+          eq(documents.userId, userId),
+          eq(documents.deleted, true)
+        )
+      )
+      .returning();
+
+    return {
+      restoredCount: restoredDocuments.length,
+      restoredDocuments,
+    };
+  }),
+  permanentDeleteAll: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.auth.session.userId;
+
+    // Permanently delete all deleted documents for this user
+    const deletedDocuments = await db
+      .delete(documents)
+      .where(
+        and(
+          eq(documents.userId, userId),
+          eq(documents.deleted, true)
+        )
+      )
+      .returning();
+
+    return {
+      deletedCount: deletedDocuments.length,
+    };
+  }),
 });

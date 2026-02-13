@@ -259,6 +259,76 @@ export default function BinView() {
     }),
   );
 
+  // Bulk operations
+  const restoreAllFolders = useMutation(
+    trpc.folder.restoreAll.mutationOptions({
+      onMutate: () => {
+        toast.loading("Restoring all folders...");
+      },
+      onSuccess: (data) => {
+        toast.dismiss();
+        toast.success(`Restored ${data.restoredCount} folders`);
+        invalidateBinData();
+      },
+      onError: (error) => {
+        toast.dismiss();
+        handleError(error, "restore all folders");
+      },
+    }),
+  );
+
+  const restoreAllDocuments = useMutation(
+    trpc.document.restoreAll.mutationOptions({
+      onMutate: () => {
+        toast.loading("Restoring all documents...");
+      },
+      onSuccess: (data) => {
+        toast.dismiss();
+        toast.success(`Restored ${data.restoredCount} documents`);
+        invalidateBinData();
+      },
+      onError: (error) => {
+        toast.dismiss();
+        handleError(error, "restore all documents");
+      },
+    }),
+  );
+
+  const permanentDeleteAllFolders = useMutation(
+    trpc.folder.permanentDeleteAll.mutationOptions({
+      onMutate: () => {
+        toast.loading("Deleting all folders...");
+      },
+      onSuccess: (data) => {
+        toast.dismiss();
+        toast.success(`Permanently deleted ${data.deletedCount} folders`);
+        queryClient.setQueryData(trpc.folder.getDeleted.queryKey(), []);
+        queryClient.setQueryData(trpc.document.getDeleted.queryKey(), []);
+      },
+      onError: (error) => {
+        toast.dismiss();
+        handleError(error, "delete all folders");
+      },
+    }),
+  );
+
+  const permanentDeleteAllDocuments = useMutation(
+    trpc.document.permanentDeleteAll.mutationOptions({
+      onMutate: () => {
+        toast.loading("Deleting all documents...");
+      },
+      onSuccess: (data) => {
+        toast.dismiss();
+        toast.success(`Permanently deleted ${data.deletedCount} documents`);
+        queryClient.setQueryData(trpc.document.getDeleted.queryKey(), []);
+      },
+      onError: (error) => {
+        toast.dismiss();
+        handleError(error, "delete all documents");
+      },
+    }),
+  );
+
   const handleRestoreWithParent = () => {
     if (restoreDialog.parentFolder) {
       restoreFolder.mutate({ id: restoreDialog.parentFolder.id });
@@ -279,6 +349,29 @@ export default function BinView() {
   const hasDocuments = deletedDocuments && deletedDocuments.length > 0;
   const hasFolders = deletedFolders && deletedFolders.length > 0;
   const isEmpty = !hasDocuments && !hasFolders;
+
+  // Expose bulk operations to parent via window
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).binOperations = {
+        restoreAll: () => {
+          restoreAllFolders.mutate();
+          restoreAllDocuments.mutate();
+        },
+        emptyTrash: () => {
+          permanentDeleteAllFolders.mutate();
+          permanentDeleteAllDocuments.mutate();
+        },
+        hasItems: !isEmpty,
+      };
+    }
+  }, [
+    isEmpty,
+    restoreAllFolders,
+    restoreAllDocuments,
+    permanentDeleteAllFolders,
+    permanentDeleteAllDocuments,
+  ]);
 
   if (isLoading) {
     return (
@@ -353,24 +446,26 @@ export default function BinView() {
                     return (
                       <div
                         key={folder.id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg gap-3"
                       >
-                        <div className="flex items-center gap-3">
-                          <Folder className="h-5 w-5" />
-                          <div>
-                            <p className="font-medium">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Folder className="h-5 w-5 flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="font-medium truncate">
                               {folder.title || "Untitled Folder"}
                             </p>
                             <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              Deleted {formatDeletedDate(folder.deletedAt)}
-                              <span className="text-destructive font-medium">
-                                ({daysRemaining} days left)
+                              <Clock className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">
+                                Deleted {formatDeletedDate(folder.deletedAt)}
+                              </span>
+                              <span className="text-destructive font-medium flex-shrink-0">
+                                ({daysRemaining}d left)
                               </span>
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 sm:flex-shrink-0">
                           <Button
                             variant="outline"
                             size="sm"
@@ -378,19 +473,21 @@ export default function BinView() {
                               restoreFolder.mutate({ id: folder.id })
                             }
                             disabled={isProcessing || restoreFolder.isPending}
+                            className="flex-1 sm:flex-none"
                           >
                             {isProcessing && restoreFolder.isPending ? (
                               <Loader />
                             ) : (
-                              <RotateCcw className="h-4 w-4" />
+                              <RotateCcw className="h-4 w-4 sm:mr-2" />
                             )}
-                            Restore
+                            <span className="inline">Restore</span>
                           </Button>
                           <Credenza>
                             <CredenzaTrigger asChild>
                               <Button
                                 variant="destructive"
-                                size="icon-sm"
+                                size="icon"
+                                className="sm:size-sm flex-shrink-0"
                                 disabled={isProcessing}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -445,42 +542,46 @@ export default function BinView() {
                     return (
                       <div
                         key={doc.id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg gap-3"
                       >
-                        <div className="flex items-center gap-3">
-                          <FileText className="h-5 w-5" />
-                          <div>
-                            <p className="font-medium">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <FileText className="h-5 w-5 flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="font-medium truncate">
                               {doc.title || "Untitled Document"}
                             </p>
                             <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              Deleted {formatDeletedDate(doc.deletedAt)}
-                              <span className="text-destructive font-medium">
-                                ({daysRemaining} days left)
+                              <Clock className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">
+                                Deleted {formatDeletedDate(doc.deletedAt)}
+                              </span>
+                              <span className="text-destructive font-medium flex-shrink-0">
+                                ({daysRemaining}d left)
                               </span>
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 sm:flex-shrink-0">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleRestoreDocumentClick(doc)}
                             disabled={isProcessing || restoreDocument.isPending}
+                            className="flex-1 sm:flex-none"
                           >
                             {isProcessing && restoreDocument.isPending ? (
-                              <span className="animate-spin mr-1">⟳</span>
+                              <span className="animate-spin">⟳</span>
                             ) : (
-                              <RotateCcw className="h-4 w-4 mr-1" />
+                              <RotateCcw className="h-4 w-4 sm:mr-2" />
                             )}
-                            Restore
+                            <span className="hidden sm:inline">Restore</span>
                           </Button>
                           <Credenza>
                             <CredenzaTrigger asChild>
                               <Button
                                 variant="destructive"
-                                size="sm"
+                                size="icon"
+                                className="sm:size-sm flex-shrink-0"
                                 disabled={isProcessing}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -514,7 +615,7 @@ export default function BinView() {
                                   variant="destructive"
                                   disabled={permanentDeleteDocument.isPending}
                                 >
-                                  Delete{" "}
+                                  Delete
                                   {permanentDeleteDocument.isPending && (
                                     <Loader />
                                   )}
