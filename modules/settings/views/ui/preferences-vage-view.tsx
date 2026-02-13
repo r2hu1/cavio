@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Save, Loader2 } from "lucide-react";
 import {
-  getApiKey,
+  getAllApiKeys,
   setApiKey,
   getChatModel,
   setChatModel,
@@ -50,61 +50,56 @@ export default function PreferencesPageView() {
 
   const fetchingProviderRef = useRef<AIProvider | null>(null);
 
-  const handleSaveAllKeys = async () => {
+  const handleSavePreferences = async () => {
     setIsSaving(true);
     try {
-      const promises: Promise<void>[] = [];
-      const savedProviders: string[] = [];
+      const key = apiKeys[provider].trim();
 
-      for (const p of Object.keys(PROVIDER_CONFIG) as AIProvider[]) {
-        const key = apiKeys[p].trim();
-        if (key) {
-          promises.push(setApiKey(p, key));
-          savedProviders.push(PROVIDER_CONFIG[p].name);
-        }
+      // Save all preferences
+      await setProvider(provider);
+
+      if (key) {
+        await setApiKey(provider, key);
       }
 
-      if (promises.length === 0) {
-        toast.warning("No API keys to save");
-        return;
+      if (chatModel) {
+        await setChatModel(chatModel);
       }
 
-      await Promise.all(promises);
-      toast.success(`API keys saved for: ${savedProviders.join(", ")}`);
-      const currentKey = apiKeys[provider];
-      if (currentKey) {
-        fetchModels(currentKey, provider);
+      if (commandModel) {
+        await setCommandModel(commandModel);
+      }
+
+      toast.success("Preferences saved successfully");
+
+      // Refresh models if API key is present
+      if (key) {
+        fetchModels(key, provider);
       }
     } catch (error) {
-      toast.error("Failed to save API keys");
+      toast.error("Failed to save preferences");
       console.error(error);
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleChatModelChange = async (value: string) => {
-    setChatModelValue(value);
-    await setChatModel(value);
-    toast.success("Chat model updated successfully");
-  };
-
-  const handleCommandModelChange = async (value: string) => {
-    setCommandModelValue(value);
-    await setCommandModel(value);
-    toast.success("Command/Copilot model updated successfully");
-  };
-
-  const handleProviderChange = async (value: AIProvider) => {
+  const handleProviderChange = (value: AIProvider) => {
     setProviderValue(value);
-    await setProvider(value);
-    toast.success(`Provider changed to ${PROVIDER_CONFIG[value].name}`);
     const key = apiKeys[value];
     if (key) {
       fetchModels(key, value);
     } else {
       setModels([]);
     }
+  };
+
+  const handleChatModelChange = (value: string) => {
+    setChatModelValue(value);
+  };
+
+  const handleCommandModelChange = (value: string) => {
+    setCommandModelValue(value);
   };
 
   const handleApiKeyChange = (provider: AIProvider, value: string) => {
@@ -156,21 +151,21 @@ export default function PreferencesPageView() {
         const currentChatValue = chatModel;
         const currentCommandValue = commandModel;
 
-        if (currentChatValue && !modelValues.includes(currentChatValue)) {
+        // Set fallback if no model selected or current model not available
+        if (!currentChatValue || !modelValues.includes(currentChatValue)) {
           const fallbackModel = getCheapestModel(availableModels);
           if (fallbackModel) {
             setChatModelValue(fallbackModel);
-            await setChatModel(fallbackModel);
-            toast.info(`Chat model updated to ${fallbackModel}`);
           }
         }
 
-        if (currentCommandValue && !modelValues.includes(currentCommandValue)) {
+        if (
+          !currentCommandValue ||
+          !modelValues.includes(currentCommandValue)
+        ) {
           const fallbackModel = getCheapestModel(availableModels);
           if (fallbackModel) {
             setCommandModelValue(fallbackModel);
-            await setCommandModel(fallbackModel);
-            toast.info(`Command model updated to ${fallbackModel}`);
           }
         }
       }
@@ -189,16 +184,7 @@ export default function PreferencesPageView() {
     const currentProvider = await getProvider();
     setProviderValue(currentProvider);
 
-    const keys: Record<AIProvider, string> = {
-      gemini: "",
-      openrouter: "",
-      groq: "",
-    };
-
-    for (const p of Object.keys(PROVIDER_CONFIG) as AIProvider[]) {
-      const key = await getApiKey(p);
-      if (key) keys[p] = key;
-    }
+    const keys = await getAllApiKeys();
     setApiKeys(keys);
 
     const chat = await getChatModel();
@@ -269,20 +255,12 @@ export default function PreferencesPageView() {
   return (
     <div>
       <SessionPageNav active={"preferences"} />
-      <div className="mb-10 flex gap-2 items-center justify-between">
-        <div>
-          <h1 className="font-medium text-lg">Preferences</h1>
-          <p className="text-sm text-foreground/80">
-            Manage your AI preferences here.
-          </p>
-        </div>
-      </div>
       <div>
         <div className="grid gap-6">
           <div className="space-y-3">
             <Label className="text-base font-medium">AI Provider</Label>
             <p className="text-xs text-foreground/60 mb-4! -mt-2!">
-              Your API keys are stored locally and never sent to our servers.
+              Your API keys are encrypted and stored securely in our database.
             </p>
             <Select
               value={provider}
@@ -303,58 +281,51 @@ export default function PreferencesPageView() {
             </Select>
           </div>
 
-          <div className="border-t pt-4">
-            <h2 className="font-medium mb-4">API Keys</h2>
-            <div className="space-y-4">
-              {(Object.keys(PROVIDER_CONFIG) as AIProvider[]).map((p) => (
-                <div key={p} className="space-y-2">
-                  <Label htmlFor={`${p}-api-key`}>
-                    {PROVIDER_CONFIG[p].name} API Key
-                  </Label>
-                  <Input
-                    type="password"
-                    value={apiKeys[p]}
-                    onChange={(e) => handleApiKeyChange(p, e.target.value)}
-                    id={`${p}-api-key`}
-                    name={`${p}-api-key`}
-                    placeholder={PROVIDER_CONFIG[p].placeholder}
-                  />
-                </div>
-              ))}
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  onClick={handleSaveAllKeys}
-                  disabled={isSaving}
-                >
-                  {isSaving ? (
-                    <Loader className="h-4 w-4 mr-2" />
-                  ) : (
-                    <Save className="h-4 w-4 mr-2" />
-                  )}
-                  Save
-                </Button>
-              </div>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor={`${provider}-api-key`}>
+                {PROVIDER_CONFIG[provider].name} API Key
+              </Label>
+              <Input
+                type="password"
+                value={apiKeys[provider]}
+                onChange={(e) => handleApiKeyChange(provider, e.target.value)}
+                id={`${provider}-api-key`}
+                name={`${provider}-api-key`}
+                placeholder={PROVIDER_CONFIG[provider].placeholder}
+              />
             </div>
           </div>
 
-          <div className="border-t pt-4">
-            <h2 className="font-medium mb-5">AI Models</h2>
-            <div className="grid gap-4">
-              {renderModelSelect(
-                chatModel,
-                handleChatModelChange,
-                "Chat Model",
-                "",
-              )}
+          <div className="grid gap-4">
+            {renderModelSelect(
+              chatModel,
+              handleChatModelChange,
+              "Chat Model",
+              "",
+            )}
 
-              {renderModelSelect(
-                commandModel,
-                handleCommandModelChange,
-                "Command & Copilot Model",
-                "",
+            {renderModelSelect(
+              commandModel,
+              handleCommandModelChange,
+              "Command & Copilot Model",
+              "",
+            )}
+          </div>
+
+          <div className="flex justify-end">
+            <Button
+              size="sm"
+              onClick={handleSavePreferences}
+              disabled={isSaving}
+            >
+              Save
+              {isSaving ? (
+                <Loader className="h-4 w-4 mr-2" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
               )}
-            </div>
+            </Button>
           </div>
         </div>
       </div>

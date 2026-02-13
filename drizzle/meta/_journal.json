@@ -8,6 +8,13 @@
       "when": 1755453003643,
       "tag": "0000_magenta_hemingway",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771003557375,
+      "tag": "0001_solid_mongoose",
+      "breakpoints": true
     }
   ]
 }
