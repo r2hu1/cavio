@@ -111,7 +111,7 @@ export default function DocumentNav({
             <Cloud className="animate-pulse size-4 text-muted-foreground mr-2" />
           </Tooltip>
         )}
-        <Popover>
+        {/*<Popover>
           <PopoverTrigger asChild>
             <Button
               className="h-8 w-8"
@@ -146,7 +146,7 @@ export default function DocumentNav({
               </div>
             </div>
           </PopoverContent>
-        </Popover>
+        </Popover>*/}
         <Popover open={shareOpen} onOpenChange={setShareOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -236,8 +236,8 @@ export default function DocumentNav({
                       <SelectItem value="pdf">PDF</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant="secondary"
                     onClick={handleExport}
                     disabled={isExporting}
