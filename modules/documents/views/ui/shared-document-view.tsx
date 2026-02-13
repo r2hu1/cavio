@@ -25,6 +25,7 @@ import {
 import { useSession } from "@/lib/auth-client";
 import SharedLogo from "@/components/shared-logo";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SharedDocumentView() {
   const params = useParams();
@@ -82,8 +83,41 @@ export default function SharedDocumentView() {
     cloneDocument({ documentId, folderId });
   };
 
-  if (isPending) {
-    return <PageLoader />;
+  if (!isPending) {
+    return (
+      <div className="px-6 py-5 md:px-10">
+        <div className="flex items-center justify-between pb-6">
+          <SharedLogo />
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-9 w-9" />
+            <Skeleton className="h-9 w-24 " />
+          </div>
+        </div>
+
+        <div className="border rounded-md px-6 pb-10">
+          <div className="mt-10 space-y-4">
+            <Skeleton className="h-10 w-3/4 rounded-md" />
+            <Skeleton className="h-4 w-1/3 rounded-md" />
+          </div>
+          <div className="mt-8 space-y-3">
+            <Skeleton className="h-4 w-full rounded-md" />
+            <Skeleton className="h-4 w-full rounded-md" />
+            <Skeleton className="h-4 w-5/6 rounded-md" />
+            <Skeleton className="h-4 w-4/6 rounded-md" />
+          </div>
+          <div className="mt-10 space-y-4">
+            <Skeleton className="h-6 w-1/2 rounded-md" />
+          </div>
+          <div className="mt-6 space-y-3">
+            <Skeleton className="h-4 w-full rounded-md" />
+            <Skeleton className="h-4 w-full rounded-md" />
+            <Skeleton className="h-4 w-3/4 rounded-md" />
+            <Skeleton className="h-4 w-2/3 rounded-md" />
+            <Skeleton className="h-4 w-5/6 rounded-md" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
