@@ -59,6 +59,10 @@ export default function AiPopup({
     );
     sendMessage({
       text: value,
+      metadata: {
+        document_title: title,
+        document_last_edited: lastEdited,
+      },
     });
     setValue("");
   };
