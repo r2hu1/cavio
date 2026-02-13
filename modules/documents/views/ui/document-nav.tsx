@@ -46,6 +46,7 @@ export default function DocumentNav({
   const { state } = useEditorState();
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [exportFormat, setExportFormat] = useState("pdf");
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -74,6 +75,26 @@ export default function DocumentNav({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const { mutate: exportDocument, isPending: isExporting } = useMutation(
+    trpc.document.export.mutationOptions({
+      onSuccess: (data) => {
+        const blob = new Blob([data.content], { type: data.mimeType });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = data.filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      },
+    }),
+  );
+
+  const handleExport = () => {
+    exportDocument({ id, format: exportFormat as "json" | "mdx" | "pdf" });
   };
 
   return (
@@ -205,18 +226,23 @@ export default function DocumentNav({
                   Export document
                 </p>
                 <div className="flex items-center flex-col gap-2.5">
-                  <Select defaultValue="pdf">
+                  <Select value={exportFormat} onValueChange={setExportFormat}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Export As" />
                     </SelectTrigger>
-                    <SelectContent defaultValue="json">
+                    <SelectContent>
                       <SelectItem value="json">JSON</SelectItem>
                       <SelectItem value="mdx">MDX</SelectItem>
                       <SelectItem value="pdf">PDF</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button className="w-full" variant="secondary">
-                    Export
+                  <Button 
+                    className="w-full" 
+                    variant="secondary"
+                    onClick={handleExport}
+                    disabled={isExporting}
+                  >
+                    {isExporting ? "Exporting..." : "Export"}
                     <Download className="!h-3.5 !w-3.5" />
                   </Button>
                 </div>

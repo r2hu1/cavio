@@ -327,4 +327,71 @@ export const documentsRouter = createTRPCRouter({
 
       return newDocument;
     }),
+  export: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        format: z.enum(["json", "mdx", "pdf"]),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const document = await db
+        .select()
+        .from(documents)
+        .where(eq(documents.id, input.id));
+
+      if (document.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Document not found",
+        });
+      }
+
+      if (document[0].userId !== ctx.auth.session.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You do not have permission to export this document",
+        });
+      }
+
+      const doc = document[0];
+      let content = "";
+      let filename = "";
+      let mimeType = "";
+
+      switch (input.format) {
+        case "json":
+          content = JSON.stringify(
+            {
+              title: doc.title,
+              content: doc.content,
+              createdAt: doc.createdAt,
+              updatedAt: doc.updatedAt,
+            },
+            null,
+            2
+          );
+          filename = `${doc.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.json`;
+          mimeType = "application/json";
+          break;
+
+        case "mdx":
+          content = `# ${doc.title}\n\n${doc.content}`;
+          filename = `${doc.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.mdx`;
+          mimeType = "text/markdown";
+          break;
+
+        case "pdf":
+          content = `${doc.title}\n\n${doc.content}`;
+          filename = `${doc.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.txt`;
+          mimeType = "text/plain";
+          break;
+      }
+
+      return {
+        content,
+        filename,
+        mimeType,
+      };
+    }),
 });

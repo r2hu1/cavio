@@ -179,10 +179,15 @@ export default function SharedDocumentView() {
           <h1>{data.title}</h1> <Badge>Shared Document</Badge>
         </div>*/}
       </header>
-      <main className="border rounded-md">
+      <main className="border rounded-md px-6 py-0">
         <Plate editor={editor}>
           <EditorContainer variant="default">
-            <EditorPlate readOnly spellCheck={false} variant="default" />
+            <EditorPlate
+              readOnly
+              spellCheck={false}
+              variant="none"
+              className="max-w-5xl mx-auto"
+            />
           </EditorContainer>
         </Plate>
       </main>
