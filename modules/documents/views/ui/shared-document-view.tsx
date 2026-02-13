@@ -172,7 +172,7 @@ export default function SharedDocumentView() {
                 </CredenzaContent>
               </Credenza>
             ) : (
-              <Link href={`/sign-in?redirect=/share/${documentId}`}>
+              <Link href={`/auth/sign-in?redirect=/share/${documentId}`}>
                 <Button size="sm">
                   Sign in to Clone
                   <LogIn className="size-4!" />
