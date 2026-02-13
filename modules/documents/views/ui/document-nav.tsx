@@ -14,9 +14,11 @@ import {
   Cloud,
   Copy,
   Download,
-  Loader2,
+  Check,
   Trash,
   X,
+  Globe,
+  Lock,
 } from "lucide-react";
 import RenameDocumentInline from "./rename-document-inline";
 import { useEditorState } from "@/modules/editor/providers/editor-state-provider";
@@ -32,7 +34,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import DeleteDocumentPopup from "./delete-document-popup";
 import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function DocumentNav({
   id,
@@ -43,17 +45,36 @@ export default function DocumentNav({
 }) {
   const { state } = useEditorState();
   const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
-  // const trpc = useTRPC();
-  // const { data, isPending, error } = useQuery(
-  //   trpc.document.get.queryOptions({ id }),
-  // );
+  const { data, isPending } = useQuery(trpc.document.get.queryOptions({ id }));
 
-  // const handleExport = async(type:"PDF" | "MDX" | "JSON")=>{
-  //   if (isPending) return;
-  //   const node = data?.content.map((block: any) => JSON.parse(block));
+  const { mutate: toggleShare, isPending: isToggling } = useMutation(
+    trpc.document.toggleShare.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: trpc.document.get.queryKey({ id }),
+        });
+      },
+    }),
+  );
 
-  // }
+  const isPublished = data?.isPublished || false;
+  const shareUrl = data?.url || "";
+
+  const handleToggleShare = () => {
+    toggleShare({ id, isPublished: !isPublished });
+  };
+
+  const handleCopyLink = () => {
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <div className="flex items-center justify-between">
@@ -105,7 +126,7 @@ export default function DocumentNav({
             </div>
           </PopoverContent>
         </Popover>
-        <Popover open={shareOpen}>
+        <Popover open={shareOpen} onOpenChange={setShareOpen}>
           <PopoverTrigger asChild>
             <Button
               className="h-8 gap-1"
@@ -121,29 +142,69 @@ export default function DocumentNav({
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="mr-5 mt-2">
-            <p className="text-sm">Save or share your document with others.</p>
-            <div className="mt-4">
+          <PopoverContent className="mr-5 mt-2 w-80">
+            <div className="space-y-4">
               <div>
+                <h3 className="font-semibold text-sm">Share document</h3>
+                <p className="text-sm text-muted-foreground">
+                  Anyone with the link can view this document.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Input readOnly value="http://localhost:300" />
-                  <Button variant="outline" size="icon">
-                    <Copy className="!h-3.5 !w-3.5" />
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between mt-3">
-                  <p className="text-xs text-foreground/90">Visibility</p>
-                  <div className="flex items-center gap-1.5">
-                    <Label
-                      htmlFor="visibility"
-                      className="text-xs text-foreground/80"
-                    >
-                      Private
-                    </Label>
-                    <Switch id="visibility" defaultChecked />
+                  {isPublished ? (
+                    <Globe className="h-4 w-4" />
+                  ) : (
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium">
+                      {isPublished ? "Public" : "Private"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {isPublished
+                        ? "Anyone with the link can view"
+                        : "Only you can access"}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center flex-col mt-6 gap-2.5">
+                <Switch
+                  checked={isPublished}
+                  onCheckedChange={handleToggleShare}
+                  disabled={isToggling || isPending}
+                />
+              </div>
+
+              {isPublished && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      readOnly
+                      value={shareUrl || "Generating link..."}
+                      className="text-xs"
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleCopyLink}
+                      disabled={!shareUrl}
+                    >
+                      {copied ? (
+                        <Check className="!h-3.5 !w-3.5 text-green-500" />
+                      ) : (
+                        <Copy className="!h-3.5 !w-3.5" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="border-t pt-4">
+                <p className="text-xs text-muted-foreground mb-3">
+                  Export document
+                </p>
+                <div className="flex items-center flex-col gap-2.5">
                   <Select defaultValue="pdf">
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Export As" />
@@ -154,7 +215,7 @@ export default function DocumentNav({
                       <SelectItem value="pdf">PDF</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button className="w-full">
+                  <Button className="w-full" variant="secondary">
                     Export
                     <Download className="!h-3.5 !w-3.5" />
                   </Button>
