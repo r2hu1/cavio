@@ -53,9 +53,10 @@ export default function SocialSignInButton({
 
   const handleFlow = async () => {
     setLoading(true);
+    const searchParams = new URLSearchParams(window.location.search);
     const { error } = await signIn.social({
       provider: type,
-      callbackURL: "/",
+      callbackURL: searchParams.get("redirect") || "/",
     });
     if (error) {
       toast.error(error.message);

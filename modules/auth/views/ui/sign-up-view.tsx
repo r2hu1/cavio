@@ -68,11 +68,12 @@ export default function SignUpForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
+    const searchParams = new URLSearchParams(window.location.search);
     const { error } = await signUp.email({
       name: `${values.firstName} ${values.lastName}`,
       email: values.email,
       password: values.password,
-      callbackURL: "/auth/verify-email",
+      callbackURL: `/auth/verify-email${searchParams.get("redirect") && `?redirect=${searchParams.get("redirect")}`}`,
     });
 
     if (error) {

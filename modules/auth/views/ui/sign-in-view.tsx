@@ -57,11 +57,11 @@ export default function SignInForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-
+    const searchParams = new URLSearchParams(window.location.search);
     const { error } = await signIn.email({
       email: values.email,
       password: values.password,
-      callbackURL: "/",
+      callbackURL: searchParams.get("redirect") || "/",
     });
 
     if (error) {
