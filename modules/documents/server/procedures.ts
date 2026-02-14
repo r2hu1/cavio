@@ -141,6 +141,14 @@ export const documentsRouter = createTRPCRouter({
         .where(eq(documents.id, input.id))
         .returning();
 
+      // Remove document ID from folder's documents array
+      await db
+        .update(folders)
+        .set({
+          documents: folder.documents?.filter((docId) => docId !== input.id) ?? [],
+        })
+        .where(eq(folders.id, input.folderId));
+
       return deletedDocument;
     }),
   update: protectedProcedure
@@ -476,6 +484,24 @@ export const documentsRouter = createTRPCRouter({
             })
             .where(eq(folders.id, input.folderId));
         }
+      } else {
+        // No new folder ID - restore to original folder
+        const originalFolderId = document[0].folderId;
+        if (originalFolderId) {
+          const [originalFolder] = await db
+            .select()
+            .from(folders)
+            .where(eq(folders.id, originalFolderId));
+            
+          if (originalFolder) {
+            await db
+              .update(folders)
+              .set({
+                documents: [...(originalFolder.documents ?? []), input.id],
+              })
+              .where(eq(folders.id, originalFolderId));
+          }
+        }
       }
 
       const [restoredDocument] = await db
@@ -506,6 +532,24 @@ export const documentsRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
           message: "You do not have permission to delete this document",
         });
+      }
+
+      // Remove document ID from folder's documents array before deleting
+      const folderId = document[0].folderId;
+      if (folderId) {
+        const [folder] = await db
+          .select()
+          .from(folders)
+          .where(eq(folders.id, folderId));
+          
+        if (folder) {
+          await db
+            .update(folders)
+            .set({
+              documents: folder.documents?.filter((docId) => docId !== input.id) ?? [],
+            })
+            .where(eq(folders.id, folderId));
+        }
       }
 
       const [deletedDocument] = await db
@@ -572,6 +616,44 @@ export const documentsRouter = createTRPCRouter({
   restoreAll: protectedProcedure.mutation(async ({ ctx }) => {
     const userId = ctx.auth.session.userId;
 
+    // Get all deleted documents for this user
+    const deletedDocumentsList = await db
+      .select()
+      .from(documents)
+      .where(
+        and(
+          eq(documents.userId, userId),
+          eq(documents.deleted, true)
+        )
+      );
+
+    // Group documents by folder
+    const documentsByFolder = new Map<string, string[]>();
+    for (const doc of deletedDocumentsList) {
+      if (doc.folderId) {
+        const existing = documentsByFolder.get(doc.folderId) ?? [];
+        existing.push(doc.id);
+        documentsByFolder.set(doc.folderId, existing);
+      }
+    }
+
+    // Add document IDs back to each folder's documents array
+    for (const [folderId, docIds] of documentsByFolder) {
+      const [folder] = await db
+        .select()
+        .from(folders)
+        .where(eq(folders.id, folderId));
+        
+      if (folder) {
+        await db
+          .update(folders)
+          .set({
+            documents: [...(folder.documents ?? []), ...docIds],
+          })
+          .where(eq(folders.id, folderId));
+      }
+    }
+
     // Restore all deleted documents for this user
     const restoredDocuments = await db
       .update(documents)
@@ -594,6 +676,44 @@ export const documentsRouter = createTRPCRouter({
   }),
   permanentDeleteAll: protectedProcedure.mutation(async ({ ctx }) => {
     const userId = ctx.auth.session.userId;
+
+    // Get all deleted documents for this user
+    const deletedDocumentsList = await db
+      .select()
+      .from(documents)
+      .where(
+        and(
+          eq(documents.userId, userId),
+          eq(documents.deleted, true)
+        )
+      );
+
+    // Group documents by folder
+    const documentsByFolder = new Map<string, string[]>();
+    for (const doc of deletedDocumentsList) {
+      if (doc.folderId) {
+        const existing = documentsByFolder.get(doc.folderId) ?? [];
+        existing.push(doc.id);
+        documentsByFolder.set(doc.folderId, existing);
+      }
+    }
+
+    // Remove document IDs from each folder's documents array
+    for (const [folderId, docIds] of documentsByFolder) {
+      const [folder] = await db
+        .select()
+        .from(folders)
+        .where(eq(folders.id, folderId));
+        
+      if (folder) {
+        await db
+          .update(folders)
+          .set({
+            documents: folder.documents?.filter((docId) => !docIds.includes(docId)) ?? [],
+          })
+          .where(eq(folders.id, folderId));
+      }
+    }
 
     // Permanently delete all deleted documents for this user
     const deletedDocuments = await db

@@ -42,6 +42,9 @@ export default function CreateDocumentInline({
           await queryClient.invalidateQueries(
             trpc.document.getAll.queryOptions(),
           );
+          await queryClient.invalidateQueries(
+            trpc.folder.getRecent.queryOptions(),
+          );
         },
         onError: (error) => {
           toast.error(error.message);
