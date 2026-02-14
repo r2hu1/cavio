@@ -11,22 +11,14 @@ export async function cleanupDeletedItems() {
 	const deletedDocs = await db
 		.delete(documents)
 		.where(
-			and(
-				eq(documents.deleted, true),
-				lt(documents.deletedAt, oneWeekAgo)
-			)
+			and(eq(documents.deleted, true), lt(documents.deletedAt, oneWeekAgo)),
 		)
 		.returning();
 
 	// Delete old folders
 	const deletedFolders = await db
 		.delete(folders)
-		.where(
-			and(
-				eq(folders.deleted, true),
-				lt(folders.deletedAt, oneWeekAgo)
-			)
-		)
+		.where(and(eq(folders.deleted, true), lt(folders.deletedAt, oneWeekAgo)))
 		.returning();
 
 	return {

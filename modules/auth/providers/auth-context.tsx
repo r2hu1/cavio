@@ -7,22 +7,22 @@ import { createContext, useContext, useEffect } from "react";
 const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data, error, isPending, refetch } = useSession();
-  const router = useRouter();
+	const { data, error, isPending, refetch } = useSession();
+	const router = useRouter();
 
-  useEffect(() => {
-    if (isPending) return;
-    if (!data?.session) {
-      router.push("/home");
-    }
-  }, [isPending, data]);
+	useEffect(() => {
+		if (isPending) return;
+		if (!data?.session) {
+			router.push("/home");
+		}
+	}, [isPending, data]);
 
-  return (
-    <AuthContext.Provider value={{ data, error, isPending, refetch }}>
-      {children}
-      {isPending && <Preloader />}
-    </AuthContext.Provider>
-  );
+	return (
+		<AuthContext.Provider value={{ data, error, isPending, refetch }}>
+			{children}
+			{isPending && <Preloader />}
+		</AuthContext.Provider>
+	);
 };
 
 export const useAuthState = () => useContext(AuthContext);

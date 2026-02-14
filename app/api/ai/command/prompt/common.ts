@@ -1,4 +1,4 @@
-import dedent from 'dedent';
+import dedent from "dedent";
 
 const basicRules = dedent`
   - CRITICAL: Examples are for format reference only. NEVER output content from examples.

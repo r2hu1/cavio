@@ -1,10 +1,7 @@
 "use client";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import Breadcrumbs from "./breadcrumbs";
-import { ModeToggle } from "@/components/theme-switcher";
-import DynamicNav from "./dynamic-nav";
-import Tooltip from "@/components/ui/tooltip-v2";
 import { cn } from "@/lib/utils";
+import DynamicNav from "./dynamic-nav";
 
 export default function DashboardHeader() {
 	const { open } = useSidebar();

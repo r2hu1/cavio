@@ -1,6 +1,6 @@
-import { Session, User } from "better-auth";
-import { auth } from "../auth";
+import type { Session, User } from "better-auth";
 import { headers } from "next/headers";
+import { auth } from "../auth";
 import { TTLCache } from "./ttl";
 
 const authCache = new TTLCache<string, { session: Session; user: User }>(

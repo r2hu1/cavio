@@ -10,52 +10,52 @@ import { GhostText } from "@/components/ui/ghost-text";
 import { MarkdownKit } from "./markdown-kit";
 
 export const CopilotKit = [
-  ...MarkdownKit,
-  CopilotPlugin.configure(({ api }) => ({
-    options: {
-      completeOptions: {
-        api: "/api/ai/copilot",
-        onError: (e) => {
-          console.error(e);
-        },
-        onFinish: (_, completion) => {
-          if (completion === "0") return;
+	...MarkdownKit,
+	CopilotPlugin.configure(({ api }) => ({
+		options: {
+			completeOptions: {
+				api: "/api/ai/copilot",
+				onError: (e) => {
+					console.error(e);
+				},
+				onFinish: (_, completion) => {
+					if (completion === "0") return;
 
-          api.copilot.setBlockSuggestion({
-            text: stripMarkdown(completion),
-          });
-        },
-      },
-      debounceDelay: 1000,
-      renderGhostText: GhostText,
-      getPrompt: ({ editor }) => {
-        const contextEntry = editor.api.block({ highest: true });
+					api.copilot.setBlockSuggestion({
+						text: stripMarkdown(completion),
+					});
+				},
+			},
+			debounceDelay: 1000,
+			renderGhostText: GhostText,
+			getPrompt: ({ editor }) => {
+				const contextEntry = editor.api.block({ highest: true });
 
-        if (!contextEntry) return "";
+				if (!contextEntry) return "";
 
-        const prompt = serializeMd(editor, {
-          value: [contextEntry[0] as TElement],
-        });
+				const prompt = serializeMd(editor, {
+					value: [contextEntry[0] as TElement],
+				});
 
-        return `Continue the text up to the next punctuation mark and don't return mdx:
+				return `Continue the text up to the next punctuation mark and don't return mdx:
   """
   ${prompt}
   """`;
-      },
-    },
-    shortcuts: {
-      accept: {
-        keys: "tab",
-      },
-      acceptNextWord: {
-        keys: "mod+right",
-      },
-      reject: {
-        keys: "escape",
-      },
-      triggerSuggestion: {
-        keys: "ctrl+space",
-      },
-    },
-  })),
+			},
+		},
+		shortcuts: {
+			accept: {
+				keys: "tab",
+			},
+			acceptNextWord: {
+				keys: "mod+right",
+			},
+			reject: {
+				keys: "escape",
+			},
+			triggerSuggestion: {
+				keys: "ctrl+space",
+			},
+		},
+	})),
 ];

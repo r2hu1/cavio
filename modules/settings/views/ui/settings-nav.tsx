@@ -1,7 +1,6 @@
 "use client";
 
 import { ModeToggle } from "@/components/theme-switcher";
-import { Button } from "@/components/ui/button";
 import SignOut from "@/modules/auth/views/ui/sign-out";
 import { LogOut } from "lucide-react";
 

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function useStreamText(input: string | undefined, speed = 40) {
 	const safeText = typeof input === "string" ? input : "";

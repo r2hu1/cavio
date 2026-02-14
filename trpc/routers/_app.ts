@@ -1,8 +1,7 @@
-import { z } from "zod";
-import { baseProcedure, createTRPCRouter } from "../init";
+import { aiRouter } from "@/modules/ai/server/procedures";
 import { documentsRouter } from "@/modules/documents/server/procedures";
 import { foldersRouter } from "@/modules/folders/server/procedures";
-import { aiRouter } from "@/modules/ai/server/procedures";
+import { createTRPCRouter } from "../init";
 export const appRouter = createTRPCRouter({
 	document: documentsRouter,
 	folder: foldersRouter,

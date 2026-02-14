@@ -1,28 +1,28 @@
-import DashboardHeader from "@/modules/header/views/ui";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { DashboardSidebar } from "@/modules/sidebar/views/ui";
+import { AiChatInputProvider } from "@/modules/ai/views/providers/input-provider";
 import { AuthProvider } from "@/modules/auth/providers/auth-context";
 import { EditorStateProvider } from "@/modules/editor/providers/editor-state-provider";
-import { AiChatInputProvider } from "@/modules/ai/views/providers/input-provider";
+import DashboardHeader from "@/modules/header/views/ui";
+import { DashboardSidebar } from "@/modules/sidebar/views/ui";
 
 export default function DashboardLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <AuthProvider>
-      <SidebarProvider className="overflow-x-hidden">
-        <EditorStateProvider>
-          <DashboardSidebar />
-          <SidebarInset>
-            <DashboardHeader />
-            <div className="px-6 md:px-10 lg:px-32 py-10">
-              <AiChatInputProvider>{children}</AiChatInputProvider>
-            </div>
-          </SidebarInset>
-        </EditorStateProvider>
-      </SidebarProvider>
-    </AuthProvider>
-  );
+	return (
+		<AuthProvider>
+			<SidebarProvider className="overflow-x-hidden">
+				<EditorStateProvider>
+					<DashboardSidebar />
+					<SidebarInset>
+						<DashboardHeader />
+						<div className="px-6 md:px-10 lg:px-32 py-10">
+							<AiChatInputProvider>{children}</AiChatInputProvider>
+						</div>
+					</SidebarInset>
+				</EditorStateProvider>
+			</SidebarProvider>
+		</AuthProvider>
+	);
 }

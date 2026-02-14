@@ -11,7 +11,7 @@ export function startCleanupScheduler() {
 		try {
 			const result = await cleanupDeletedItems();
 			console.log(
-				`[Cleanup] Completed. Deleted ${result.documentsDeleted} documents and ${result.foldersDeleted} folders.`
+				`[Cleanup] Completed. Deleted ${result.documentsDeleted} documents and ${result.foldersDeleted} folders.`,
 			);
 		} catch (error) {
 			console.error("[Cleanup] Scheduled cleanup failed:", error);
@@ -23,7 +23,7 @@ export function startCleanupScheduler() {
 	cleanupDeletedItems()
 		.then((result) => {
 			console.log(
-				`[Cleanup] Initial cleanup completed. Deleted ${result.documentsDeleted} documents and ${result.foldersDeleted} folders.`
+				`[Cleanup] Initial cleanup completed. Deleted ${result.documentsDeleted} documents and ${result.foldersDeleted} folders.`,
 			);
 		})
 		.catch((error) => {

@@ -1,26 +1,26 @@
 import {
-  Tooltip as V2,
-  TooltipContent,
-  TooltipTrigger,
+	TooltipContent,
+	TooltipTrigger,
+	Tooltip as V2,
 } from "@/components/ui/tooltip";
 
 export default function Tooltip({
-  children,
-  text,
-  className,
+	children,
+	text,
+	className,
 }: {
-  children: React.ReactNode;
-  text: string;
-  className?: string;
+	children: React.ReactNode;
+	text: string;
+	className?: string;
 }) {
-  return (
-    <V2>
-      <TooltipTrigger asChild className={className}>
-        {children}
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{text}</p>
-      </TooltipContent>
-    </V2>
-  );
+	return (
+		<V2>
+			<TooltipTrigger asChild className={className}>
+				{children}
+			</TooltipTrigger>
+			<TooltipContent>
+				<p>{text}</p>
+			</TooltipContent>
+		</V2>
+	);
 }

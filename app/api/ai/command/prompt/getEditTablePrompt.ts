@@ -1,28 +1,28 @@
-import type { ChatMessage } from '@/components/editor/use-chat';
-import type { SlateEditor } from 'platejs';
+import type { ChatMessage } from "@/components/editor/use-chat";
+import type { SlateEditor } from "platejs";
 
-import { getMarkdown } from '@platejs/ai';
-import dedent from 'dedent';
+import { getMarkdown } from "@platejs/ai";
+import dedent from "dedent";
 
 import {
-  buildStructuredPrompt,
-  formatTextFromMessages,
-  getLastUserInstruction,
-} from '../utils';
+	buildStructuredPrompt,
+	formatTextFromMessages,
+	getLastUserInstruction,
+} from "../utils";
 
 export function buildEditTableMultiCellPrompt(
-  editor: SlateEditor,
-  messages: ChatMessage[]
+	editor: SlateEditor,
+	messages: ChatMessage[],
 ): string {
-  const tableCellMarkdown = getMarkdown(editor, {
-    type: 'tableCellWithId',
-  });
+	const tableCellMarkdown = getMarkdown(editor, {
+		type: "tableCellWithId",
+	});
 
-  return buildStructuredPrompt({
-    context: tableCellMarkdown,
-    examples: [
-      // 1) Simple text edit
-      dedent`
+	return buildStructuredPrompt({
+		context: tableCellMarkdown,
+		examples: [
+			// 1) Simple text edit
+			dedent`
         <instruction>
         Fix grammar
         </instruction>
@@ -44,8 +44,8 @@ export function buildEditTableMultiCellPrompt(
         </output>
       `,
 
-      // 2) Multi-cell edit
-      dedent`
+			// 2) Multi-cell edit
+			dedent`
         <instruction>
         Translate to Chinese
         </instruction>
@@ -73,8 +73,8 @@ export function buildEditTableMultiCellPrompt(
         </output>
       `,
 
-      // 3) Multi-block content in cell
-      dedent`
+			// 3) Multi-block content in cell
+			dedent`
         <instruction>
         Add more details
         </instruction>
@@ -95,10 +95,10 @@ export function buildEditTableMultiCellPrompt(
         ]
         </output>
       `,
-    ],
-    history: formatTextFromMessages(messages),
-    instruction: getLastUserInstruction(messages),
-    rules: dedent`
+		],
+		history: formatTextFromMessages(messages),
+		instruction: getLastUserInstruction(messages),
+		rules: dedent`
       - The table contains <CellRef id="..." /> placeholders marking selected cells.
       - The actual content of each selected cell is in <Cell id="...">content</Cell> blocks after the table.
       - You must ONLY modify the content of the <Cell> blocks.
@@ -107,11 +107,11 @@ export function buildEditTableMultiCellPrompt(
       - Do NOT output any <Cell>, <CellRef>, or table markdown - only the JSON array.
       - CRITICAL: Examples are for format reference only. NEVER output content from examples.
     `,
-    task: dedent`
+		task: dedent`
       You are a table cell editor assistant.
       The <context> contains a markdown table with <CellRef /> placeholders and corresponding <Cell> content blocks.
       Your task is to modify the content of the selected cells according to the user's instruction.
       Output ONLY a valid JSON array with the modified cell contents.
     `,
-  });
+	});
 }

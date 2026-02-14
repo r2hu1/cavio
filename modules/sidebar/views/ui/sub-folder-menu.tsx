@@ -1,63 +1,59 @@
 "use client";
 
 import {
-  SidebarMenuSubButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import DocumentActionContextMenu from "@/modules/documents/views/ui/action-context-menu";
-import CreateDocumentInline from "@/modules/documents/views/ui/create-document-inline";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { FilePlus, Loader2 } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function SubFolderMenu({ folderId }: { folderId: string }) {
-  const trpc = useTRPC();
-  const { data, isLoading, error } = useQuery(
-    trpc.document.getAllByFolderId.queryOptions({ folderId }),
-  );
-  const pathname = usePathname();
+	const trpc = useTRPC();
+	const { data, isLoading, error } = useQuery(
+		trpc.document.getAllByFolderId.queryOptions({ folderId }),
+	);
+	const pathname = usePathname();
 
-  return (
-    <SidebarMenuSub>
-      {isLoading && (
-        <SidebarMenuSubItem className="space-y-1">
-          {Array.from({ length: 2 }).map((_, index) => (
-            <Skeleton key={index} className="h-6 rounded-sm w-full" />
-          ))}
-        </SidebarMenuSubItem>
-      )}
+	return (
+		<SidebarMenuSub>
+			{isLoading && (
+				<SidebarMenuSubItem className="space-y-1">
+					{Array.from({ length: 2 }).map((_, index) => (
+						<Skeleton key={index} className="h-6 rounded-sm w-full" />
+					))}
+				</SidebarMenuSubItem>
+			)}
 
-      {!isLoading && data && data.length > 0 && (
-        <>
-          {data.map((document) => (
-            <SidebarMenuSubItem key={document.id}>
-              <DocumentActionContextMenu id={document.id} folderId={folderId}>
-                <SidebarMenuSubButton
-                  title={document.title}
-                  isActive={pathname === `/folder/${folderId}/${document.id}`}
-                  href={`/folder/${folderId}/${document.id}`}
-                  className="truncate text-nowrap"
-                >
-                  <span className="flex-1 min-w-0 truncate">
-                    {document.title}
-                  </span>
-                </SidebarMenuSubButton>
-              </DocumentActionContextMenu>
-            </SidebarMenuSubItem>
-          ))}
-        </>
-      )}
+			{!isLoading && data && data.length > 0 && (
+				<>
+					{data.map((document) => (
+						<SidebarMenuSubItem key={document.id}>
+							<DocumentActionContextMenu id={document.id} folderId={folderId}>
+								<SidebarMenuSubButton
+									title={document.title}
+									isActive={pathname === `/folder/${folderId}/${document.id}`}
+									href={`/folder/${folderId}/${document.id}`}
+									className="truncate text-nowrap"
+								>
+									<span className="flex-1 min-w-0 truncate">
+										{document.title}
+									</span>
+								</SidebarMenuSubButton>
+							</DocumentActionContextMenu>
+						</SidebarMenuSubItem>
+					))}
+				</>
+			)}
 
-      {!isLoading && (!data || data.length === 0) && (
-        <SidebarMenuSubItem className="px-2">
-          <span className="text-sm text-foreground/50">No docs inside</span>
-        </SidebarMenuSubItem>
-      )}
-    </SidebarMenuSub>
-  );
+			{!isLoading && (!data || data.length === 0) && (
+				<SidebarMenuSubItem className="px-2">
+					<span className="text-sm text-foreground/50">No docs inside</span>
+				</SidebarMenuSubItem>
+			)}
+		</SidebarMenuSub>
+	);
 }

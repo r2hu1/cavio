@@ -1,31 +1,31 @@
-import type { ChatMessage } from '@/components/editor/use-chat';
-import type { SlateEditor } from 'platejs';
+import type { ChatMessage } from "@/components/editor/use-chat";
+import type { SlateEditor } from "platejs";
 
-import dedent from 'dedent';
+import dedent from "dedent";
 
 import {
-  addSelection,
-  buildStructuredPrompt,
-  formatTextFromMessages,
-  getLastUserInstruction,
-  getMarkdownWithSelection,
-  isMultiBlocks,
-  isSelectionInTable,
-  isSingleCellSelection,
-} from '../utils';
+	addSelection,
+	buildStructuredPrompt,
+	formatTextFromMessages,
+	getLastUserInstruction,
+	getMarkdownWithSelection,
+	isMultiBlocks,
+	isSelectionInTable,
+	isSingleCellSelection,
+} from "../utils";
 
-import { buildEditTableMultiCellPrompt } from './getEditTablePrompt';
-import { commonEditRules } from './common';
+import { commonEditRules } from "./common";
+import { buildEditTableMultiCellPrompt } from "./getEditTablePrompt";
 function buildEditMultiBlockPrompt(
-  editor: SlateEditor,
-  messages: ChatMessage[]
+	editor: SlateEditor,
+	messages: ChatMessage[],
 ) {
-  const selectingMarkdown = getMarkdownWithSelection(editor);
+	const selectingMarkdown = getMarkdownWithSelection(editor);
 
-  return buildStructuredPrompt({
-    context: selectingMarkdown,
-    examples: [
-      dedent`
+	return buildStructuredPrompt({
+		context: selectingMarkdown,
+		examples: [
+			dedent`
         <instruction>
         Fix grammar.
         </instruction>
@@ -40,7 +40,7 @@ function buildEditMultiBlockPrompt(
         This guide explains how to install the application.
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Make the tone more formal and professional.
         </instruction>
@@ -55,7 +55,7 @@ function buildEditMultiBlockPrompt(
         This section describes the setup procedure in a clear and professional manner.
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Make it more concise without losing meaning.
         </instruction>
@@ -68,37 +68,37 @@ function buildEditMultiBlockPrompt(
         This document provides a detailed overview of the installation steps.
         </output>
       `,
-    ],
-    history: formatTextFromMessages(messages),
-    instruction: getLastUserInstruction(messages),
-    outputFormatting: 'markdown',
-    rules: dedent`
+		],
+		history: formatTextFromMessages(messages),
+		instruction: getLastUserInstruction(messages),
+		outputFormatting: "markdown",
+		rules: dedent`
       ${commonEditRules}
       - Preserve the block count, line breaks, and all existing Markdown syntax exactly; only modify the textual content inside each block.
       - Do not change heading levels, list markers, link URLs, or add/remove blank lines unless explicitly instructed.
     `,
-    task: dedent`
+		task: dedent`
       The following <context> is user-provided Markdown content that needs improvement.
       Your output should be a seamless replacement of the original content.
     `,
-  });
+	});
 }
 
 function buildEditSelectionPrompt(
-  editor: SlateEditor,
-  messages: ChatMessage[]
+	editor: SlateEditor,
+	messages: ChatMessage[],
 ) {
-  addSelection(editor);
+	addSelection(editor);
 
-  const selectingMarkdown = getMarkdownWithSelection(editor);
-  const endIndex = selectingMarkdown.indexOf('<Selection>');
-  const prefilledResponse =
-    endIndex === -1 ? '' : selectingMarkdown.slice(0, endIndex);
+	const selectingMarkdown = getMarkdownWithSelection(editor);
+	const endIndex = selectingMarkdown.indexOf("<Selection>");
+	const prefilledResponse =
+		endIndex === -1 ? "" : selectingMarkdown.slice(0, endIndex);
 
-  return buildStructuredPrompt({
-    context: selectingMarkdown,
-    examples: [
-      dedent`
+	return buildStructuredPrompt({
+		context: selectingMarkdown,
+		examples: [
+			dedent`
         <instruction>
         Improve word choice.
         </instruction>
@@ -111,7 +111,7 @@ function buildEditSelectionPrompt(
         great
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Fix grammar.
         </instruction>
@@ -124,7 +124,7 @@ function buildEditSelectionPrompt(
         goes
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Make tone more polite.
         </instruction>
@@ -137,7 +137,7 @@ function buildEditSelectionPrompt(
         Please provide
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Make tone more confident.
         </instruction>
@@ -150,7 +150,7 @@ function buildEditSelectionPrompt(
         believe
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Simplify the language.
         </instruction>
@@ -163,7 +163,7 @@ function buildEditSelectionPrompt(
         very
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Translate into French.
         </instruction>
@@ -176,7 +176,7 @@ function buildEditSelectionPrompt(
         Bonjour
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Expand the description.
         </instruction>
@@ -189,7 +189,7 @@ function buildEditSelectionPrompt(
         breathtaking and full of vibrant colors
         </output>
       `,
-      dedent`
+			dedent`
         <instruction>
         Make it sound more natural.
         </instruction>
@@ -202,39 +202,39 @@ function buildEditSelectionPrompt(
         had a party
         </output>
       `,
-    ],
-    history: formatTextFromMessages(messages),
-    instruction: getLastUserInstruction(messages),
-    outputFormatting: 'markdown',
-    prefilledResponse,
-    rules: dedent`
+		],
+		history: formatTextFromMessages(messages),
+		instruction: getLastUserInstruction(messages),
+		outputFormatting: "markdown",
+		prefilledResponse,
+		rules: dedent`
       ${commonEditRules}
       - Your response will be directly concatenated with the prefilledResponse, so ensure the result is smooth and coherent.
       - You may use surrounding text in <context> to ensure the replacement fits naturally.
     `,
-    task: dedent`
+		task: dedent`
       The following <context> contains <Selection> tags marking the editable part.
       Output only the replacement for the selected text.
     `,
-  });
+	});
 }
 
 export function getEditPrompt(
-  editor: SlateEditor,
-  { isSelecting, messages }: { isSelecting: boolean; messages: ChatMessage[] }
-): [string, 'table' | 'multi-block' | 'selection'] {
-  if (!isSelecting)
-    throw new Error('Edit tool is only available when selecting');
+	editor: SlateEditor,
+	{ isSelecting, messages }: { isSelecting: boolean; messages: ChatMessage[] },
+): [string, "table" | "multi-block" | "selection"] {
+	if (!isSelecting)
+		throw new Error("Edit tool is only available when selecting");
 
-  // Handle selection inside table cell
-  if (isSelectionInTable(editor) && !isSingleCellSelection(editor)) {
-    return [buildEditTableMultiCellPrompt(editor, messages), 'table'];
-  }
-  // Handle multi-block selection
-  if (isMultiBlocks(editor)) {
-    return [buildEditMultiBlockPrompt(editor, messages), 'multi-block'];
-  }
+	// Handle selection inside table cell
+	if (isSelectionInTable(editor) && !isSingleCellSelection(editor)) {
+		return [buildEditTableMultiCellPrompt(editor, messages), "table"];
+	}
+	// Handle multi-block selection
+	if (isMultiBlocks(editor)) {
+		return [buildEditMultiBlockPrompt(editor, messages), "multi-block"];
+	}
 
-  // Handle single block with selection
-  return [buildEditSelectionPrompt(editor, messages), 'selection'];
+	// Handle single block with selection
+	return [buildEditSelectionPrompt(editor, messages), "selection"];
 }

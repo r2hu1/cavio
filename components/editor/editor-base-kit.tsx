@@ -1,6 +1,6 @@
 "use client";
 
-import { type Value, TrailingBlockPlugin } from "platejs";
+import { TrailingBlockPlugin, type Value } from "platejs";
 import { type TPlateEditor, useEditorRef } from "platejs/react";
 
 import { AIKit } from "./plugins/ai-kit";
@@ -22,7 +22,6 @@ import { DndKit } from "./plugins/dnd-kit";
 import { DocxKit } from "./plugins/docx-kit";
 import { EmojiKit } from "./plugins/emoji-kit";
 import { ExitBreakKit } from "./plugins/exit-break-kit";
-import { FixedToolbarKit } from "./plugins/fixed-toolbar-kit";
 import { FloatingToolbarKit } from "./plugins/floating-toolbar-kit";
 import { FontKit } from "./plugins/font-kit";
 import { LineHeightKit } from "./plugins/line-height-kit";
@@ -39,55 +38,55 @@ import { TocKit } from "./plugins/toc-kit";
 import { ToggleKit } from "./plugins/toggle-kit";
 
 export const BaseEditorKit = [
-  ...AIKit,
-  ...BlockMenuKit,
+	...AIKit,
+	...BlockMenuKit,
 
-  // Elements
-  ...BasicBlocksKit,
-  ...CodeBlockKit,
-  ...CodeDrawingKit,
-  ...TableKit,
-  ...ToggleKit,
-  ...TocKit,
-  ...MediaKit,
-  ...CalloutKit,
-  ...ColumnKit,
-  ...MathKit,
-  ...DateKit,
-  ...LinkKit,
-  ...MentionKit,
+	// Elements
+	...BasicBlocksKit,
+	...CodeBlockKit,
+	...CodeDrawingKit,
+	...TableKit,
+	...ToggleKit,
+	...TocKit,
+	...MediaKit,
+	...CalloutKit,
+	...ColumnKit,
+	...MathKit,
+	...DateKit,
+	...LinkKit,
+	...MentionKit,
 
-  // Marks
-  ...BasicMarksKit,
-  ...FontKit,
+	// Marks
+	...BasicMarksKit,
+	...FontKit,
 
-  // Block Style
-  ...ListKit,
-  ...AlignKit,
-  ...LineHeightKit,
+	// Block Style
+	...ListKit,
+	...AlignKit,
+	...LineHeightKit,
 
-  // Collaboration
-  ...DiscussionKit,
-  ...CommentKit,
-  ...SuggestionKit,
+	// Collaboration
+	...DiscussionKit,
+	...CommentKit,
+	...SuggestionKit,
 
-  // Editing
-  ...SlashKit,
-  ...AutoformatKit,
-  ...CursorOverlayKit,
-  ...DndKit,
-  ...EmojiKit,
-  ...ExitBreakKit,
-  TrailingBlockPlugin,
+	// Editing
+	...SlashKit,
+	...AutoformatKit,
+	...CursorOverlayKit,
+	...DndKit,
+	...EmojiKit,
+	...ExitBreakKit,
+	TrailingBlockPlugin,
 
-  // Parsers
-  ...DocxKit,
-  ...MarkdownKit,
+	// Parsers
+	...DocxKit,
+	...MarkdownKit,
 
-  // UI
-  ...BlockPlaceholderKit,
-  // ...FixedToolbarKit,
-  ...FloatingToolbarKit,
+	// UI
+	...BlockPlaceholderKit,
+	// ...FixedToolbarKit,
+	...FloatingToolbarKit,
 ];
 
 export type MyEditor = TPlateEditor<Value, (typeof BaseEditorKit)[number]>;
