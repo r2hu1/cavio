@@ -155,11 +155,17 @@
 	body {
 		@apply bg-background text-foreground;
 	}
-	.hidden_scrollbar {
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-	}
-	.animate-wobble {
-		animation: wobble 1.55s ease-in-out infinite;
-	}
+}
+.hidden_scrollbar {
+	overflow: auto;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.hidden_scrollbar::-webkit-scrollbar {
+	display: none;
+}
+
+.animate-wobble {
+	animation: wobble 1.55s ease-in-out infinite;
 }
