@@ -224,7 +224,13 @@ export const documentsRouter = createTRPCRouter({
 			const document = await db
 				.select()
 				.from(documents)
-				.where(eq(documents.id, input.id));
+				.where(
+					and(
+						eq(documents.id, input.id),
+						eq(documents.deleted, false),
+						eq(documents.isPublished, true),
+					),
+				);
 			if (document.length === 0) {
 				throw new TRPCError({
 					code: "NOT_FOUND",

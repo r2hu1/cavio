@@ -1,3 +1,4 @@
+import { InferSelectModel } from "drizzle-orm";
 import {
 	boolean,
 	integer,
@@ -170,3 +171,8 @@ export const apiKeys = pgTable("api_keys", {
 		() => /* @__PURE__ */ new Date(),
 	),
 });
+
+export type FolderType = InferSelectModel<typeof folders>;
+export type DocType = InferSelectModel<typeof documents>;
+export type ApiKeyType = InferSelectModel<typeof apiKeys>;
+export type UserType = InferSelectModel<typeof user>;

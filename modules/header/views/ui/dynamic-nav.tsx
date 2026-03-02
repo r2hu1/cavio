@@ -29,26 +29,6 @@ export default function DynamicNav() {
 	const homePage = pathname.length == 0;
 	const folderId = pathname[1];
 	const documentId = pathname[2];
-	const isBin = pathname.includes("bin");
-	const [hasBinItems, setHasBinItems] = useState(false);
-	const [isRestoring, setIsRestoring] = useState(false);
-	const [isEmptying, setIsEmptying] = useState(false);
-
-	// Check if bin has items and operation states
-	useEffect(() => {
-		if (isBin) {
-			const checkBinState = () => {
-				const binOps = (window as any).binOperations;
-				setHasBinItems(binOps?.hasItems ?? false);
-				setIsRestoring(binOps?.isRestoring ?? false);
-				setIsEmptying(binOps?.isEmptying ?? false);
-			};
-
-			checkBinState();
-			const interval = setInterval(checkBinState, 500);
-			return () => clearInterval(interval);
-		}
-	}, [isBin]);
 
 	const handleRestoreAll = () => {
 		const binOps = (window as any).binOperations;
@@ -94,52 +74,6 @@ export default function DynamicNav() {
 			{folderPage && <FolderNav folderId={folderId} />}
 			{documentPage && <DocumentNav id={documentId} folderId={folderId} />}
 			{settingsPage && <SettingsNav path={pathname} />}
-			{isBin && (
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						<h1>Trash Bin</h1>
-					</div>
-					<div className="flex items-center gap-2">
-						<Button
-							size="sm"
-							variant="secondary"
-							onClick={handleRestoreAll}
-							disabled={!hasBinItems || isRestoring}
-						>
-							<span className="hidden sm:inline">Restore All</span>
-							{isRestoring ? <Loader /> : <ArchiveRestore className="size-4" />}
-						</Button>
-						<Credenza open={open} onOpenChange={setOpen}>
-							<CredenzaTrigger asChild>
-								<Button size="sm" disabled={!hasBinItems}>
-									Empty Trash <Trash className="size-4" />
-								</Button>
-							</CredenzaTrigger>
-							<CredenzaContent>
-								<CredenzaHeader>
-									<CredenzaTitle>Empty Trash?</CredenzaTitle>
-									<CredenzaDescription>
-										This will permanently delete all items in the trash. This
-										action cannot be undone.
-									</CredenzaDescription>
-								</CredenzaHeader>
-								<CredenzaFooter>
-									<CredenzaClose asChild>
-										<Button variant="secondary">Cancel</Button>
-									</CredenzaClose>
-									<Button
-										variant="destructive"
-										onClick={handleEmptyTrash}
-										disabled={isEmptying}
-									>
-										Continue {isEmptying && <Loader />}
-									</Button>
-								</CredenzaFooter>
-							</CredenzaContent>
-						</Credenza>
-					</div>
-				</div>
-			)}
 		</div>
 	);
 }

@@ -55,7 +55,6 @@ export default function PreferencesPageView() {
 		try {
 			const key = apiKeys[provider].trim();
 
-			// Save all preferences
 			await setProvider(provider);
 
 			if (key) {
@@ -72,7 +71,6 @@ export default function PreferencesPageView() {
 
 			toast.success("Preferences saved successfully");
 
-			// Refresh models if API key is present
 			if (key) {
 				fetchModels(key, provider);
 			}
@@ -151,7 +149,6 @@ export default function PreferencesPageView() {
 				const currentChatValue = chatModel;
 				const currentCommandValue = commandModel;
 
-				// Set fallback if no model selected or current model not available
 				if (!currentChatValue || !modelValues.includes(currentChatValue)) {
 					const fallbackModel = getCheapestModel(availableModels);
 					if (fallbackModel) {
@@ -321,9 +318,9 @@ export default function PreferencesPageView() {
 						>
 							Save
 							{isSaving ? (
-								<Loader className="h-4 w-4 mr-2" />
+								<Loader className="h-4 w-4" />
 							) : (
-								<Save className="h-4 w-4 mr-2" />
+								<Save className="h-4 w-4" />
 							)}
 						</Button>
 					</div>

@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function proxy(request: NextRequest) {
 	const sessionCookie = getSessionCookie(request);
 
-	const sessionDeProtectedRoutes = ["/auth/sign-in", "/auth/sign-up"];
+	const sessionDeProtectedRoutes = ["/auth/sign-in", "/auth/sign-up", "/home"];
 	if (
 		sessionCookie &&
 		sessionDeProtectedRoutes.includes(request.nextUrl.pathname)
